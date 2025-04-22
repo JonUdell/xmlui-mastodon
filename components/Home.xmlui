@@ -14,10 +14,37 @@
     <Items data="{tootsHome}">
       <Card padding="$space-3" marginBottom="$space-2">
         <VStack>
-          <Text variant="strong">{$item.display_name || $item.username}</Text>
-          <Text variant="caption">@{$item.username}@{$item.server}</Text>
-          <Text variant="caption">{$item.created_at}</Text>
-          <Text>{$item.status ? $item.status.content : ''}</Text>
+          <HStack spacing="$space-1">
+            <Text variant="strong">{$item.display_name || $item.username}</Text>
+            <Text variant="caption">@{$item.username}@{$item.server}</Text>
+          </HStack>
+          <Text variant="caption">{window.formatDate($item.created_at)}</Text>
+          
+          <Fragment when="{$item.status && $item.status.content}">
+            <Markdown allowHtml="true" content="{$item.status.content}" />
+          </Fragment>
+          
+          <Fragment when="{$item.status && $item.status.reblog && $item.status.reblog.content}">
+            <VStack backgroundColor="$color-surface-50" padding="$space-2" marginTop="$space-1" borderRadius="$radius-m">
+              <HStack spacing="$space-1">
+                <Text variant="em">♻️ Boosted from</Text>
+                <Text variant="strong">{$item.status.reblog.account ? $item.status.reblog.account.display_name : ''}</Text>
+                <Text variant="caption">@{$item.status.reblog.account ? $item.status.reblog.account.username : ''}</Text>
+              </HStack>
+              <Markdown allowHtml="true" content="{$item.status.reblog.content}" />
+            </VStack>
+          </Fragment>
+          
+          <Fragment when="{$item.status && $item.status.media_attachments && $item.status.media_attachments.length > 0}">
+            <Text variant="caption">🖼️ {$item.status.media_attachments.length} media attachment(s)</Text>
+          </Fragment>
+          
+          <HStack spacing="$space-3" marginTop="$space-2">
+            <Text>💬 {$item.status ? $item.status.replies_count : 0}</Text>
+            <Text>♻️ {$item.status ? $item.status.reblogs_count : 0}</Text>
+            <Text>⭐ {$item.status ? $item.status.favourites_count : 0}</Text>
+          </HStack>
+          
           <Fragment when="{$item.instance_qualified_url}">
             <Link to="{$item.instance_qualified_url}" target="_blank">View on Mastodon</Link>
           </Fragment>

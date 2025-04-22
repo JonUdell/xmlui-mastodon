@@ -51,6 +51,16 @@
               `}
         }
 
+        window.formatDate = function(dateString) {
+            if (!dateString) return '';
+            try {
+                const date = new Date(dateString);
+                return date.toLocaleString();
+            } catch (e) {
+                return dateString;
+            }
+        }
+
     </script>
 </head>
 
