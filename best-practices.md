@@ -38,7 +38,7 @@ Rules:
 
 5 don't add any xmlui styling, let the theme and layout engine do its job
 
-6 proceed in small increments, write the absolute minimum amount of xmlui markup necessary -->
+6 proceed in small increments, write the absolute minimum amount of xmlui markup necessary and no script if possible
 
 7 do not invent any xmlui syntax. only use constructs for which you can find examples in the docs and sample apps
 
@@ -50,5 +50,7 @@ This project:
 
 steampipe-mod-mastodon-insights is a steampipe mod that uses the mastodon plugin to visualize social media activity. We will port it to XMLUI and improve it.
 
-xmlui-mastodon is the seed of our port. 
+xmlui-mastodon is the seed of our port. initially it has a table of recent toots in Home.xmlui.
+
+Ready to go?
 

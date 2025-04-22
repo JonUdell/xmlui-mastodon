@@ -9,15 +9,24 @@
     method="POST"
   />
 
-  <Table data="{tootsHome}">
-    <Column bindTo="display_name"/>
-    <Column bindTo="username"/>
-    <Column bindTo="server"/>
-    <Column bindTo="followers"/>
-    <Column bindTo="following"/>
-    <Column bindTo="status">
-      { JSON.stringify($item.status) }
-    </Column>
-  </Table>
+  <VStack>
+    <H1>Home Timeline</H1>
+    <Items data="{tootsHome}">
+      <Card padding="$space-3" marginBottom="$space-2">
+        <VStack>
+          <Text variant="strong">{$item.display_name || $item.username}</Text>
+          <Text variant="caption">@{$item.username}@{$item.server}</Text>
+          <Text variant="caption">{$item.created_at}</Text>
+          <Text>{$item.status ? $item.status.content : ''}</Text>
+          <Fragment when="{$item.instance_qualified_url}">
+            <Link to="{$item.instance_qualified_url}" target="_blank">View on Mastodon</Link>
+          </Fragment>
+          <Fragment when="{!$item.instance_qualified_url && $item.url}">
+            <Link to="{$item.url}" target="_blank">View on Mastodon</Link>
+          </Fragment>
+        </VStack>
+      </Card>
+    </Items>
+  </VStack>
 
 </Component>
