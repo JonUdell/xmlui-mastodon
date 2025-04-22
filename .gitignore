@@ -1,0 +1,6 @@
+# Dependency directories
+xmlui/
+
+# Configuration files with sensitive data
+config.js
+

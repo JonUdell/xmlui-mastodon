@@ -1,0 +1,19 @@
+{
+  "themes": ["themes/earthtone.json"],
+  "themevars": {
+    "marginBottom-Text-markdown": "1rem",
+
+    "marginBottom-H1": "1rem",
+
+    "marginTop-H2": "1rem",
+    "marginBottom-H2": "1rem",
+
+    "marginTop-Text-codefence": "1.5rem",
+    "marginBottom-Text-codefence": "1.5rem",
+
+    "marginTop-Admonition": "1rem",
+    "marginTop-Blockquote": "1rem",
+
+    "marginTop-HtmlLi": "1rem"
+  }
+}

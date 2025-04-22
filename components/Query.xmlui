@@ -1,0 +1,92 @@
+<Component name="Query">
+
+<AppState
+  id="appState"
+  bucket="queryState"
+  initialValue="{
+    {
+      example: 'select 1',
+      loading: false,
+      results: []
+    }
+  }"
+/>
+
+<!--
+<Text>appState: {JSON.stringify(appState.value, null, 2) }</Text>
+-->
+
+<HStack>
+
+    <VStack width="50%">
+      <H1>SQL Query</H1>
+
+      <TextArea
+        id="sqlQueryInput"
+        initialValue = "{appState.value.example}"
+        width="100%"
+        height="300px"
+      />
+
+      <Button
+        label="{appState.value.loading ? 'Loading...' : 'Run Query'}"
+        onClick="{ window.updateQueryWithNonce(sqlQueryInput.value, appState.update) }"
+      />
+
+      <Fragment when="{appState.value.example }">
+        <DataSource
+          id="queryResults"
+          url="{ window.xmluiQuery }"
+          body="{ window.customSql(appState.value.example) }"
+          method="POST"
+          onLoaded="{ appState.update( { loading: false, results: queryResults.value } ) }"
+        />
+      </Fragment>
+
+      <Text preserveLinebreaks="true">
+        { JSON.stringify( appState.value.results, null, 2) }
+      </Text>
+
+    </VStack>
+
+    <VStack width="50%">
+
+      <h2>Canned queries</h2>
+
+      <QueryExample
+        title="Issues for xmlui"
+        example="example1"
+      />
+
+      <QueryExample
+        title="Commits for xmlui (local: sqlite cache of github via steampipe)"
+        example="example3"
+      />
+
+      <QueryExample
+        title="Commits for xmlui (remote: github via steampipe)"
+        example="example5"
+      />
+
+      <QueryExample
+        title="Commits for xmlui by day for person"
+        example="example2"
+      />
+
+      <QueryExample
+        title="SQLite master"
+        example="example4"
+      />
+
+     <Markdown><![CDATA[
+      <details>
+        <img src="resources/query-example-flow.png"/>
+      <summary>Visualize reactivity flow</summary>
+     ]]></Markdown>
+
+    </VStack>
+
+
+  </HStack>
+
+</Component>

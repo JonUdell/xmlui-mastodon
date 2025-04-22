@@ -1,0 +1,32 @@
+<Component
+  name="Sheet"
+  xmlns:XMLUIExtensions="component-ns"
+>
+  <!-- Use the shared state from QueryPipes -->
+  <AppState
+    id="sheetState"
+    bucket="sheetState"
+    onInitialized="{
+      console.log('Sheet component initialized with state:', sheetState.value);
+      console.log('Worksheets data available:', sheetState.value.worksheets ? 'Yes' : 'No');
+    }"
+  />
+
+  <VStack width="{$props.width || '100%'}" gap="1em">
+    <H2>{$props.title || 'Data Sheet'}</H2>
+
+      <Fragment when="{sheetState.value.worksheets && sheetState.value.worksheets[0] && sheetState.value.worksheets[0].data}">
+        <XMLUIExtensions:Spreadsheet
+          worksheets="{window.prepareWorksheetsForSpreadsheet(sheetState.value.worksheets)}"
+        />
+      </Fragment>
+      <Fragment when="{!(sheetState.value.worksheets && sheetState.value.worksheets[0] && sheetState.value.worksheets[0].data)}">
+        <Text>No worksheet data available</Text>
+      </Fragment>
+
+    <Text when="{sheetState.value.worksheets && sheetState.value.worksheets[0] && sheetState.value.worksheets[0].data && sheetState.value.worksheets[0].data.length > 1}">
+      Loaded {sheetState.value.worksheets[0].data.length - 1} rows
+    </Text>
+  </VStack>
+
+</Component>

@@ -1,0 +1,25 @@
+<App
+  layout="horizontal"
+  logo="resources/xmlui-logo.svg"
+  logo-dark="resources/logo-dark.svg"
+  defaultTheme="earthtone"
+>
+
+  <NavPanel>
+    <NavLink label="Home" to="/" icon="home" />
+  </NavPanel>
+
+  <Pages inspect="true">
+    <Page url="/">
+      <Home />
+    </Page>
+  </Pages>
+
+  <Footer>
+    <Text>
+      Powered by XMLUI
+    </Text>
+    <ToneChangerButton />
+  </Footer>
+
+</App>

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="xmlui/0.9.13.js"></script>
+    <script src="xmlui/charts-0.1.12.js"></script>
+    <script src="config.js"></script>
+    <script>
+        window.pipesQuery = 'http://localhost:8080/proxy/pipes.turbot.com/api/latest/user/jonudell/workspace/mastodon/query'
+
+        window.windowValue = 0;
+
+        window.init = function () {
+            return { sql: `select steampipe_configure_github('token="${window.config.githubToken}"')` }
+        }
+
+        window.updateQueryWithNonce = function(query, appStateUpdateFn) {
+            console.log('Executing query:', query);
+            // Get the raw query without any existing nonce comment
+            const rawQuery = query.replace(/^-- [0-9]+\n\n/, '');
+            // Add nonce comment at the beginning
+            const queryWithNonce = `-- ${Date.now()}\n\n${rawQuery}`;
+            console.log('Modified query with nonce:', queryWithNonce);
+
+            // Update the app state
+            appStateUpdateFn({
+                example: queryWithNonce,
+                loading: true,
+                results: []
+            });
+
+            return queryWithNonce;
+        }
+
+        // Custom SQL query function
+        window.customSql = function(query) {
+            console.log('Running query:', query);
+            return {
+                sql: query
+            }
+        }
+
+        window.tootsHome = function (count) {
+            return {
+                sql: `select  *
+                from mastodon_toot_home
+                order by created_at desc
+                limit ${count}
+              `}
+        }
+
+    </script>
+</head>
+
+<body>
+</body>
+
+</html>

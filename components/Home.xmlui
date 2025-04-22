@@ -1,0 +1,23 @@
+<Component name="Home">
+
+  <DataSource
+    id="tootsHome"
+    url="{ window.pipesQuery }"
+    headers='{ {Authorization: "Bearer " + window.config.pipesToken, "content-type":"application/json" } }'
+    body="{ window.tootsHome(10) }"
+    resultSelector="items"
+    method="POST"
+  />
+
+  <Table data="{tootsHome}">
+    <Column bindTo="display_name"/>
+    <Column bindTo="username"/>
+    <Column bindTo="server"/>
+    <Column bindTo="followers"/>
+    <Column bindTo="following"/>
+    <Column bindTo="status">
+      { JSON.stringify($item.status) }
+    </Column>
+  </Table>
+
+</Component>

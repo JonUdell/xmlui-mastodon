@@ -1,0 +1,18 @@
+<Component name="People">
+  <DataSource
+    id="people"
+    url="{ window.xmluiQuery }"
+    body="{ window.people() }"
+    method="POST"
+  />
+
+  <FlowLayout>
+    <Items
+      data="{people}">
+      <VStack horizontalAlignment="center" width="200px">
+        <Link label="{$item.login}" to="{$item.url}" target="_blank" />
+        <Image src="{$item.avatar_url}" />
+      </VStack>
+    </Items>
+  </FlowLayout>
+</Component>

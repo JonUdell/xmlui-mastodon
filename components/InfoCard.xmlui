@@ -1,0 +1,15 @@
+<Component name="InfoCard">
+
+    <DataSource
+      id="data"
+      url="{ xmluiQuery }" 
+      body='{ $props.sql }'
+      method="POST"
+    />
+
+    <Card orientation="horizontal">
+      <Text variant="strong">{$props.text}</Text>
+      <Text>{ data.value[0].value }</Text>
+    </Card>
+
+</Component>

@@ -1,0 +1,33 @@
+{
+  "name": "Earthtone",
+  "id": "earthtone",
+  "themeVars": {
+    "--- App-bound root theme variables": "",
+    "space-base": "0.25rem",
+
+    "color-primary": "hsl(30, 50%, 30%)",
+    "color-secondary": "hsl(120, 40%, 25%)",
+    "color-surface": "hsl(39, 43%, 97%)",
+    "color-warn": "hsl(35, 100%, 50%)",
+
+    "marginBottom-Text-markdown": "1rem",
+
+    "marginBottom-H1": "1rem",
+
+    "marginTop-H2": "1rem",
+    "marginBottom-H2": "1rem",
+
+    "marginTop-Text-codefence": "1.5rem",
+    "marginBottom-Text-codefence": "1.5rem",
+
+    "marginTop-Admonition": "1rem",
+    "marginTop-Blockquote": "1rem",
+
+
+    "light": {
+    },
+    "dark": {
+      "textColor-Link": "$color-warn-300"
+    }
+  }
+}
