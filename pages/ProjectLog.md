@@ -1,4 +1,131 @@
+# Purpose
+
+We are going to improve [steampipe-mod-mastodon-insights](https://github.com/turbot/steampipe-mod-mastodon-insights), with special focus on realizing the design approach discussed in [A Bloomberg terminal for Mastodon](https://blog.jonudell.net/2022/12/17/a-bloomberg-terminal-for-mastodon/). XMLUI gives us many more degrees of freedom to improve on the original bare-bones Powerpipe dashboard. Both projects use the same Mastodon API access, abstracted as a set of Postgres tables provided by [steampipe-plugin-mastodon](https://github.com/turbot/steampipe-plugin-mastodon).
+
+This should result in a beautiful Mastodon reader which, because database backed, will also (unlike the stock Mastodon client or others like Elk and Mona) have a long memory and enable powerful search and data visualization.
+
+It will be usable either hosted in Turbot Pipes (for propellerheads) or locally in SQLite (for civilians).
+
+# Setup
+
+Repo: [xmlui-mastodon](https://github.com/jonudell/xmlui-mastodon)
+
+We are using sqlite-server, but only for its CORS proxy. Although we could be using the steampipe Mastodon plugin in sqlite (see xmlui-github), here we are using a remote steampipe in a Turbot Pipes workspace, our queries use the Pipes query API via the local CORS proxy.
+
+We are working with two assistants, Cursor and Claude, both augmented with these  MCP (Model Context Protocol) servers.
+
+```
+{
+  "mcpServers": {
+    "filesystem": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "/Users/jonudell/remote-xmlui-hn",
+        "/Users/jonudell/remote-xmlui-cms",
+        "/Users/jonudell/xmlui-github",
+        "/Users/jonudell/xmlui",
+        "/Users/jonudell/sqlite-server",
+        "/Users/jonudell/xmlui-mastodon"
+        "/Users/jonudell/steampipe-mod-mastodon-insights"
+      ]
+    },
+    "steampipe": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@turbot/steampipe-mcp"
+      ]
+    }
+  }
+}
+```
+
+The filesystem tool enables the AIs to search local repos for context, and write to the repo we are developing.
+
+The steampipe tool enables them to run queries against the Mastodon plugin
+
+## Available MCP tools
+
+### From server: filesystem
+
+#### create_directory
+Create a new directory or ensure a directory exists. Can create multiple nested directories in one operation. If the directory already exists, this operation will succeed silently. Perfect for setting up directory structures for projects or ensuring required paths exist. Only works within allowed directories.
+
+#### directory_tree
+Get a recursive tree view of files and directories as a JSON structure. Each entry includes 'name', 'type' (file/directory), and 'children' for directories. Files have no children array, while directories always have a children array (which may be empty). The output is formatted with 2-space indentation for readability. Only works within allowed directories.
+
+#### edit_file
+Make line-based edits to a text file. Each edit replaces exact line sequences with new content. Returns a git-style diff showing the changes made. Only works within allowed directories.
+
+#### get_file_info
+Retrieve detailed metadata about a file or directory. Returns comprehensive information including size, creation time, last modified time, permissions, and type. This tool is perfect for understanding file characteristics without reading the actual content. Only works within allowed directories.
+
+#### list_allowed_directories
+Returns the list of directories that this server is allowed to access. Use this to understand which directories are available before trying to access files.
+
+#### list_directory
+Get a detailed listing of all files and directories in a specified path. Results clearly distinguish between files and directories with [FILE] and [DIR] prefixes. This tool is essential for understanding directory structure and finding specific files within a directory. Only works within allowed directories.
+
+#### move_file
+Move or rename files and directories. Can move files between directories and rename them in a single operation. If the destination exists, the operation will fail. Works across different directories and can be used for simple renaming within the same directory. Both source and destination must be within allowed directories.
+
+#### read_file
+Read the complete contents of a file from the file system. Handles various text encodings and provides detailed error messages if the file cannot be read. Use this tool when you need to examine the contents of a single file. Only works within allowed directories.
+
+#### read_multiple_files
+Read the contents of multiple files simultaneously. This is more efficient than reading files one by one when you need to analyze or compare multiple files. Each file's content is returned with its path as a reference. Failed reads for individual files won't stop the entire operation. Only works within allowed directories.
+
+#### search_files
+Recursively search for files and directories matching a pattern. Searches through all subdirectories from the starting path. The search is case-insensitive and matches partial names. Returns full paths to all matching items. Great for finding files when you don't know their exact location. Only searches within allowed directories.
+
+#### write_file
+Create a new file or completely overwrite an existing file with new content. Use with caution as it will overwrite existing files without warning. Handles text content with proper encoding. Only works within allowed directories.
+
+
+### From server: steampipe
+
+#### steampipe_plugin_list
+List all Steampipe plugins installed on the system. Plugins provide access to different data sources like AWS, GCP, or Azure.
+
+#### steampipe_plugin_show
+Get details for a specific Steampipe plugin installation, including version, memory limits, and configuration.
+
+#### steampipe_query
+Query cloud infrastructure, SaaS, APIs, code and more with SQL. Queries are read-only and must use PostgreSQL syntax. For best performance limit the columns requested and use CTEs instead of joins. Trust the search path unless sure you need to specify a schema. Check available tables and columns before querying using steampipe_table_list and steampipe_table_show.
+
+#### steampipe_table_list
+List all available Steampipe tables. Use schema and filter parameters to narrow down results.
+
+#### steampipe_table_show
+Get detailed information about a specific Steampipe table, including column definitions, data types, and descriptions.
+
+
+
+# Rules for AI helpers
+
+1 use the filesystem mcp tool to read and write repos.
+
+2 xmlui-mastodon is our project. remote-xmlui-cms, remote-xmlui-hn, and remote-xmlui-invoice, and xmlui-github are reference projects, use them to find xmlui patterns. xmlui is the xmlui project, use it to scan documentation and understand component implementations. component docs are in ~/xmlui/docs/pages/components, implementations in ~/xmlui/xmlui/components. packages like charts and spreadsheets are in ~/xmlui/packages.
+
+3 use steampipe to explore tables and columns available via the mastodon plugin.
+
+4 don't write any code without my permission
+
+5 don't add any xmlui styling, let the theme and layout engine do its job
+
+6 proceed in small increments, write the absolute minimum amount of xmlui markup necessary and no script if possible
+
+7 do not invent any xmlui syntax. only use constructs for which you can find examples in the docs and sample apps
+
+8 never touch the dom. we only work within xmlui abstractions inside the <App> realm, with help from vars and functions defined on the window variable in index.html
+
+9 keep complex functions and expressions out of xmlui, they can live in index.html
+
 # Snapshot 1
+
+![snapshot1](../resources/snapshot1.png)
 
 We've created a basic Mastodon home timeline viewer that displays toots with proper formatting. Our initial implementation:
 
@@ -10,7 +137,104 @@ We've created a basic Mastodon home timeline viewer that displays toots with pro
 - Formatted dates for better readability
 - We aim to follow the <a href="https://blog.jonudell.net/2022/12/17/a-bloomberg-terminal-for-mastodon/">Bloomberg terminal for Mastodon</a> design philosophy with high information density
 
-<details>
-<summary>screenshot</summary>
-    <img src="../resources/snapshot1.png"/>
-</details>
+# Snapshot 2
+
+![snapshot2](../resources/snapshot2.png)
+
+In this iteration, we aimed to improve the display of the timeline.
+
+- Initially attempted a 2-column layout that didn't work well for the content
+- Tried using card backgrounds to visually differentiate between toots and reblogs
+- Simplified to a cleaner approach using Items with ContentSeparator between posts
+- Removed all background styling, letting the theme handle visual presentation
+- Fixed reaction counts by directly accessing the correct data fields
+- Optimized the SQL query to extract counts from the nested JSON structure
+- Added type conversion in the SQL query ((status->>'replies_count')::int) to ensure proper numeric values
+- Simplified the component markup by accessing direct properties instead of nested values
+- Improved error handling with fallbacks to maintain consistent UI when data is missing
+- Removed the "View" link which wasn't needed with the current display format
+- Maintained the information-dense layout while ensuring data accuracy
+
+ We were also getting zeros for reaction counts. To diagnose and fix the issue, we explored the Steampipe schema for the Mastodon plugin by running targeted SQL queries. We:
+- Examined the structure of the JSON data in the `status` field
+- Ran queries to search for toots with non-zero reaction counts to verify our approach
+- Used PostgreSQL JSON extraction operators (`->` and `->>`) to access nested values
+- Explicitly cast string values to integers to ensure proper numeric handling
+- Verified our solution with test queries before integrating it into the application
+
+## Theme System Learnings
+
+We initially made the mistake of adding inline styles directly to components, which violates the principle of separation between content and presentation. After reviewing the reference documentation, we learned:
+
+- **Theme Variables**: XMLUI has a robust theming system with predefined variables (we looked at an export of them `~/themes/xmlui.json`) that control colors, spacing, typography, and other visual elements.
+
+- **Component Bindings**: The proper approach is to use theme variables in components rather than hardcoded styles.
+
+- **Layout Engine**: Rule #5 emphasizes "don't add any xmlui styling, let the theme and layout engine do its job" - the layout engine handles spacing, alignment, and responsiveness automatically.
+
+- **Consistent Design Language**: Using theme variables ensures a consistent look and feel across the application, making it easier to maintain and update the design.
+
+- **Component Variants**: Instead of custom styling, we should leverage component variants (like `Text variant="caption"` or `variant="strong"`) which are already mapped to appropriate theme variables.
+
+This approach keeps our markup clean and ensures visual consistency while allowing the theme to be changed globally without modifying component code.
+
+## Color Role System in XMLUI
+
+After examining the theme variables in detail, we discovered that XMLUI uses three main color roles to create a consistent visual hierarchy:
+
+**1. Surface Colors**
+- **Purpose:** Used for backgrounds, containers, and UI surfaces
+- **Palette Range:** From white (surface-0) to very dark (surface-950)
+- **Usage Examples:**
+  - `backgroundColor: "$color-surface-subtle"`
+  - `backgroundColor-dropdown-item--hover: "$color-surface-50"`
+  - `textColor-secondary: "$color-surface-600"`
+  - `borderColor: "$color-surface-200"`
+
+**2. Primary Colors**
+- **Purpose:** Used for emphasis, key actions, and interactive elements
+- **Default Value:** A blue shade (#206bc4)
+- **Usage Examples:**
+  - `backgroundColor-tree-row--selected--before: "$color-primary-50"`
+  - `backgroundColor-header-Accordion: "$color-primary-500"`
+  - `backgroundColor-header-Accordion-hover: "$color-primary-400"`
+  - `backgroundColor-AutoComplete-badge: "$color-primary-500"`
+
+**3. Secondary Colors**
+- **Purpose:** Used for supporting elements, less prominent UI components
+- **Default Value:** A slate gray (#6c7a91)
+- **Usage Examples:**
+  - `backgroundColor-secondary: "$color-surface-50"` (interestingly using surface)
+  - `textColor-secondary: "$color-surface-600"` (also using surface)
+
+**Color System Organization:**
+1. **Base Constants:** Defined with prefix `const-color-` (const-color-primary-500)
+2. **Semantic Variables:** Mapped from constants (color-primary: "$const-color-primary-500")
+3. **Component Variables:** Applied to specific components (backgroundColor-Button-primary: "$color-primary-500")
+
+This three-role system creates a visual hierarchy where:
+- **Surface** creates neutral backgrounds and containers
+- **Primary** draws attention to important elements and actions
+- **Secondary** provides visual support without competing with primary elements
+
+Each role includes a full spectrum (50-950) allowing for subtle variations in lightness/darkness while maintaining color harmony throughout the interface.
+
+## Syntax Constraints and Documentation
+
+We repeatedly broke rule 7: "do not invent any xmlui syntax. only use constructs for which you can find examples in the docs and sample apps." Key lessons learned:
+
+- **Reference Before Coding**: Always check existing components in reference projects before writing new code.
+
+- **Documentation First**: Examine documentation to understand available components and their proper usage.
+
+- **Avoid Assumptions**: Don't assume that common patterns from other frameworks (like React) will work in XMLUI.
+
+- **Syntax Verification**: Use examples from sample apps to verify syntax for expressions, condition handling, and component nesting.
+
+- **Component Boundaries**: Understand which HTML elements are supported natively in the Markdown versus XMLUI-specific components.
+
+A specific example where we broke rule 7 was attempting to use a nested structure of `<List><ListItem><Items>...</Items></ListItem></List>`, which is completely invalid in XMLUI. The correct understanding is that:
+- `Items` and `List` are both iterator components but never used together
+- `ListItem` is an HTML element available in Markdown contexts, not a top-level XMLUI component
+- The proper pattern is to use either `Items` with direct children or `List` with a render function
+

@@ -44,7 +44,18 @@
 
         window.tootsHome = function (count) {
             return {
-                sql: `select  *
+                sql: `select
+                    id,
+                    username,
+                    display_name,
+                    created_at,
+                    url,
+                    instance_qualified_url,
+                    status,
+                    reblog,
+                    (status->>'replies_count')::int as replies_count,
+                    (status->>'reblogs_count')::int as reblogs_count,
+                    (status->>'favourites_count')::int as favourites_count
                 from mastodon_toot_home
                 order by created_at desc
                 limit ${count}
@@ -59,6 +70,16 @@
             } catch (e) {
                 return dateString;
             }
+        }
+
+        window.getCount = function(obj, property) {
+            if (!obj || !property) return 0;
+            const value = obj[property];
+            if (value === undefined || value === null) return 0;
+
+            // Try to convert to number, return 0 if it fails
+            const num = parseInt(value, 10);
+            return isNaN(num) ? 0 : num;
         }
 
     </script>

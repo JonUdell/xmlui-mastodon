@@ -1,5 +1,6 @@
 We are working on ~/xmlui-hub. Relevant resources you can access:
 
+```
 {
   "mcpServers": {
     "filesystem": {
@@ -25,6 +26,7 @@ We are working on ~/xmlui-hub. Relevant resources you can access:
     }
   }
 }
+```
 
 Rules:
 
