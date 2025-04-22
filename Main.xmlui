@@ -7,12 +7,24 @@
 
   <NavPanel>
     <NavLink label="Home" to="/" icon="home" />
+    <NavLink label="ProjectLog" to="/projectLog" icon="" />
+    <NavLink label="Icons" to="/icons" icon="home" />
   </NavPanel>
 
   <Pages inspect="true">
+
     <Page url="/">
       <Home />
     </Page>
+
+    <Page url="/projectLog">
+      <Markdown data="/pages/projectLog.md" />
+    </Page>
+
+    <Page url="/icons">
+      <Icons />
+    </Page>
+
   </Pages>
 
   <Footer>
