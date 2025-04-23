@@ -10,7 +10,6 @@
   />
 
   <VStack>
-    <H1>Home Timeline</H1>
 
     <Items data="{tootsHome}">
       <VStack>
