@@ -1,3 +1,14 @@
+# Table of Contents
+
+- [Purpose](#purpose)
+- [Setup](#setup)
+- [Rules for AI helpers](#rules-for-ai-helpers)
+- [Snapshot 1](#snapshot-1)
+- [Snapshot 2](#snapshot-2)
+- [Snapshot 3](#snapshot-3)
+- [Snapshot 4](#snapshot-4)
+- [Snapshot 5](#snapshot-5)
+
 # Purpose
 
 We are going to improve [steampipe-mod-mastodon-insights](https://github.com/turbot/steampipe-mod-mastodon-insights), with special focus on realizing the design approach discussed in [A Bloomberg terminal for Mastodon](https://blog.jonudell.net/2022/12/17/a-bloomberg-terminal-for-mastodon/). XMLUI gives us many more degrees of freedom to improve on the original bare-bones Powerpipe dashboard. Both projects use the same Mastodon API access, abstracted as a set of Postgres tables provided by [steampipe-plugin-mastodon](https://github.com/turbot/steampipe-plugin-mastodon).
