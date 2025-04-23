@@ -47,31 +47,42 @@
 
         window.tootsHome = function (count) {
             return {
-                sql: `select
-                    id,
-                    username,
-                    display_name,
-                    created_at,
-                    url,
-                    instance_qualified_url,
-                    status,
-                    reblog,
-                    (status->>'replies_count')::int as replies_count,
-                    (status->>'reblogs_count')::int as reblogs_count,
-                    (status->>'favourites_count')::int as favourites_count,
-                    account::json->>'avatar' as avatar_url,
-                    CASE
-                      WHEN reblog IS NOT NULL THEN
-                        reblog::json->'account'->>'avatar'
-                      ELSE
-                        NULL
-                    END AS reblog_avatar_url,
-                    status->>'in_reply_to_id' as in_reply_to_id,
-                    status->>'in_reply_to_account_id' as in_reply_to_account_id
-                from mastodon_toot_home
-                order by created_at desc
-                limit ${count}
-              `}
+                sql: `
+                /*
+                 * Note about reply usernames:
+                 * We only return the in_reply_to_account_id field here.
+                 * The Mastodon Steampipe plugin doesn't allow joining with
+                 * mastodon_account table without a specific filter on the id.
+                 *
+                 * To get usernames for replies, we'll batch-process these after
+                 * the initial query returns, using the usernameCache.
+                 */
+                SELECT
+                  id,
+                  username,
+                  display_name,
+                  created_at,
+                  url,
+                  instance_qualified_url,
+                  status,
+                  reblog,
+                  (status->>'replies_count')::int as replies_count,
+                  (status->>'reblogs_count')::int as reblogs_count,
+                  (status->>'favourites_count')::int as favourites_count,
+                  account::json->>'avatar' as avatar_url,
+                  CASE
+                    WHEN reblog IS NOT NULL THEN
+                      reblog::json->'account'->>'avatar'
+                    ELSE
+                      NULL
+                  END AS reblog_avatar_url,
+                  status->>'in_reply_to_id' as in_reply_to_id,
+                  status->>'in_reply_to_account_id' as in_reply_to_account_id
+                FROM mastodon_toot_home
+                ORDER BY created_at DESC
+                LIMIT ${count}
+                `
+            }
         }
 
         window.formatDate = function(dateString) {
@@ -92,6 +103,41 @@
             // Try to convert to number, return 0 if it fails
             const num = parseInt(value, 10);
             return isNaN(num) ? 0 : num;
+        }
+
+        // Global variable to store loaded toots
+        window.loadedToots = [];
+
+        // Manual function to load toots
+        window.loadTootsManually = function() {
+            const query = tootsHome(20);
+
+            // Construct the request options
+            const options = {
+                method: 'POST',
+                headers: {
+                    'Authorization': 'Bearer ' + window.config.pipesToken,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(query)
+            };
+
+            // Show loading state
+            console.log('Loading toots...');
+
+            // Make the fetch request
+            fetch(window.pipesQuery, options)
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Toots loaded:', data);
+                    window.loadedToots = data.items || [];
+
+                    // Force a re-render by dispatching a custom event
+                    document.dispatchEvent(new CustomEvent('toots-loaded'));
+                })
+                .catch(error => {
+                    console.error('Error loading toots:', error);
+                });
         }
 
         // Function to look up a username from an account ID - used by tootsHome
@@ -132,6 +178,25 @@
                     avatar_url: item.avatar_url,
                     display_name: item.display_name,
                     username: item.username
+                });
+            }
+        }
+
+        window.openReblogUserProfile = function(itemId) {
+            // Find the item in the data
+            const items = document.querySelector('[data="{tootsHome}"]').__antmlData;
+            if (!items || !items.length) return;
+
+            const item = items.find(i => i.id === itemId);
+            if (!item || !item.reblog || !item.reblog.account) return;
+
+            // Open the dialog with profile info
+            const dialog = document.getElementById('userProfileDialog');
+            if (dialog && dialog.__antmlComponent && dialog.__antmlComponent.open) {
+                dialog.__antmlComponent.open({
+                    avatar_url: item.reblog_avatar_url,
+                    display_name: item.reblog.account.display_name,
+                    username: item.reblog.account.username
                 });
             }
         }
