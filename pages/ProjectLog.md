@@ -238,3 +238,21 @@ A specific example where we broke rule 7 was attempting to use a nested structur
 - `ListItem` is an HTML element available in Markdown contexts, not a top-level XMLUI component
 - The proper pattern is to use either `Items` with direct children or `List` with a render function
 
+# Snapshot 3
+
+In this iteration, we focused on improving the display of reblogs to better match how modern Mastodon clients like Elk present them.
+
+- Restructured the component to clearly distinguish between regular posts and reblogs
+- Implemented a proper hierarchy for reblogs:
+  - Reblogger's name appears at the top with a small reblog icon (♻️)
+  - Original author is displayed prominently with their username and post date
+  - Original content is shown with proper formatting
+- Created a more consistent UI pattern where both regular posts and reblogs maintain the same visual structure
+- Used Fragment components with conditional rendering to show only the appropriate content
+- Fixed ampersand issues in conditional expressions using the ternary operator pattern
+- Improved media attachment handling for both regular posts and reblogs
+- Maintained the dense information display following the "Bloomberg terminal for Mastodon" design philosophy
+
+While this is a good milestone, we noted that the visual differentiation between regular posts and reblogs is still too subtle. In future iterations, we'll focus on making this distinction more immediately apparent without sacrificing information density or readability.
+
+![snapshot3](../resources/snapshot3.png)

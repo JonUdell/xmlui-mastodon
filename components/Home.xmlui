@@ -13,39 +13,54 @@
     <H1>Home Timeline</H1>
 
     <Items data="{tootsHome}">
-
       <VStack>
-        <!-- Row 1: User info, date, link -->
-        <HStack>
-          <Text variant="strong">{$item.display_name || $item.username}</Text>
-          <Text variant="caption">@{$item.username}</Text>
-          <Text variant="caption">{window.formatDate($item.created_at)}</Text>
-        </HStack>
+        <!-- Regular Post Display -->
+        <Fragment when="{!$item.reblog}">
+          <HStack>
+            <Text variant="strong">{$item.display_name || $item.username}</Text>
+            <Text variant="caption">@{$item.username}</Text>
+            <Text variant="caption">{window.formatDate($item.created_at)}</Text>
+          </HStack>
 
-        <!-- Row 2: Toot content -->
-        <VStack>
-          <Fragment when="{$item.status && $item.status.content}">
-            <Markdown content="{$item.status.content}" />
-          </Fragment>
+          <VStack>
+            <Fragment when="{$item.status ? $item.status.content : false}">
+              <Markdown content="{$item.status.content}" />
+            </Fragment>
 
-          <Fragment when="{$item.reblog && $item.reblog.content}">
+            <Fragment when="{$item.status ? ($item.status.media_attachments ? $item.status.media_attachments.length > 0 : false) : false}">
+              <Text variant="caption">🖼️ {$item.status.media_attachments.length} media</Text>
+            </Fragment>
+          </VStack>
+        </Fragment>
+
+        <!-- Reblog Display -->
+        <Fragment when="{$item.reblog}">
+          <!-- Reblogger info at top with small icon -->
+          <HStack>
+            <Text variant="caption">♻️</Text>
+            <Text variant="strong">{$item.display_name || $item.username}</Text>
+            <Text variant="caption">@{$item.username}</Text>
+          </HStack>
+
+          <!-- Original post display with more prominence -->
+          <VStack>
+            <!-- Original author info -->
             <HStack>
-              <Text variant="caption">♻️</Text>
-              <Text variant="strong">{$item.reblog.account ?
-                $item.reblog.account.display_name : ''}</Text>
-              <Text variant="caption">@{$item.reblog.account ?
-                $item.reblog.account.username : ''}</Text>
+              <Text variant="strong">{$item.reblog.account ? $item.reblog.account.display_name : ''}</Text>
+              <Text variant="caption">@{$item.reblog.account ? $item.reblog.account.username : ''}</Text>
+              <Text variant="caption">{window.formatDate($item.reblog.created_at || $item.created_at)}</Text>
             </HStack>
+
+            <!-- Original content -->
             <Markdown content="{$item.reblog.content}" />
-          </Fragment>
 
-          <Fragment
-            when="{$item.status && $item.status.media_attachments && $item.status.media_attachments.length > 0}">
-            <Text variant="caption">🖼️ {$item.status.media_attachments.length} media</Text>
-          </Fragment>
-        </VStack>
+            <Fragment when="{$item.reblog.media_attachments ? $item.reblog.media_attachments.length > 0 : false}">
+              <Text variant="caption">🖼️ {$item.reblog.media_attachments.length} media</Text>
+            </Fragment>
+          </VStack>
+        </Fragment>
 
-        <!-- Row 3: Reactions -->
+        <!-- Reactions - same for both types -->
         <HStack>
           <Text variant="caption">💬 {$item.replies_count || 0}</Text>
           <Text variant="caption">♻️ {$item.reblogs_count || 0}</Text>
