@@ -12,6 +12,8 @@
 
     "fontSize": "14px",
 
+    "borderRadius-Avatar": "50%",
+
     "marginBottom-Text-markdown": "1rem",
 
     "marginBottom-H1": "1rem",

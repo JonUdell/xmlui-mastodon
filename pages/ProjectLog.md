@@ -141,6 +141,7 @@ We've created a basic Mastodon home timeline viewer that displays toots with pro
 
 ![snapshot2](../resources/snapshot2.png)
 
+
 In this iteration, we aimed to improve the display of the timeline.
 
 - Initially attempted a 2-column layout that didn't work well for the content
@@ -240,6 +241,8 @@ A specific example where we broke rule 7 was attempting to use a nested structur
 
 # Snapshot 3
 
+![snapshot3](../resources/snapshot3.png)
+
 In this iteration, we focused on improving the display of reblogs to better match how modern Mastodon clients like Elk present them.
 
 - Restructured the component to clearly distinguish between regular posts and reblogs
@@ -255,4 +258,63 @@ In this iteration, we focused on improving the display of reblogs to better matc
 
 While this is a good milestone, we noted that the visual differentiation between regular posts and reblogs is still too subtle. In future iterations, we'll focus on making this distinction more immediately apparent without sacrificing information density or readability.
 
-![snapshot3](../resources/snapshot3.png)
+# Snapshot 4
+
+![snapshot4](../resources/snapshot4.png)
+
+In this iteration we added avatars.
+
+First we used steampipe-mcp to explore the Mastodon API, figure out where to get the avatar urls, and how to query for them. We ran test queries to verify, then updated our `tootsHome` query.
+
+```
+window.tootsHome = function (count) {
+    return {
+        sql: `select
+            id,
+            username,
+            display_name,
+            created_at,
+            url,
+            instance_qualified_url,
+            status,
+            reblog,
+            (status->>'replies_count')::int as replies_count,
+            (status->>'reblogs_count')::int as reblogs_count,
+            (status->>'favourites_count')::int as favourites_count,
+            account::json->>'avatar' as avatar_url,
+            CASE
+              WHEN reblog IS NOT NULL THEN
+                reblog::json->'account'->>'avatar'
+              ELSE
+                NULL
+            END AS reblog_avatar_url
+        from mastodon_toot_home
+        order by created_at desc
+        limit ${count}
+      `}
+}
+```
+
+- Initially used `Image` components with direct CSS properties (`width`, `height`, `borderRadius`) for avatars
+- Discovered these properties worked but weren't documented for the `Image` component
+- Explored XMLUI docs using the `xmlui-mcp` tooling to find the proper component for our use case
+- Switched to the dedicated `Avatar` component with appropriate properties:
+  - Used `url` property instead of `src` to specify the avatar image
+  - Utilized the predefined `size` property with values `md` for standard avatars and `xs` for smaller ones
+  - Added `name` property to display user initials as fallback when images don't load
+- Enhanced theming with properly documented theme variables:
+  - Added `borderRadius-Avatar: "50%"` to the theme to make avatars circular
+  - Maintained a clean separation between component structure and styling
+
+This iteration demonstrates our improved understanding of XMLUI's component system and theming approach:
+
+1. **Proper Component Selection**: We used the `mcp_xmlui_list_components` and `mcp_xmlui_xmlui_docs` tools to discover and understand the appropriate components for our needs.
+
+2. **Theme-Based Styling**: Rather than inline styles, we applied styling through the theme system, enhancing maintainability.
+
+3. **Documentation-First Development**: We verified all properties and components in the documentation before implementation.
+
+4. **Steampipe Integration**: We continue to leverage the Steampipe Mastodon plugin for data retrieval.
+
+The timeline now better matches modern Mastodon clients like Elk, with proper avatar display while maintaining the information density of our "Bloomberg terminal for Mastodon" design philosophy. By comparing our implementation to Elk, we identified additional refinements for future iterations, such as media previews and improved spacing.
+

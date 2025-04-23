@@ -55,7 +55,14 @@
                     reblog,
                     (status->>'replies_count')::int as replies_count,
                     (status->>'reblogs_count')::int as reblogs_count,
-                    (status->>'favourites_count')::int as favourites_count
+                    (status->>'favourites_count')::int as favourites_count,
+                    account::json->>'avatar' as avatar_url,
+                    CASE
+                      WHEN reblog IS NOT NULL THEN
+                        reblog::json->'account'->>'avatar'
+                      ELSE
+                        NULL
+                    END AS reblog_avatar_url
                 from mastodon_toot_home
                 order by created_at desc
                 limit ${count}
