@@ -318,3 +318,28 @@ This iteration demonstrates our improved understanding of XMLUI's component syst
 
 The timeline now better matches modern Mastodon clients like Elk, with proper avatar display while maintaining the information density of our "Bloomberg terminal for Mastodon" design philosophy. By comparing our implementation to Elk, we identified additional refinements for future iterations, such as media previews and improved spacing.
 
+# Snapshot 5
+
+![snapshot5](../resources/snapshot5.png)
+
+In this iteration, we focused on improving information density to better align with our "Bloomberg terminal for Mastodon" design philosophy:
+
+- Reduced the size of primary avatars from `md` (Medium) to `sm` (Small) to decrease vertical space consumption
+- Maintained the visual hierarchy between different types of authors:
+  - Primary post authors now use `sm` size avatars (default size in XMLUI)
+  - Rebloggers still use `xs` (Extra small) to indicate their secondary importance
+- This simple but effective change allows more content to be visible on screen without scrolling
+- Preserved the visual distinction between original content and reblogs
+
+We studied the Avatar component documentation through `xmlui-mcp` tools to understand the available size options (`xs`, `sm`, `md`, `lg`) and made an informed choice about which values would best balance readability with information density.
+
+The result is a more compact timeline that still maintains clear visual hierarchy and readability. This change demonstrates that small, targeted adjustments can significantly improve the user experience when backed by proper component understanding and documentation.
+
+By comparing our implementation to modern Mastodon clients like Elk, we identified that reducing unnecessary vertical spacing is key to achieving better information density. This approach allows us to display more content in the available screen space while maintaining a clean, readable interface.
+
+Future density improvements could include:
+- Further reducing spacing between elements
+- More compact rendering of links and media attachments
+- Optimizing the layout of interaction metrics
+- Potential grid-based views for even higher density when appropriate
+

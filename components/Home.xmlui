@@ -16,7 +16,7 @@
         <!-- Regular Post Display -->
         <Fragment when="{!$item.reblog}">
           <HStack alignItems="center">
-            <Avatar url="{$item.avatar_url}" size="md" name="{$item.display_name || $item.username}" />
+            <Avatar url="{$item.avatar_url}" size="sm" name="{$item.display_name || $item.username}" />
             <VStack alignItems="start">
               <Text variant="strong">{$item.display_name || $item.username}</Text>
               <Text variant="caption">@{$item.username}</Text>
@@ -49,7 +49,7 @@
           <VStack marginLeft="20px">
             <!-- Original author info with avatar -->
             <HStack alignItems="center">
-              <Avatar url="{$item.reblog_avatar_url}" size="md" name="{$item.reblog.account ? $item.reblog.account.display_name : $item.reblog.account ? $item.reblog.account.username : ''}" />
+              <Avatar url="{$item.reblog_avatar_url}" size="sm" name="{$item.reblog.account ? $item.reblog.account.display_name : $item.reblog.account ? $item.reblog.account.username : ''}" />
               <VStack alignItems="start">
                 <Text variant="strong">{$item.reblog.account ? $item.reblog.account.display_name : ''}</Text>
                 <Text variant="caption">@{$item.reblog.account ? $item.reblog.account.username : ''}</Text>
