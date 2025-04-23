@@ -9,18 +9,40 @@
     method="POST"
   />
 
+  <!-- User Profile Modal Dialog -->
+  <ModalDialog id="userProfileDialog" title="User Profile">
+    <VStack gap="0.5rem" alignItems="center">
+      <Avatar url="{$param.avatar_url}" size="md" />
+      <Text variant="strong">{$param.display_name || $param.username}</Text>
+      <Text variant="caption">@{$param.username}</Text>
+    </VStack>
+  </ModalDialog>
+
   <VStack>
 
     <Items data="{tootsHome}">
       <VStack>
         <!-- Regular Post Display -->
         <Fragment when="{!$item.reblog}">
+          <!-- Reply indicator if this is a reply -->
+          <Fragment when="{$item.in_reply_to_id != null}">
+            <HStack alignItems="center" gap="0.5rem">
+              <Text variant="caption">💬 Replying to @{$item.in_reply_to_account_id}</Text>
+            </HStack>
+          </Fragment>
+
           <HStack alignItems="center">
-            <Avatar url="{$item.avatar_url}" size="sm" name="{$item.display_name || $item.username}" />
+            <Avatar
+              url="{$item.avatar_url}"
+              size="sm"
+              name="{$item.display_name || $item.username}"
+              onClick="userProfileDialog.open({avatar_url: $item.avatar_url, display_name: $item.display_name, username: $item.username})"
+            />
             <VStack alignItems="start">
               <Text variant="strong">{$item.display_name || $item.username}</Text>
               <Text variant="caption">@{$item.username}</Text>
             </VStack>
+            <SpaceFiller />
             <Text variant="caption">{window.formatDate($item.created_at)}</Text>
           </HStack>
 
@@ -37,27 +59,29 @@
 
         <!-- Reblog Display -->
         <Fragment when="{$item.reblog}">
-          <!-- Reblogger info at top with small icon and avatar -->
-          <HStack alignItems="center">
-            <Text variant="caption">♻️</Text>
-            <Avatar url="{$item.avatar_url}" size="xs" name="{$item.display_name || $item.username}" />
-            <Text variant="strong">{$item.display_name || $item.username}</Text>
-            <Text variant="caption">@{$item.username}</Text>
+          <!-- Combined reblogger and original author info in a single row -->
+          <HStack alignItems="center" gap="0.5rem">
+            <Avatar
+              url="{$item.avatar_url}"
+              size="xs"
+              name="{$item.display_name || $item.username}"
+              onClick="userProfileDialog.open({avatar_url: $item.avatar_url, display_name: $item.display_name, username: $item.username})"
+            />
+            <Text variant="caption">{$item.display_name || $item.username}</Text>
+            <Text variant="caption">➡️</Text>
+            <Avatar
+              url="{$item.reblog_avatar_url}"
+              size="xs"
+              name="{$item.reblog.account ? $item.reblog.account.display_name : $item.reblog.account ? $item.reblog.account.username : ''}"
+              onClick="userProfileDialog.open({avatar_url: $item.reblog_avatar_url, display_name: $item.reblog.account ? $item.reblog.account.display_name : '', username: $item.reblog.account ? $item.reblog.account.username : ''})"
+            />
+            <Text variant="strong">{$item.reblog.account ? $item.reblog.account.display_name : ''}</Text>
+            <SpaceFiller />
+            <Text variant="caption">{window.formatDate($item.reblog.created_at || $item.created_at)}</Text>
           </HStack>
 
-          <!-- Original post display with more prominence -->
-          <VStack marginLeft="20px">
-            <!-- Original author info with avatar -->
-            <HStack alignItems="center">
-              <Avatar url="{$item.reblog_avatar_url}" size="sm" name="{$item.reblog.account ? $item.reblog.account.display_name : $item.reblog.account ? $item.reblog.account.username : ''}" />
-              <VStack alignItems="start">
-                <Text variant="strong">{$item.reblog.account ? $item.reblog.account.display_name : ''}</Text>
-                <Text variant="caption">@{$item.reblog.account ? $item.reblog.account.username : ''}</Text>
-              </VStack>
-              <Text variant="caption">{window.formatDate($item.reblog.created_at || $item.created_at)}</Text>
-            </HStack>
-
-            <!-- Original content -->
+          <!-- Original content -->
+          <VStack marginLeft="0.5rem">
             <Markdown content="{$item.reblog.content}" />
 
             <Fragment when="{$item.reblog.media_attachments ? $item.reblog.media_attachments.length > 0 : false}">
@@ -69,7 +93,7 @@
         <!-- Reactions - same for both types -->
         <HStack>
           <Text variant="caption">💬 {$item.replies_count || 0}</Text>
-          <Text variant="caption">♻️ {$item.reblogs_count || 0}</Text>
+          <Text variant="caption">➡️ {$item.reblogs_count || 0}</Text>
           <Text variant="caption">⭐ {$item.favourites_count || 0}</Text>
         </HStack>
       </VStack>

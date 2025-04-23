@@ -1,4 +1,4 @@
-# Table of Contents
+# Contents
 
 - [Purpose](#purpose)
 - [Setup](#setup)
@@ -8,6 +8,7 @@
 - [Snapshot 3](#snapshot-3)
 - [Snapshot 4](#snapshot-4)
 - [Snapshot 5](#snapshot-5)
+- [Snapshot 6](#snapshot-6)
 
 # Purpose
 
@@ -353,4 +354,37 @@ Future density improvements could include:
 - More compact rendering of links and media attachments
 - Optimizing the layout of interaction metrics
 - Potential grid-based views for even higher density when appropriate
+
+# Snapshot 6
+
+![snapshot6](../resources/snapshot6.png)
+
+In this iteration, we focused on further improving information density and introducing interactive elements:
+
+- **Consolidated Reblog Display**: We completely redesigned the reblog display to follow a single-row pattern:
+  - Reblogger and original author now appear side-by-side on the same line
+  - Connected by a right arrow emoji (➡️) that visually indicates the reblog relationship
+  - Both avatars use the `xs` (Extra small) size to maximize information density
+  - Original content is now indented with a slight left margin for visual hierarchy
+
+- **User Profile Modal Dialog**: Added a `ModalDialog` component to view user profiles:
+  - Clicking on any avatar now opens a profile dialog
+  - Displays avatar, display name, and username in a clean centered layout
+  - Creates a more interactive experience without leaving the timeline
+  - Provides quick access to user information without excess clutter
+
+- **Consistent Visual Language**: Updated our visual indicators for better clarity:
+  - Replaced the recycling icon (♻️) with right arrow (➡️) in both reblog display and reaction counts
+  - This creates a cohesive visual language where the same symbol indicates the same concept throughout the UI
+  - Makes it immediately clear what the relationship is between users in a reblog
+
+- **Reply Indicators**: Added initial support for showing reply relationships:
+  - Posts that are replies now display "💬 Replying to @account_id"
+  - Sets the groundwork for our next iteration which will show actual usernames
+
+These changes continue our Bloomberg-terminal inspired approach of maximizing information density while maintaining readability. The single-row reblog display significantly reduces vertical space consumption compared to our previous approach, allowing more content to be visible on screen without scrolling.
+
+By adding interactive elements like the profile dialog, we've begun to embrace the strengths of XMLUI as a modern UI framework while staying true to our information-dense design philosophy. This creates a hybrid approach that combines the best of both worlds: high information density with modern interactive features.
+
+Next steps will include enhancing the reply indicators to show usernames instead of account IDs and implementing a more comprehensive user profile view.
 
