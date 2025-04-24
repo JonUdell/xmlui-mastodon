@@ -12,10 +12,6 @@
 
         window.windowValue = 0;
 
-        window.init = function () {
-            return { sql: `select steampipe_configure_github('token="${window.config.githubToken}"')` }
-        }
-
         window.updateQueryWithNonce = function(query, appStateUpdateFn) {
             console.log('Executing query:', query);
             // Get the raw query without any existing nonce comment
