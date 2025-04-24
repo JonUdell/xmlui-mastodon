@@ -9,6 +9,7 @@
 - [Snapshot 4](#snapshot-4)
 - [Snapshot 5](#snapshot-5)
 - [Snapshot 6](#snapshot-6)
+- [Snapshot 7](#snapshot-7)
 
 # Purpose
 
@@ -387,4 +388,36 @@ These changes continue our Bloomberg-terminal inspired approach of maximizing in
 By adding interactive elements like the profile dialog, we've begun to embrace the strengths of XMLUI as a modern UI framework while staying true to our information-dense design philosophy. This creates a hybrid approach that combines the best of both worlds: high information density with modern interactive features.
 
 Next steps will include enhancing the reply indicators to show usernames instead of account IDs and implementing a more comprehensive user profile view.
+
+# Snapshot 7
+
+![snapshot7](../resources/snapshot7.png)
+
+In this iteration we punted on username lookup in favor of visual refinement.
+
+- **Icon Semantics and Visual Language**:
+  - Distinguished between relationship indicators and action metrics
+  - Used directional arrow (→) to show the relationship between reblogger and original author
+  - Used different icons for the metrics section to represent actions (reply, boost, favorite)
+
+> hm. in this screenshot we have rightarrow between post user and reblog user, the semantics of rightarrow is good but the look is bad: too small and sparse compared to the emoji. but now we diverge from the reaction row which is using the share icon which is richer and somehow more semantically appropriate in that context. do you see what i mean?
+
+>> You're absolutely right. There's a visual and semantic inconsistency now:
+>> The "arrowright" icon between users is too thin and sparse compared to the emoji it replaced - it lacks visual weight
+>> We're using "share" for reblogs in the reaction row but "arrowright" in the user relationship line
+>> Since reblogging is fundamentally about sharing content, the "share" icon makes more semantic sense in both places. Let me fix this for better consistency:
+>> Now we have better consistency - the "share" icon is used in both places to represent reblogging/sharing content. This creates visual harmony and is semantically accurate since reblogging is a form of sharing.
+>> The "share" icon likely has more visual weight than the thin arrow icon, which should make it stand out better between the user names. This should create a clearer visual relationship while maintaining a consistent conceptual model throughout the interface.
+
+- **Icons vs Emoji**
+  - The emoji we were using for icons conflicted with emoji that appear in usernames
+  - We switched to XMLUI icons
+  - Created circular icon containers with consistent border styling
+
+- **CHStack for Icon Layout**:
+  - Initially wrapped icons in Text components which created unwanted visual artifacts (dots/periods after icons)
+  - Through documentation exploration, identified CHStack (Centered HStack) as the proper container
+  - Created circular icon containers using CHStack with border styling
+  - Achieved perfect icon centering and consistent visual appearance
+  - Cursor found the CHStack solution on its own thanks to xmlui-mcp!
 
