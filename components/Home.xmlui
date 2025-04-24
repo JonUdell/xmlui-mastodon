@@ -34,14 +34,14 @@
           <HStack alignItems="center">
             <Avatar
               url="{$item.avatar_url}"
-              size="sm"
+              size="xs"
               name="{$item.display_name || $item.username}"
               onClick="userProfileDialog.open({avatar_url: $item.avatar_url, display_name: $item.display_name, username: $item.username})"
             />
-            <VStack alignItems="start">
+            <HStack alignItems="center" gap="0.5rem">
               <Text variant="strong">{$item.display_name || $item.username}</Text>
               <Text variant="caption">@{$item.username}</Text>
-            </VStack>
+            </HStack>
             <SpaceFiller />
             <Text variant="caption">{window.formatDate($item.created_at)}</Text>
           </HStack>
