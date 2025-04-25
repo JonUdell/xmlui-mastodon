@@ -10,6 +10,7 @@
 - [Snapshot 5](#snapshot-5)
 - [Snapshot 6](#snapshot-6)
 - [Snapshot 7](#snapshot-7)
+- [Snapshot 8](#snapshot-8)
 
 # Purpose
 
@@ -420,4 +421,57 @@ In this iteration we punted on username lookup in favor of visual refinement.
   - Created circular icon containers using CHStack with border styling
   - Achieved perfect icon centering and consistent visual appearance
   - Cursor found the CHStack solution on its own thanks to xmlui-mcp!
+
+# Snapshot 8
+
+![snapshot8](../resources/snapshot8.png)
+
+In this iteration, we focused on enhancing the user profile modal dialog and improving our understanding of XMLUI's component-based styling approach:
+
+- **Enhanced User Profile Information**:
+  - Used steampipe-mcp to explore the Mastodon API data schema and discover available profile fields:
+    - Identified additional profile metadata including header images, bio notes, and follower/following counts
+    - Wrote test queries to verify field availability and proper JSON path extraction
+    - Updated our SQL query in index.html to extract these fields using PostgreSQL JSON operators:
+      ```sql
+      account::json->>'header' as header_url,
+      account::json->>'note' as note,
+      account::json->>'followers_count' as followers_count,
+      account::json->>'following_count' as following_count,
+      account::json->>'statuses_count' as statuses_count,
+      ```
+    - Added parallel extraction for reblogged content profile information
+    - Used CASE statements to handle conditional data extraction for reblog scenarios
+
+  - **Profile Modal Implementation**:
+    - Used xmlui-mcp to research common components for social media profiles
+    - Selected appropriate components by reviewing documentation:
+      - `Avatar` for user profile pictures
+      - `Image` for header photos
+      - `Markdown` for rendering formatted bio text
+      - `Card` for visually grouping profile sections
+      - `HStack` and `VStack` for layout organization
+    - Created a comprehensive profile view following social media conventions:
+      - Header image at the top
+      - Larger profile avatar overlapping the header (visual hierarchy)
+      - Username and display name in prominent position
+      - Statistics section showing follower/following counts
+      - Bio section with properly rendered Markdown content
+      - Join date with appropriate icon
+      - Link to view the full profile on Mastodon
+
+- **Component-Based Styling**: We identified that our `Avatar` component was using unnecessary inline styles:
+  - Removed explicit height and border-radius properties from Avatar components
+  - Discovered through documentation that Avatar has built-in styling based on the `size` prop
+  - Confirmed that Avatar automatically applies appropriate border-radius (4px by default)
+
+- **Theme System Understanding**: Gained deeper insight into how XMLUI components encapsulate styling:
+  - Components like Avatar handle their own presentation details internally
+  - The `size` prop (e.g., "xs", "lg") controls multiple style properties simultaneously
+  - This encapsulation follows design system principles where presentation details are abstracted
+
+- **Documentation-Driven Development**: Used the XMLUI documentation to understand component capabilities:
+  - Explored the Avatar component docs to verify styling properties
+  - Confirmed that border-radius is built into the component (4px default)
+  - Learned that size tokens (xs, sm, md, lg) are preferred over raw pixel values
 
