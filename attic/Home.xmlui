@@ -9,16 +9,73 @@
     method="POST"
   />
 
-  <!-- User Profile Modal Dialog -->
-  <ModalDialog id="userProfileDialog" title="User Profile">
-    <VStack gap="0.5rem">
-      <Avatar url="{$param.avatar_url}" size="md" />
-      <Text variant="strong">{$param.display_name || $param.username}</Text>
-      <Text variant="caption">@{$param.username}</Text>
+  <!-- Enhanced User Profile Modal Dialog -->
+  <ModalDialog id="userProfileDialog" title="">
+    <VStack gap="1rem">
+      <!-- Header Image -->
+      <Image
+        src="{$param.header_url}"
+        alt="Profile header image"
+      />
+
+      <!-- Profile Info -->
+      <VStack gap="0.5rem" padding="0 1rem">
+        <!-- Avatar (positioned to overlap header) -->
+        <Avatar
+          url="{$param.avatar_url}"
+          size="lg"
+          name="{$param.display_name || $param.username}"
+        />
+
+        <!-- User Info -->
+        <Text variant="strong" fontSize="1.2rem">{$param.display_name || $param.username}</Text>
+        <Text variant="caption">@{$param.username}</Text>
+
+        <!-- Stats -->
+        <HStack gap="1rem" marginTop="0.5rem" justifyContent="center">
+          <VStack alignItems="center">
+            <Text variant="strong">{$param.followers_count || 0}</Text>
+            <Text variant="caption">Followers</Text>
+          </VStack>
+          <VStack alignItems="center">
+            <Text variant="strong">{$param.following_count || 0}</Text>
+            <Text variant="caption">Following</Text>
+          </VStack>
+          <VStack alignItems="center">
+            <Text variant="strong">{$param.statuses_count || 0}</Text>
+            <Text variant="caption">Posts</Text>
+          </VStack>
+        </HStack>
+
+        <!-- Profile Bio -->
+        <Card padding="1rem" marginTop="0.5rem">
+          <Fragment when="{$param.note}">
+            <Markdown content="{$param.note}" />
+          </Fragment>
+          <Fragment when="{!$param.note}">
+            <Text variant="caption">No bio available</Text>
+          </Fragment>
+        </Card>
+
+        <!-- Join Date -->
+        <HStack gap="0.5rem" alignItems="center" justifyContent="center" marginTop="0.5rem">
+          <Icon name="calendar" size="sm" />
+          <Text variant="caption">Joined {window.formatDate($param.created_at)}</Text>
+        </HStack>
+
+        <!-- Profile Link -->
+        <HStack justifyContent="center" marginTop="0.5rem">
+          <Link url="{$param.url}" target="_blank">
+            <Button label="View on Mastodon" />
+          </Link>
+        </HStack>
+      </VStack>
     </VStack>
   </ModalDialog>
 
   <VStack>
+    <!-- Simple debug text -->
+    <Text variant="code" color="red">Debug Mode: Using simplified avatar</Text>
 
     <Items data="{tootsHome}">
       <VStack>
@@ -27,20 +84,22 @@
           <!-- Reply indicator if this is a reply -->
           <Fragment when="{$item.in_reply_to_id != null}">
             <HStack gap="0.5rem">
-              <Text backgroundColor="$color-surface-100" borderRadius="50%" padding="0.4rem" width="1.6rem" height="1.6rem">
+              <CHStack border="1px solid $color-surface-300" borderRadius="50%" width="1.4rem" height="1.4rem">
                 <Icon name="reply" size="sm" />
-              </Text>
+              </CHStack>
               <Text variant="caption">Replying to @{$item.in_reply_to_account_id}</Text>
             </HStack>
           </Fragment>
 
           <HStack>
+            <!-- Replace MastodonAvatar with direct Avatar as a test -->
             <Avatar
               url="{$item.avatar_url}"
               size="xs"
-              name="{$item.display_name || $item.username}"
-              onClick="userProfileDialog.open({avatar_url: $item.avatar_url, display_name: $item.display_name, username: $item.username})"
+              name="{$item.display_name || $item.username || 'User'}"
             />
+            <!-- Keep debug message -->
+            <Text variant="caption" color="blue" fontSize="10px">Direct Avatar</Text>
             <HStack gap="0.5rem">
               <Text variant="strong">{$item.display_name || $item.username}</Text>
               <Text variant="caption">@{$item.username}</Text>
@@ -64,21 +123,37 @@
         <Fragment when="{$item.reblog}">
           <!-- Combined reblogger and original author info in a single row -->
           <HStack verticalAlignment="center" gap="0.5rem">
-            <Avatar
+            <MastodonAvatar
+              id="{$item.id}"
               url="{$item.avatar_url}"
               size="xs"
-              name="{$item.display_name || $item.username}"
-              onClick="userProfileDialog.open({avatar_url: $item.avatar_url, display_name: $item.display_name, username: $item.username})"
+              display_name="{$item.display_name}"
+              username="{$item.username}"
+              header_url="{$item.header_url}"
+              note="{$item.note}"
+              followers_count="{$item.followers_count}"
+              following_count="{$item.following_count}"
+              statuses_count="{$item.statuses_count}"
+              profile_url="{$item.url}"
+              created_at="{$item.created_at}"
             />
             <Text variant="caption">{$item.display_name || $item.username}</Text>
-            <Text backgroundColor="$color-surface-100" borderRadius="50%" padding="0.4rem" width="1.6rem" height="1.6rem">
-              <Icon name="arrowright" size="sm" />
-            </Text>
-            <Avatar
+            <CHStack border="1px solid $color-surface-300" borderRadius="50%" width="1.4rem" height="1.4rem">
+              <Icon name="arrowright" size="md" />
+            </CHStack>
+            <MastodonAvatar
+              id="{$item.reblog ? $item.reblog.id : ''}"
               url="{$item.reblog_avatar_url}"
               size="xs"
-              name="{$item.reblog.account ? $item.reblog.account.display_name : $item.reblog.account ? $item.reblog.account.username : ''}"
-              onClick="userProfileDialog.open({avatar_url: $item.reblog_avatar_url, display_name: $item.reblog.account ? $item.reblog.account.display_name : '', username: $item.reblog.account ? $item.reblog.account.username : ''})"
+              display_name="{$item.reblog.account ? $item.reblog.account.display_name : ''}"
+              username="{$item.reblog.account ? $item.reblog.account.username : ''}"
+              header_url="{$item.reblog_header_url}"
+              note="{$item.reblog_note}"
+              followers_count="{$item.reblog_followers_count}"
+              following_count="{$item.reblog_following_count}"
+              statuses_count="{$item.reblog_statuses_count}"
+              profile_url="{$item.reblog ? $item.reblog.url : ''}"
+              created_at="{$item.reblog ? $item.reblog.created_at : ''}"
             />
             <Text variant="strong">{$item.reblog.account ? $item.reblog.account.display_name : ''}</Text>
             <SpaceFiller />
@@ -98,21 +173,21 @@
         <!-- Reactions - same for both types -->
         <HStack verticalAlignment="center" gap="0.75rem">
           <HStack verticalAlignment="center" gap="0.25rem">
-            <Text backgroundColor="$color-surface-100" borderRadius="50%" padding="0.4rem" width="1.6rem" height="1.6rem">
-              <Icon name="chat" size="sm" />
-            </Text>
+            <CHStack border="1px solid $color-surface-300" borderRadius="50%" width="1.4rem" height="1.4rem">
+              <Icon name="reply" size="sm" />
+            </CHStack>
             <Text variant="caption">{$item.replies_count || 0}</Text>
           </HStack>
           <HStack verticalAlignment="center" gap="0.25rem">
-            <Text backgroundColor="$color-surface-100" borderRadius="50%" padding="0.4rem" width="1.6rem" height="1.6rem">
-              <Icon name="share" size="sm" />
-            </Text>
+            <CHStack border="1px solid $color-surface-300" borderRadius="50%" width="1.4rem" height="1.4rem">
+              <Icon name="trending-up" size="sm" />
+            </CHStack>
             <Text variant="caption">{$item.reblogs_count || 0}</Text>
           </HStack>
           <HStack verticalAlignment="center" gap="0.25rem">
-            <Text backgroundColor="$color-surface-100" borderRadius="50%" padding="0.4rem" width="1.6rem" height="1.6rem">
-              <Icon name="star" size="sm" />
-            </Text>
+            <CHStack border="1px solid $color-surface-300" borderRadius="50%" width="1.4rem" height="1.4rem">
+              <Icon name="like" size="sm" />
+            </CHStack>
             <Text variant="caption">{$item.favourites_count || 0}</Text>
           </HStack>
         </HStack>

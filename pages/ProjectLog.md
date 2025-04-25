@@ -11,6 +11,7 @@
 - [Snapshot 6](#snapshot-6)
 - [Snapshot 7](#snapshot-7)
 - [Snapshot 8](#snapshot-8)
+- [Snapshot 9](#snapshot-9)
 
 # Purpose
 
@@ -474,4 +475,32 @@ In this iteration, we focused on enhancing the user profile modal dialog and imp
   - Explored the Avatar component docs to verify styling properties
   - Confirmed that border-radius is built into the component (4px default)
   - Learned that size tokens (xs, sm, md, lg) are preferred over raw pixel values
+
+# Snapshot 9
+
+![snapshot9](../resources/snapshot9.png)
+
+In this iteration, we worked on code refactoring to improve maintainability:
+
+- **Component Refactoring Attempt**: Created a reusable `MastodonAvatar` component:
+  - Encapsulated the avatar functionality into a single component
+  - Attempted to consolidate repetitive avatar styling and click behavior
+  - Created proper props handling with fallback values
+  - Explored component definition and usage patterns in XMLUI
+
+- **Component Integration Challenges**: Encountered several challenges with custom components:
+  - The component rendered correctly (visible with debugging borders/text)
+  - Dialog opening functionality worked inconsistently
+  - Through trial and error, learned more about XMLUI's component lifecycle
+  - Explored different approaches for event handling within components
+
+- **Debugging Experiments**: Tried various approaches to identify the issue:
+  - Added visible debug styling to confirm component rendering
+  - Tested different event handler syntax patterns
+  - Verified dialog functionality with test buttons
+  - Experimented with simplified component implementation
+
+While we didn't fully achieve our refactoring goal in this iteration, we gained valuable insights into XMLUI's component model. We'll need to investigate further to resolve the issues with custom component event handling in a future iteration.
+
+This experience highlighted the importance of incremental changes and thorough testing when working with custom components in XMLUI. For now, we've reverted to the original direct Avatar implementation to maintain functionality.
 
