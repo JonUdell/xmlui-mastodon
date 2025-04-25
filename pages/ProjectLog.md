@@ -11,6 +11,7 @@
 - [Snapshot 6](#snapshot-6)
 - [Snapshot 7](#snapshot-7)
 - [Snapshot 8](#snapshot-8)
+- [Snapshot 9](#snapshot-9)
 
 # Purpose
 
@@ -475,3 +476,91 @@ In this iteration, we focused on enhancing the user profile modal dialog and imp
   - Confirmed that border-radius is built into the component (4px default)
   - Learned that size tokens (xs, sm, md, lg) are preferred over raw pixel values
 
+# Snapshot 9
+
+In this iteration we refactored the Avatar component into a specialized MastodonAvatar component.
+
+We made some mistakes at first. Initially we didn't move the ModalDialog from Home into MastodonAvatar, instead tried to pass a reference to it, that didn't seem to work. But it was better to move the ModalDialog in out of Main and into MastodonAvatar anyway, it was cluttering Main along with all those verbose calls to userProfileDialog, each passing 10 args.
+
+Along with moving the 60-line ModalDialog out of Main, we changed three of these:
+
+```
+<Avatar
+  url="{$item.avatar_url}"
+  size="xs"
+  name="{$item.display_name || $item.username}"
+  onClick="userProfileDialog.open({
+    avatar_url: $item.avatar_url,
+    display_name: $item.display_name,
+    username: $item.username,
+    header_url: $item.header_url,
+    note: $item.note,
+    followers_count: $item.followers_count,
+    following_count: $item.following_count,
+    statuses_count: $item.statuses_count,
+    url: $item.url,
+    created_at: $item.created_at
+  })"
+/>
+```
+
+Into these:
+
+```
+<Avatar
+  url="{$item.avatar_url}"
+  size="xs"
+  name="{$item.display_name || $item.username}"
+/>
+```
+
+That was our next mistake. All three live in Fragments inside the same Items loop, so we need to pass $item.
+
+
+```
+<Avatar
+  url="{$item.avatar_url}"
+  size="xs"
+  name="{$item.display_name || $item.username}"
+  item="$item"
+/>
+```
+
+And then reference it as $props.item in MastodonAvatar.
+
+```
+  <Avatar
+    url="{$props.url}"
+    size="xs"
+    onClick="{ userProfileDialog.open({
+        avatar_url: $props.item.avatar_url,
+        display_name: $props.item.display_name,
+        username: $props.item.username,
+        header_url: $props.item.header_url,
+        note: $props.item.note,
+        followers_count: $props.item.followers_count,
+        following_count: $props.item.following_count,
+        statuses_count: $props.item.statuses_count,
+        url: $props.item.url,
+        created_at: $props.item.created_at
+        })
+      }"
+  />
+```
+
+With all that done, we have gained a nice simplification of Main, a resusable MastodonAvatar component, and a better understanding of how to do this kind of refactoring.
+
+Another thing we noted, not having used ModalDialog before, is that it calls its arguments $param.X not $props.X.
+
+```
+<Component name="MastodonAvatar">
+
+  <!-- Enhanced User Profile Modal Dialog -->
+  <ModalDialog id="userProfileDialog" title="">
+    <VStack gap="1rem">
+      <!-- Header Image -->
+      <Image
+        src="{$param.header_url}"
+        alt="Profile header image"
+      />
+```
