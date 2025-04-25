@@ -7,6 +7,9 @@
       <Image
         src="{$param.header_url}"
         alt="Profile header image"
+        width="100%"
+        fit="cover"
+        aspectRatio="3 / 1"
       />
 
       <!-- Profile Info -->
