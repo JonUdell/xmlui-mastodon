@@ -56,12 +56,47 @@
                     (status->>'reblogs_count')::int as reblogs_count,
                     (status->>'favourites_count')::int as favourites_count,
                     account::json->>'avatar' as avatar_url,
+                    account::json->>'header' as header_url,
+                    account::json->>'note' as note,
+                    account::json->>'followers_count' as followers_count,
+                    account::json->>'following_count' as following_count,
+                    account::json->>'statuses_count' as statuses_count,
                     CASE
                       WHEN reblog IS NOT NULL THEN
                         reblog::json->'account'->>'avatar'
                       ELSE
                         NULL
                     END AS reblog_avatar_url,
+                    CASE
+                      WHEN reblog IS NOT NULL THEN
+                        reblog::json->'account'->>'header'
+                      ELSE
+                        NULL
+                    END AS reblog_header_url,
+                    CASE
+                      WHEN reblog IS NOT NULL THEN
+                        reblog::json->'account'->>'note'
+                      ELSE
+                        NULL
+                    END AS reblog_note,
+                    CASE
+                      WHEN reblog IS NOT NULL THEN
+                        reblog::json->'account'->>'followers_count'
+                      ELSE
+                        NULL
+                    END AS reblog_followers_count,
+                    CASE
+                      WHEN reblog IS NOT NULL THEN
+                        reblog::json->'account'->>'following_count'
+                      ELSE
+                        NULL
+                    END AS reblog_following_count,
+                    CASE
+                      WHEN reblog IS NOT NULL THEN
+                        reblog::json->'account'->>'statuses_count'
+                      ELSE
+                        NULL
+                    END AS reblog_statuses_count,
                     status->>'in_reply_to_id' as in_reply_to_id,
                     status->>'in_reply_to_account_id' as in_reply_to_account_id
                 from mastodon_toot_home

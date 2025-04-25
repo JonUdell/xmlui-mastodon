@@ -2114,3 +2114,892 @@ Made the container Text elements more rounded by increasing the border radius fr
 Used consistent padding="$space-1" to properly center icons within their backgrounds
 Kept verticalAlignment="center" only on the reblog row and reactions row, as those were the areas with alignment issues
 These changes should result in a cleaner, more subtle look for the icon backgrounds with proper vertical alignment where needed.
+
+what were we going to do next?
+
+To determine what we were going to do next, I need to check our project files and recent work. Let me examine the project structure.
+Error: Access denied - path outside allowed directories: / not in /Users/jonudell/remote-xmlui-hn, /Users/jonudell/remote-xmlui-cms, /Users/jonudell/xmlui-github, /Users/jonudell/xmlui, /Users/jonudell/sqlite-server, /Users/jonudell/xmlui-mastodon, /Users/jonudell/steampipe-mod-mastodon-insights
+Let me check the xmlui-mastodon directory to see what we were working on:
+[DIR] .git
+[FILE] .gitignore
+[FILE] Main.xmlui
+[DIR] attic
+[FILE] best-practices.md
+[DIR] components
+[FILE] config.js
+[FILE] config.json
+[FILE] data.db
+[FILE] index.html
+[FILE] notes.md
+[DIR] pages
+[DIR] resources
+[FILE] sqlite-server
+[FILE] steampipe_sqlite_github.so
+[DIR] themes
+[FILE] transcript.txt
+[DIR] xmlui
+Let me check some key files to understand our current project:
+<App
+  layout="horizontal"
+  logo="resources/xmlui-logo.svg"
+  logo-dark="resources/logo-dark.svg"
+  defaultTheme="earthtone"
+>
+
+  <NavPanel>
+    <NavLink label="Home" to="/" icon="home" />
+    <NavLink label="ProjectLog" to="/projectLog" icon="" />
+    <NavLink label="Icons" to="/icons" icon="home" />
+  </NavPanel>
+
+  <Pages inspect="true">
+
+    <Page url="/">
+      <Home />
+    </Page>
+
+    <Page url="/projectLog">
+      <Markdown data="/pages/projectLog.md" />
+    </Page>
+
+    <Page url="/icons">
+      <Icons />
+    </Page>
+
+  </Pages>
+
+  <Footer>
+    <Text>
+      Powered by XMLUI
+    </Text>
+    <ToneChangerButton />
+  </Footer>
+
+</App>
+Let me check the project log to see what was last recorded:
+Let me also check the Home component to understand our current implementation:
+<Component name="Home">
+
+  <DataSource
+    id="tootsHome"
+    url="{ window.pipesQuery }"
+    headers='{ {Authorization: "Bearer " + window.config.pipesToken, "content-type":"application/json" } }'
+    body="{ window.tootsHome(20) }"
+    resultSelector="items"
+    method="POST"
+  />
+
+  <!-- User Profile Modal Dialog -->
+  <ModalDialog id="userProfileDialog" title="User Profile">
+    <VStack gap="0.5rem">
+      <Avatar url="{$param.avatar_url}" size="md" />
+      <Text variant="strong">{$param.display_name || $param.username}</Text>
+      <Text variant="caption">@{$param.username}</Text>
+    </VStack>
+  </ModalDialog>
+
+  <VStack>
+
+    <Items data="{tootsHome}">
+      <VStack>
+        <!-- Regular Post Display -->
+        <Fragment when="{!$item.reblog}">
+          <!-- Reply indicator if this is a reply -->
+          <Fragment when="{$item.in_reply_to_id != null}">
+            <HStack gap="0.5rem">
+              <CHStack border="1px solid $color-surface-300" borderRadius="50%" width="1.4rem" height="1.4rem">
+                <Icon name="reply" size="sm" />
+              </CHStack>
+              <Text variant="caption">Replying to @{$item.in_reply_to_account_id}</Text>
+            </HStack>
+          </Fragment>
+
+          <HStack>
+            <Avatar
+              url="{$item.avatar_url}"
+              size="xs"
+              name="{$item.display_name || $item.username}"
+              onClick="userProfileDialog.open({avatar_url: $item.avatar_url, display_name: $item.display_name, username: $item.username})"
+            />
+            <HStack gap="0.5rem">
+              <Text variant="strong">{$item.display_name || $item.username}</Text>
+              <Text variant="caption">@{$item.username}</Text>
+            </HStack>
+            <SpaceFiller />
+            <Text variant="caption">{window.formatDate($item.created_at)}</Text>
+          </HStack>
+
+          <VStack>
+            <Fragment when="{$item.status ? $item.status.content : false}">
+              <Markdown content="{$item.status.content}" />
+            </Fragment>
+
+            <Fragment when="{$item.status ? ($item.status.media_attachments ? $item.status.media_attachments.length > 0 : false) : false}">
+              <Text variant="caption">🖼️ {$item.status.media_attachments.length} media</Text>
+            </Fragment>
+          </VStack>
+        </Fragment>
+
+        <!-- Reblog Display -->
+        <Fragment when="{$item.reblog}">
+          <!-- Combined reblogger and original author info in a single row -->
+          <HStack verticalAlignment="center" gap="0.5rem">
+            <Avatar
+              url="{$item.avatar_url}"
+              size="xs"
+              name="{$item.display_name || $item.username}"
+              onClick="userProfileDialog.open({avatar_url: $item.avatar_url, display_name: $item.display_name, username: $item.username})"
+            />
+            <Text variant="caption">{$item.display_name || $item.username}</Text>
+            <CHStack border="1px solid $color-surface-300" borderRadius="50%" width="1.4rem" height="1.4rem">
+              <Icon name="arrowright" size="md" />
+            </CHStack>
+            <Avatar
+              url="{$item.reblog_avatar_url}"
+              size="xs"
+              name="{$item.reblog.account ? $item.reblog.account.display_name : $item.reblog.account ? $item.reblog.account.username : ''}"
+              onClick="userProfileDialog.open({avatar_url: $item.reblog_avatar_url, display_name: $item.reblog.account ? $item.reblog.account.display_name : '', username: $item.reblog.account ? $item.reblog.account.username : ''})"
+            />
+            <Text variant="strong">{$item.reblog.account ? $item.reblog.account.display_name : ''}</Text>
+            <SpaceFiller />
+            <Text variant="caption">{window.formatDate($item.reblog.created_at || $item.created_at)}</Text>
+          </HStack>
+
+          <!-- Original content -->
+          <VStack marginLeft="0.5rem" backgroundColor="$color-surface-100" padding="$space-4" borderRadius="0.25rem">
+            <Markdown content="{$item.reblog.content}" />
+
+            <Fragment when="{$item.reblog.media_attachments ? $item.reblog.media_attachments.length > 0 : false}">
+              <Text variant="caption">🖼️ {$item.reblog.media_attachments.length} media</Text>
+            </Fragment>
+          </VStack>
+        </Fragment>
+
+        <!-- Reactions - same for both types -->
+        <HStack verticalAlignment="center" gap="0.75rem">
+          <HStack verticalAlignment="center" gap="0.25rem">
+            <CHStack border="1px solid $color-surface-300" borderRadius="50%" width="1.4rem" height="1.4rem">
+              <Icon name="reply" size="sm" />
+            </CHStack>
+            <Text variant="caption">{$item.replies_count || 0}</Text>
+          </HStack>
+          <HStack verticalAlignment="center" gap="0.25rem">
+            <CHStack border="1px solid $color-surface-300" borderRadius="50%" width="1.4rem" height="1.4rem">
+              <Icon name="trending-up" size="sm" />
+            </CHStack>
+            <Text variant="caption">{$item.reblogs_count || 0}</Text>
+          </HStack>
+          <HStack verticalAlignment="center" gap="0.25rem">
+            <CHStack border="1px solid $color-surface-300" borderRadius="50%" width="1.4rem" height="1.4rem">
+              <Icon name="like" size="sm" />
+            </CHStack>
+            <Text variant="caption">{$item.favourites_count || 0}</Text>
+          </HStack>
+        </HStack>
+      </VStack>
+      <ContentSeparator/>
+    </Items>
+  </VStack>
+
+</Component>
+Let me also check the index.html file to see what helper functions we've defined:
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="xmlui/0.9.13.js"></script>
+    <script src="xmlui/charts-0.1.12.js"></script>
+    <script src="config.js"></script>
+    <script>
+        window.pipesQuery = 'http://localhost:8080/proxy/pipes.turbot.com/api/latest/user/jonudell/workspace/mastodon/query'
+
+        window.windowValue = 0;
+
+        window.updateQueryWithNonce = function(query, appStateUpdateFn) {
+            console.log('Executing query:', query);
+            // Get the raw query without any existing nonce comment
+            const rawQuery = query.replace(/^-- [0-9]+\n\n/, '');
+            // Add nonce comment at the beginning
+            const queryWithNonce = `-- ${Date.now()}\n\n${rawQuery}`;
+            console.log('Modified query with nonce:', queryWithNonce);
+
+            // Update the app state
+            appStateUpdateFn({
+                example: queryWithNonce,
+                loading: true,
+                results: []
+            });
+
+            return queryWithNonce;
+        }
+
+        // Custom SQL query function
+        window.customSql = function(query) {
+            console.log('Running query:', query);
+            return {
+                sql: query
+            }
+        }
+
+        // Cache for usernames to avoid duplicate queries
+        window.usernameCache = {};
+
+        window.tootsHome = function (count) {
+            return {
+                sql: `select
+                    id,
+                    username,
+                    display_name,
+                    created_at,
+                    url,
+                    instance_qualified_url,
+                    status,
+                    reblog,
+                    (status->>'replies_count')::int as replies_count,
+                    (status->>'reblogs_count')::int as reblogs_count,
+                    (status->>'favourites_count')::int as favourites_count,
+                    account::json->>'avatar' as avatar_url,
+                    CASE
+                      WHEN reblog IS NOT NULL THEN
+                        reblog::json->'account'->>'avatar'
+                      ELSE
+                        NULL
+                    END AS reblog_avatar_url,
+                    status->>'in_reply_to_id' as in_reply_to_id,
+                    status->>'in_reply_to_account_id' as in_reply_to_account_id
+                from mastodon_toot_home
+                order by created_at desc
+                limit ${count}
+              `}
+        }
+
+        window.formatDate = function(dateString) {
+            if (!dateString) return '';
+            try {
+                const date = new Date(dateString);
+                return date.toLocaleString();
+            } catch (e) {
+                return dateString || '';
+            }
+        }
+
+        window.getCount = function(obj, property) {
+            if (!obj || !property) return 0;
+            const value = obj[property];
+            if (value === undefined || value === null) return 0;
+
+            // Try to convert to number, return 0 if it fails
+            const num = parseInt(value, 10);
+            return isNaN(num) ? 0 : num;
+        }
+
+        // Function to look up a username from an account ID - used by tootsHome
+        window.lookupUsername = function(accountId) {
+            if (!accountId) return null;
+
+            // Return from cache if available
+            if (window.usernameCache[accountId]) {
+                return { username: window.usernameCache[accountId] };
+            }
+
+            return {
+                sql: `SELECT username FROM mastodon_account WHERE id = '${accountId}'`,
+                then: function(result) {
+                    if (result && result.length > 0) {
+                        // Store username in cache for future use
+                        window.usernameCache[accountId] = result[0].username;
+                        return { username: result[0].username };
+                    }
+                    return { username: null };
+                }
+            };
+        }
+
+        // Helper functions to open profile dialog
+        window.openUserProfile = function(itemId) {
+            // Find the item in the data
+            const items = document.querySelector('[data="{tootsHome}"]').__antmlData;
+            if (!items || !items.length) return;
+
+            const item = items.find(i => i.id === itemId);
+            if (!item) return;
+
+            // Open the dialog with profile info
+            const dialog = document.getElementById('userProfileDialog');
+            if (dialog && dialog.__antmlComponent && dialog.__antmlComponent.open) {
+                dialog.__antmlComponent.open({
+                    avatar_url: item.avatar_url,
+                    display_name: item.display_name,
+                    username: item.username
+                });
+            }
+        }
+
+    </script>
+</head>
+
+<body>
+</body>
+
+</html>
+Based on the project state, here's what we were working on:
+We've built a Mastodon timeline viewer in XMLUI that displays toots, reblogs, and user information
+The latest snapshot (Snapshot 7) shows we were:
+Refining the visual design of the timeline
+Improving icons and visual indicators for reblogs and reactions
+Working on a user profile modal dialog
+Planning to implement username lookup for reply indicators (but postponed it)
+The most logical next steps would be:
+Implement the username lookup functionality for replies (instead of showing account IDs)
+Enhance the user profile modal with more information
+Add support for viewing media attachments
+Implement interaction capabilities (like, reblog, reply)
+Add additional timeline views (notifications, local, federated)
+Do you want to proceed with any of these specific improvements?
+lets work on 2. for that, what mastodon table will you need, and what info does it have?
+
+Let me explore the Mastodon tables to see what user profile data is available.
+{"tables":[{"schema":"mastodon","name":"mastodon_account","description":"Represents mastodon accounts."},{"schema":"mastodon","name":"mastodon_domain_block","description":"Represents a domain blocked by a Mastodon server."},{"schema":"mastodon","name":"mastodon_follower","description":"Represents a follower of a user of Mastodon."},{"schema":"mastodon","name":"mastodon_following","description":"Represents a user of Mastodon an account is following."},{"schema":"mastodon","name":"mastodon_list_account","description":"Represents an account of a list of yours."},{"schema":"mastodon","name":"mastodon_my_account","description":"Represents your user of Mastodon and its associated profile."},{"schema":"mastodon","name":"mastodon_my_follower","description":"Represents an account that follows you."},{"schema":"mastodon","name":"mastodon_my_following","description":"Represents an account you are following."},{"schema":"mastodon","name":"mastodon_my_list","description":"Represents your list of accounts."},{"schema":"mastodon","name":"mastodon_my_toot","description":"Represents a toot posted to your account."},{"schema":"mastodon","name":"mastodon_notification","description":"Represents a notification of an event relevant to your account."},{"schema":"mastodon","name":"mastodon_peer","description":"Represents a neighbor Mastodon server that your server is connected to."},{"schema":"mastodon","name":"mastodon_rate","description":"Represents API rate-limit information about your access token."},{"schema":"mastodon","name":"mastodon_relationship","description":"Represents the relationship between accounts."},{"schema":"mastodon","name":"mastodon_rule","description":"Represents a rule that server users should follow."},{"schema":"mastodon","name":"mastodon_search_account","description":"Represents an account matching a search term."},{"schema":"mastodon","name":"mastodon_search_hashtag","description":"Represents a hashtag matching a search term."},{"schema":"mastodon","name":"mastodon_search_toot","description":"Represents a toot matching a search term."},{"schema":"mastodon","name":"mastodon_server","description":"Represents an independent instance of Mastodon."},{"schema":"mastodon","name":"mastodon_toot_direct","description":"Represents a toot on your direct timeline."},{"schema":"mastodon","name":"mastodon_toot_favourite","description":"Represents a favourite toot of yours."},{"schema":"mastodon","name":"mastodon_toot_federated","description":"Represents a toot in a federated server."},{"schema":"mastodon","name":"mastodon_toot_home","description":"Represents a toot on your home timeline."},{"schema":"mastodon","name":"mastodon_toot_list","description":"Represents a toot on your list timeline."},{"schema":"mastodon","name":"mastodon_toot_local","description":"Represents a toot on your local server."},{"schema":"mastodon","name":"mastodon_weekly_activity","description":"Represents a weekly activity stats of a Mastodon server."}]}
+Now, let me examine the structure of mastodon_account which seems most relevant:
+{"table":{"schema":"mastodon","name":"mastodon_account","type":"FOREIGN","columns":[{"name":"account_id","type":"text","nullable":true,"default":null,"description":"The account ID."},{"name":"id","type":"text","nullable":true,"default":null,"description":"ID of the account."},{"name":"acct","type":"text","nullable":true,"default":null,"description":"username@server for the account."},{"name":"created_at","type":"timestamp with time zone","nullable":true,"default":null,"description":"Timestamp when the account was created."},{"name":"url","type":"text","nullable":true,"default":null,"description":"URL for the account."},{"name":"instance_qualified_account_url","type":"text","nullable":true,"default":null,"description":"Account URL prefixed with my instance."},{"name":"username","type":"text","nullable":true,"default":null,"description":"Username for the account."},{"name":"server","type":"text","nullable":true,"default":null,"description":"Server for the account."},{"name":"display_name","type":"text","nullable":true,"default":null,"description":"Display name for the account."},{"name":"followers_count","type":"bigint","nullable":true,"default":null,"numeric_precision":64,"description":"Number of followers for the account."},{"name":"following_count","type":"bigint","nullable":true,"default":null,"numeric_precision":64,"description":"Number of accounts this account follows."},{"name":"statuses_count","type":"bigint","nullable":true,"default":null,"numeric_precision":64,"description":"Toots from this account."},{"name":"note","type":"text","nullable":true,"default":null,"description":"Description of the account."},{"name":"sp_connection_name","type":"text","nullable":true,"default":null,"description":"Steampipe connection name."},{"name":"sp_ctx","type":"jsonb","nullable":true,"default":null,"description":"Steampipe context in JSON form."},{"name":"_ctx","type":"jsonb","nullable":true,"default":null,"description":"Steampipe context in JSON form."}]}}
+Let me also check additional profile data that might be in other tables:
+mastodon_account
+rpc error: code = Internal desc = mastodon: rpc error: code = Internal desc = 'List' call for table 'mastodon_account' is missing 1 required qual: column:'id' operator: =
+I need to provide an account ID. Let me first see if there's any data in the mastodon_my_account table:
+[{"account_id":"110147269591397842","id":"110147269591397842","acct":"judell","created_at":"2023-04-05T00:00:00.000Z","url":"https://social.coop/@judell","instance_qualified_account_url":"https://https:/social.coop/@judell@social.coop","username":"judell","server":"social.coop","display_name":"Jon Udell","followers_count":"2132","following_count":"1311","statuses_count":"1755","note":" Patron saint of trailing-edge technologies, grateful resident of the nation-state of California.","sp_connection_name":"mastodon","sp_ctx":{"steampipe":{"sdk_version":"5.11.5"},"connection_name":"mastodon"},"_ctx":{"steampipe":{"sdk_version":"5.11.5"},"connection_name":"mastodon"}}]
+Now I'll try to get a more complete picture by examining the actual fields available for a specific account:
+[{"id":"110147269591397842","username":"judell","display_name":"Jon Udell","followers_count":"2132","following_count":"1311","statuses_count":"1755","note":" Patron saint of trailing-edge technologies, grateful resident of the nation-state of California.","url":"https://social.coop/@judell","acct":"judell","created_at":"2023-04-05T00:00:00.000Z"}]
+We need to get the avatar URL information. Let me check how it's obtained in our current implementation:
+Based on this exploration, I can see that we need to enhance our user profile modal with additional information from mastodon_account. The mastodon_account table contains:
+Basic profile info: username, display_name, acct (username@server)
+Bio/description in the "note" field
+Stats: followers_count, following_count, statuses_count
+URL information: url, instance_qualified_account_url
+Creation date: created_at
+Avatar URL (coming from the account JSON field)
+For our enhanced user profile modal, we should include:
+Avatar (already implemented)
+Display name and username (already implemented)
+Bio/description from the "note" field
+Follow stats (followers and following counts)
+Post count
+Join date
+Links to their Mastodon profile
+Let me query for the account data we'd need for an enhanced profile:
+column "note" does not exist
+Let me see if the note is in the account JSON:
+Perfect! For our enhanced profile modal, we'll need:
+The user's avatar (already in our implementation)
+The header image (header_url)
+Display name and username
+Bio/description (note field - contains HTML that we'll need to render with the Markdown component)
+Follow stats (followers_count, following_count)
+Post count (statuses_count)
+Join date (created_at)
+Link to their Mastodon profile (url)
+We'll need to update our tootsHome function in index.html to include this additional data, and enhance our ModalDialog component to display it nicely.
+lets do a trial of that, what xmlui components will work well
+
+Let me check what XMLUI components are available for building an enhanced profile modal:
+Available XMLUI components:
+
+- status: Server status information
+- APICall: Make API calls from XMLUI
+- App: Root application component
+- AppHeader: Application header component
+- AppState: Manage application state
+- AutoComplete: Auto-complete input field
+- Avatar: User avatar/profile image
+- Backdrop: Background overlay component
+- Badge: Badge or label component
+- Bookmark: Bookmark functionality
+- Breakout: Break out of container constraints
+- Button: Interactive button component
+- CHStack: Centered horizontal stack
+- CVStack: Centered vertical stack
+- Card: Card container component
+- ChangeListener: Listen for changes in components
+- Checkbox: Checkbox input component
+- ColorPicker: Color selection component
+- Column: Column layout component
+- ContentSeparator: Visual separator between content
+- DataSource: Data source management
+- DatePicker: Date selection component
+- DropdownMenu: Dropdown menu component
+- EmojiSelector: Emoji selection component
+- FileInput: File input component
+- FileUploadDropZone: Drag and drop file upload zone
+- FlowLayout: Flowing layout component
+- Footer: Page footer component
+- Form: Form container component
+- FormItem: Individual form item
+- FormSection: Form section grouping
+- Fragment: Fragment/partial component
+- H1: Heading level 1
+- H2: Heading level 2
+- H3: Heading level 3
+- H4: Heading level 4
+- H5: Heading level 5
+- H6: Heading level 6
+- HSplitter: Horizontal splitter component
+- HStack: Horizontal stack layout
+- Heading: Generic heading component
+- Icon: Icon display component
+- Image: Image display component
+- Items: Collection of items
+- Link: Hyperlink component
+- List: List component
+- Logo: Logo display component
+- Markdown: Markdown renderer
+- MenuItem: Menu item component
+- MenuSeparator: Visual separator in menus
+- ModalDialog: Modal dialog component
+- NavGroup: Navigation group component
+- NavLink: Navigation link component
+- NavPanel: Navigation panel component
+- NoResult: No results found component
+- NumberBox: Numeric input component
+- Option: Option/choice component
+- Page: Page container component
+- PageMetaTitle: Page title metadata
+- Pages: Multiple pages container
+- PasswordInput: Password input field
+- ProgressBar: Progress bar component
+- Queue: Queue management component
+- RadioGroup: Radio button group
+- RealTimeAdapter: Real-time data adapter
+- Redirect: URL redirect component
+- Select: Dropdown select component
+- SelectionStore: Manages selection state
+- Slider: Slider input component
+- SpaceFiller: Flexible space filler
+- Spinner: Loading spinner component
+- Splitter: Resizable splitter component
+- Stack: Stack layout component
+- StickyBox: Sticky positioned container
+- SubMenuItem: Nested menu item
+- Switch: Toggle switch component
+- TabItem: Individual tab item
+- Table: Table/grid component
+- TableOfContents: TOC navigation component
+- Tabs: Tabbed interface component
+- Text: Text display component
+- TextArea: Multi-line text input
+- TextBox: Single-line text input
+- Theme: Theme configuration
+- ToneChangerButton: Button to change tone
+- VSplitter: Vertical splitter component
+- VStack: Vertical stack layout
+Now let me check some specific components that would be useful for our profile modal:
+}
+import { Callout } from "nextra/components";
+
+# Avatar [#component-avatar]
+
+The `Avatar` component represents a user, group (or other entity's) avatar with a small image or initials.
+
+## Properties
+
+### `name`
+
+This property sets the name value the Avatar uses to display initials.
+
+```xmlui copy
+<App>
+  <Avatar name="John, Doe" />
+</App>
+```
+
+<Playground
+  name="Example: name"
+  app={`
+    <App>
+      <Avatar name="John, Doe" />
+    </App>
+  `}
+/>
+
+### `size (default: "sm")`
+
+This property defines the display size of the Avatar.
+
+Available values:
+
+| Value | Description |
+| --- | --- |
+| `xs` | Extra small button |
+| `sm` | Small button **(default)** |
+| `md` | Medium button |
+| `lg` | Large button |
+
+```xmlui copy
+<App>
+  <HStack>
+    <Avatar name="Dorothy Ellen Fuller" />
+    <Avatar name="Xavier Schiller" size="xs" />
+    <Avatar name="Sebastien Moore" size="sm" />
+    <Avatar name="Molly Dough" size="md" />
+    <Avatar name="Lynn Gilbert" size="lg" />
+  </HStack>
+</App>
+```
+
+<Playground
+  name="Example: size"
+  app={`
+    <App>
+      <HStack>
+        <Avatar name="Dorothy Ellen Fuller" />
+        <Avatar name="Xavier Schiller" size="xs" />
+        <Avatar name="Sebastien Moore" size="sm" />
+        <Avatar name="Molly Dough" size="md" />
+        <Avatar name="Lynn Gilbert" size="lg" />
+      </HStack>
+    </App>
+  `}
+/>
+
+### `url`
+
+This property specifies the URL of the image to display in the Avatar.
+
+```xmlui copy
+<App>
+  <Avatar url="https://i.pravatar.cc/100" size="md" />
+</App>
+```
+
+<Playground
+  name="Example: url"
+  app={`
+    <App>
+      <Avatar url="https://i.pravatar.cc/100" size="md" />
+    </App>
+  `}
+/>
+
+## Events
+
+### `click`
+
+This event is triggered when the avatar is clicked.
+
+```xmlui copy
+<App>
+  <HStack verticalAlignment="center">
+    <Avatar name="Molly Dough" size="md" onClick="toast('Avatar clicked')" />
+    Click the avatar!
+  </HStack>
+</App>
+```
+
+<Playground
+  name="Example: click"
+  app={`
+    <App>
+      <HStack verticalAlignment="center">
+        <Avatar name="Molly Dough" size="md" onClick="toast('Avatar clicked')" />
+        Click the avatar!
+      </HStack>
+    </App>
+  `}
+/>
+
+## Exposed Methods
+
+This component does not expose any methods.
+
+## Styling
+
+The `Avatar` component uses these theme variables to customize its appearance:
+
+- `backgroundColor`
+- `borderColor`
+- `color`
+- `fontWeight`
+- `borderRadius`
+- `boxShadow`
+- `borderStyle`
+- `borderWidth`
+
+### Theme Variables
+
+| Variable | Default Value (Light) | Default Value (Dark) |
+| --- | --- | --- |
+| [backgroundColor](../styles-and-themes/common-units/#color)-Avatar | $color-surface-100 | $color-surface-100 |
+| [border](../styles-and-themes/common-units/#border)-Avatar | 0px solid $color-surface-400A80 | 0px solid $color-surface-400A80 |
+| [borderBottom](../styles-and-themes/common-units/#border)-Avatar | <GrayText>none</GrayText> | <GrayText>none</GrayText> |
+| [borderBottomColor](../styles-and-themes/common-units/#color)-Avatar | <GrayText>none</GrayText> | <GrayText>none</GrayText> |
+| [borderBottomStyle](../styles-and-themes/common-units/#border-style)-Avatar | <GrayText>none</GrayText> | <GrayText>none</GrayText> |
+| [borderBottomWidth](../styles-and-themes/common-units/#size)-Avatar | <GrayText>none</GrayText> | <GrayText>none</GrayText> |
+| [borderColor](../styles-and-themes/common-units/#color)-Avatar | <GrayText>none</GrayText> | <GrayText>none</GrayText> |
+| [border](../styles-and-themes/common-units/#border)EndEndRadius-Avatar | <GrayText>none</GrayText> | <GrayText>none</GrayText> |
+| [border](../styles-and-themes/common-units/#border)EndStartRadius-Avatar | <GrayText>none</GrayText> | <GrayText>none</GrayText> |
+| [borderHorizontal](../styles-and-themes/common-units/#border)-Avatar | <GrayText>none</GrayText> | <GrayText>none</GrayText> |
+| [borderHorizontalColor](../styles-and-themes/common-units/#color)-Avatar | <GrayText>none</GrayText> | <GrayText>none</GrayText> |
+| [borderHorizontalStyle](../styles-and-themes/common-units/#border-style)-Avatar | <GrayText>none</GrayText> | <GrayText>none</GrayText> |
+| [borderHorizontalWidth](../styles-and-themes/common-units/#size)-Avatar | <GrayText>none</GrayText> | <GrayText>none</GrayText> |
+| [borderLeft](../styles-and-themes/common-units/#border)-Avatar | <GrayText>none</GrayText> | <GrayText>none</GrayText> |
+| [color](../styles-and-themes/common-units/#color)-Avatar | <GrayText>none</GrayText> | <GrayText>none</GrayText> |
+| [borderLeftStyle](../styles-and-themes/common-units/#border-style)-Avatar | <GrayText>none</GrayText> | <GrayText>none</GrayText> |
+| [borderLeftWidth](../styles-and-themes/common-units/#size)-Avatar | <GrayText>none</GrayText> | <GrayText>none</GrayText> |
+| [borderRadius](../styles-and-themes/common-units/#border-rounding)-Avatar | 4px | 4px |
+| [borderRight](../styles-and-themes/common-units/#border)-Avatar | <GrayText>none</GrayText> | <GrayText>none</GrayText> |
+| [color](../styles-and-themes/common-units/#color)-Avatar | <GrayText>none</GrayText> | <GrayText>none</GrayText> |
+| [borderRightStyle](../styles-and-themes/common-units/#border-style)-Avatar | <GrayText>none</GrayText> | <GrayText>none</GrayText> |
+| [borderRightWidth](../styles-and-themes/common-units/#size)-Avatar | <GrayText>none</GrayText> | <GrayText>none</GrayText> |
+| [border](../styles-and-themes/common-units/#border)StartEndRadius-Avatar | <GrayText>none</GrayText> | <GrayText>none</GrayText> |
+| [border](../styles-and-themes/common-units/#border)StartStartRadius-Avatar | <GrayText>none</GrayText> | <GrayText>none</GrayText> |
+| [borderStyle](../styles-and-themes/common-units/#border-style)-Avatar | <GrayText>none</GrayText> | <GrayText>none</GrayText> |
+| [borderTop](../styles-and-themes/common-units/#border)-Avatar | <GrayText>none</GrayText> | <GrayText>none</GrayText> |
+| [borderTopColor](../styles-and-themes/common-units/#color)-Avatar | <GrayText>none</GrayText> | <GrayText>none</GrayText> |
+| [borderTopStyle](../styles-and-themes/common-units/#border-style)-Avatar | <GrayText>none</GrayText> | <GrayText>none</GrayText> |
+| [borderTopWidth](../styles-and-themes/common-units/#size)-Avatar | <GrayText>none</GrayText> | <GrayText>none</GrayText> |
+| [borderHorizontal](../styles-and-themes/common-units/#border)-Avatar | <GrayText>none</GrayText> | <GrayText>none</GrayText> |
+| [borderVerticalColor](../styles-and-themes/common-units/#color)-Avatar | <GrayText>none</GrayText> | <GrayText>none</GrayText> |
+| [borderVerticalStyle](../styles-and-themes/common-units/#border-style)-Avatar | <GrayText>none</GrayText> | <GrayText>none</GrayText> |
+| [borderVerticalWidth](../styles-and-themes/common-units/#size)-Avatar | <GrayText>none</GrayText> | <GrayText>none</GrayText> |
+| [borderWidth](../styles-and-themes/common-units/#size)-Avatar | <GrayText>none</GrayText> | <GrayText>none</GrayText> |
+| [boxShadow](../styles-and-themes/common-units/#boxShadow)-Avatar | inset 0 0 0 1px rgba(4,32,69,0.1) | inset 0 0 0 1px rgba(4,32,69,0.1) |
+| [fontWeight](../styles-and-themes/common-units/#fontWeight)-Avatar | $fontWeight-bold | $fontWeight-bold |
+| [textColor](../styles-and-themes/common-units/#color)-Avatar | $textColor-secondary | $textColor-secondary |
+import { Callout } from "nextra/components";
+
+# Image [#component-image]
+
+The `Image` component represents or depicts an object, scene, idea, or other concept with a picture.
+
+## Properties
+
+### `alt`
+
+This property specifies an alternate text for the image.
+
+This is useful in two cases:
+1. Accessibility: screen readers read the prop value to users so they know what the image is about.
+2. The text is also displayed when the image can't be loaded for some reason (network errors, content blocking, etc.).
+
+```xmlui copy
+<App>
+  <Image src="cantFindIt.jpg" alt="This image depicts a wonderful scene not for human eyes" />
+</App>
+```
+
+<Playground
+  name="Example: alt"
+  app={`
+    <App>
+      <Image src="cantFindIt.jpg" alt="This image depicts a wonderful scene not for human eyes" />
+    </App>
+  `}
+/>
+
+### `animation`
+
+The animation object to be applied to the component
+
+### `aspectRatio`
+
+This property sets a preferred aspect ratio for the image, which will be used in the calculation of auto sizes and some other layout functions.
+
+```xmlui copy
+<App>
+  <Image
+    src="/resources/images/components/image/breakfast.jpg"
+    aspectRatio="200 / 150" />
+</App>
+```
+
+<Playground
+  name="Example: aspectRatio"
+  app={`
+    <App>
+      <Image src="/resources/images/components/image/breakfast.jpg" aspectRatio="200 / 150" />
+    </App>
+  `}
+/>
+
+### `fit (default: "contain")`
+
+This property sets how the image content should be resized to fit its container.
+
+| Name      | Value |
+| --------- | ----- |
+| `contain` | The replaced content is scaled to maintain its aspect ratio while fitting within the image's container. The entire image is made to fill the container. |
+| `cover`   | The image is sized to maintain its aspect ratio while filling the element's entire content box. If the image's aspect ratio does not match the aspect ratio of its container, then the image will be clipped to fit. |
+
+```xmlui copy /fit/
+<App>
+  <HStack padding="1rem" height="280px" gap="1rem">
+    <Image
+      src="/resources/images/components/image/breakfast.jpg"
+      fit="contain"
+      width="240px" />
+    <Image
+      src="/resources/images/components/image/breakfast.jpg"
+      fit="cover"
+      width="240px" />
+  </HStack>
+</App>
+```
+
+<Playground
+  name="Example: fit"
+  app={`
+    <App>
+      <HStack padding="1rem" height="280px" gap="1rem">
+        <Image src="/resources/images/components/image/breakfast.jpg" fit="contain" width="240px" />
+        <Image src="/resources/images/components/image/breakfast.jpg" fit="cover" width="240px" />
+      </HStack>
+    </App>
+  `}
+/>
+
+### `lazyLoad`
+
+Lazy loading instructs the browser to load the image only when it is imminently needed (e.g. user scrolls to it). The default value is eager (`false`).
+
+Lazy loading instructs the browser to load the image only when it is imminently needed (e.g. user scrolls to it).
+The default value is eager (\`false\`).
+
+### `src`
+
+This property is used to indicate the source (path) of the image to display.
+
+## Events
+
+### `click`
+
+This event is triggered when the Image is clicked.
+
+This event is triggered when the image is clicked.
+
+```xmlui copy {5}
+<App>
+  <Stack height="280px" width="400px">
+    <Image
+      src="/resources/images/components/image/breakfast.jpg"
+      fit="cover"
+      onClick="toast('Image clicked')"
+    />
+  </Stack>
+</App>
+```
+
+<Playground
+  name="Example: click"
+  app={`
+    <App>
+      <Stack height="280px" width="400px">
+        <Image
+          src="/resources/images/components/image/breakfast.jpg"
+          fit="cover"
+          onClick="toast('Image clicked')"
+        />
+      </Stack>
+    </App>
+  `}
+/>
+
+## Exposed Methods
+
+This component does not expose any methods.
+
+## Styling
+
+The `Image` component does not support styling.
+Nonetheless, you can use layout properties and theme variables.
+The following markup uses the `borderRadius` layout property to set rounded borders:
+
+```xmlui copy {6}
+<App>
+  <Stack height="280px" width="400px" >
+    <Image
+      src="/resources/images/components/image/breakfast.jpg"
+      fit="cover"
+      borderRadius="400px"
+      border="$border-MyImage" />
+  </Stack>
+</App>
+```
+
+The `border` layout property refers to a theme variable, `$border-MyImage`,
+which is defined in the custom theme set in the App Manifest:
+
+```json copy
+"border-MyImage": "4px solid purple"
+```
+
+This example shows the result:
+
+<Playground
+  name="Example: styling with layout properties"
+  defaultTheme="custom"
+  themes={[
+    {
+      id: "custom",
+      name: "Custom Theme",
+      themeVars: {
+        "border-MyImage": "4px solid purple"
+      },
+    },
+  ]}
+  app={`
+    <App>
+      <Stack height="280px" width="400px" >
+        <Image
+          src="/resources/images/components/image/breakfast.jpg"
+          fit="cover"
+          borderRadius="400px"
+          border="$border-MyImage" />
+      </Stack>
+    </App>
+  `}
+/>
+Let me also look at previous usage of ModalDialog in our components:
+Based on the components I've examined, here's a design plan for our enhanced user profile modal:
+We'll use a ModalDialog as the base, similar to our current implementation
+For the header image, we'll use Image with appropriate sizing
+We'll use Avatar for the profile picture, positioned to overlap the header
+We'll use VStack for vertical layout organization
+For the bio, we'll use Markdown to render HTML content
+For stats, we'll use HStack with icons and text
+The overall layout will use Card for sections
+Let me update the tootsHome function in index.html first to include all the necessary profile data:
+Missing required parameter 'path' for tool edit_file
+Let me try again with the correct parameter naming:
+Missing required parameter 'path' for tool edit_file
+Let me try with the mcp_filesystem_write_file instead:
+Now let me update the file with the enhanced tootsHome function:
+Successfully wrote to /Users/jonudell/xmlui-mastodon/index.html
+Now let's update the Home.xmlui file to enhance our user profile modal dialog:
+I've created an enhanced user profile modal with the following features:
+Header Image: Added a header image at the top of the profile using the Image component with appropriate sizing and border radius.
+Avatar: The profile picture overlaps the header image slightly to create a modern profile card look, using a larger size (lg) than in the timeline.
+Profile Information:
+Display name (or username if display name is missing)
+Username with @ prefix
+Formatted with appropriate styling (strong variant for display name, caption for username)
+Stats Section:
+Three columns showing followers, following, and post counts
+Aligned centrally for visual balance
+Each with a bold count and descriptive caption
+Bio/Description:
+Contained in a Card component for visual separation
+Uses the Markdown component to properly render HTML content from the note field
+Falls back to "No bio available" if missing
+Join Date:
+Shows when the user joined Mastodon with a calendar icon
+Uses the formatDate helper function for consistent date formatting
+Profile Link:
+Added a button that links to the user's Mastodon profile
+Opens in a new tab via the target="blank" attribute
+Layout and Styling:
+Used appropriate spacing with gap properties
+Maintained consistent visual hierarchy
+Used borderRadius for rounded corners on the header image
+Data Handling:
+Updated click handlers on avatars to pass all the profile data to the modal
+Added conditional rendering for missing data
