@@ -74,8 +74,6 @@
   </ModalDialog>
 
   <VStack>
-    <!-- Simple debug text -->
-    <Text variant="code" color="red">Debug Mode: Using simplified avatar</Text>
 
     <Items data="{tootsHome}">
       <VStack>
@@ -92,14 +90,23 @@
           </Fragment>
 
           <HStack>
-            <!-- Replace MastodonAvatar with direct Avatar as a test -->
             <Avatar
               url="{$item.avatar_url}"
               size="xs"
-              name="{$item.display_name || $item.username || 'User'}"
+              name="{$item.display_name || $item.username}"
+              onClick="userProfileDialog.open({
+                avatar_url: $item.avatar_url,
+                display_name: $item.display_name,
+                username: $item.username,
+                header_url: $item.header_url,
+                note: $item.note,
+                followers_count: $item.followers_count,
+                following_count: $item.following_count,
+                statuses_count: $item.statuses_count,
+                url: $item.url,
+                created_at: $item.created_at
+              })"
             />
-            <!-- Keep debug message -->
-            <Text variant="caption" color="blue" fontSize="10px">Direct Avatar</Text>
             <HStack gap="0.5rem">
               <Text variant="strong">{$item.display_name || $item.username}</Text>
               <Text variant="caption">@{$item.username}</Text>
@@ -123,28 +130,43 @@
         <Fragment when="{$item.reblog}">
           <!-- Combined reblogger and original author info in a single row -->
           <HStack verticalAlignment="center" gap="0.5rem">
-            <MastodonAvatar
-              id="{$item.id}"
+            <Avatar
               url="{$item.avatar_url}"
               size="xs"
+              name="{$item.display_name || $item.username}"
+              onClick="userProfileDialog.open({
+                avatar_url: $item.avatar_url,
+                display_name: $item.display_name,
+                username: $item.username,
+                header_url: $item.header_url,
+                note: $item.note,
+                followers_count: $item.followers_count,
+                following_count: $item.following_count,
+                statuses_count: $item.statuses_count,
+                url: $item.url,
+                created_at: $item.created_at
+              })"
             />
             <Text variant="caption">{$item.display_name || $item.username}</Text>
             <CHStack border="1px solid $color-surface-300" borderRadius="50%" width="1.4rem" height="1.4rem">
               <Icon name="arrowright" size="md" />
             </CHStack>
-            <MastodonAvatar
-              id="{$item.reblog ? $item.reblog.id : ''}"
+            <Avatar
               url="{$item.reblog_avatar_url}"
               size="xs"
-              display_name="{$item.reblog.account ? $item.reblog.account.display_name : ''}"
-              username="{$item.reblog.account ? $item.reblog.account.username : ''}"
-              header_url="{$item.reblog_header_url}"
-              note="{$item.reblog_note}"
-              followers_count="{$item.reblog_followers_count}"
-              following_count="{$item.reblog_following_count}"
-              statuses_count="{$item.reblog_statuses_count}"
-              profile_url="{$item.reblog ? $item.reblog.url : ''}"
-              created_at="{$item.reblog ? $item.reblog.created_at : ''}"
+              name="{$item.reblog.account ? $item.reblog.account.display_name : $item.reblog.account ? $item.reblog.account.username : ''}"
+              onClick="userProfileDialog.open({
+                avatar_url: $item.reblog_avatar_url,
+                display_name: $item.reblog.account ? $item.reblog.account.display_name : '',
+                username: $item.reblog.account ? $item.reblog.account.username : '',
+                header_url: $item.reblog_header_url,
+                note: $item.reblog_note,
+                followers_count: $item.reblog_followers_count,
+                following_count: $item.reblog_following_count,
+                statuses_count: $item.reblog_statuses_count,
+                url: $item.reblog ? $item.reblog.url : '',
+                created_at: $item.reblog ? $item.reblog.created_at : ''
+              })"
             />
             <Text variant="strong">{$item.reblog.account ? $item.reblog.account.display_name : ''}</Text>
             <SpaceFiller />
