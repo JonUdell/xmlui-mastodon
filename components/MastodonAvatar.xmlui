@@ -73,7 +73,23 @@
   <Avatar
     url="{$props.url}"
     size="xs"
-    onClick="{ userProfileDialog.open({
+    onClick="{
+      // Check if this is a reblog avatar
+      const isReblogAvatar = $props.url === $props.item.reblog_avatar_url;
+
+      // If it's a reblog avatar, use the reblog account data
+      userProfileDialog.open(isReblogAvatar ? {
+        avatar_url: $props.item.reblog_avatar_url,
+        display_name: $props.item.reblog.account.display_name,
+        username: $props.item.reblog.account.username,
+        header_url: $props.item.reblog_header_url,
+        note: $props.item.reblog_note,
+        followers_count: $props.item.reblog_followers_count,
+        following_count: $props.item.reblog_following_count,
+        statuses_count: $props.item.reblog_statuses_count,
+        url: $props.item.reblog.account.url,
+        created_at: $props.item.reblog.created_at
+      } : {
         avatar_url: $props.item.avatar_url,
         display_name: $props.item.display_name,
         username: $props.item.username,
@@ -84,8 +100,8 @@
         statuses_count: $props.item.statuses_count,
         url: $props.item.url,
         created_at: $props.item.created_at
-        })
-      }"
+      })
+    }"
   />
 
 </Component>
