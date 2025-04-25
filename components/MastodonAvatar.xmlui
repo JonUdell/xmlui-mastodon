@@ -1,0 +1,86 @@
+<Component name="MastodonAvatar">
+
+  <!-- Enhanced User Profile Modal Dialog -->
+  <ModalDialog id="userProfileDialog" title="">
+    <VStack gap="1rem">
+      <!-- Header Image -->
+      <Image
+        src="{$param.header_url}"
+        alt="Profile header image"
+      />
+
+      <!-- Profile Info -->
+      <VStack gap="0.5rem" padding="0 1rem">
+        <!-- Avatar (positioned to overlap header) -->
+        <Avatar
+          url="{$param.avatar_url}"
+          size="lg"
+          name="{$param.display_name || $param.username}"
+        />
+
+        <!-- User Info -->
+        <Text variant="strong" fontSize="1.2rem">{$param.display_name || $param.username}</Text>
+        <Text variant="caption">@{$param.username}</Text>
+
+        <!-- Stats -->
+        <HStack gap="1rem" marginTop="0.5rem" justifyContent="center">
+          <VStack alignItems="center">
+            <Text variant="strong">{$param.followers_count || 0}</Text>
+            <Text variant="caption">Followers</Text>
+          </VStack>
+          <VStack alignItems="center">
+            <Text variant="strong">{$param.following_count || 0}</Text>
+            <Text variant="caption">Following</Text>
+          </VStack>
+          <VStack alignItems="center">
+            <Text variant="strong">{$param.statuses_count || 0}</Text>
+            <Text variant="caption">Posts</Text>
+          </VStack>
+        </HStack>
+
+        <!-- Profile Bio -->
+        <Card padding="1rem" marginTop="0.5rem">
+          <Fragment when="{$param.note}">
+            <Markdown content="{$param.note}" />
+          </Fragment>
+          <Fragment when="{!$param.note}">
+            <Text variant="caption">No bio available</Text>
+          </Fragment>
+        </Card>
+
+        <!-- Join Date -->
+        <HStack gap="0.5rem" alignItems="center" justifyContent="center" marginTop="0.5rem">
+          <Icon name="calendar" size="sm" />
+          <Text variant="caption">Joined {window.formatDate($param.created_at)}</Text>
+        </HStack>
+
+        <!-- Profile Link -->
+        <HStack justifyContent="center" marginTop="0.5rem">
+          <Link url="{$param.url}" target="_blank">
+            <Button label="View on Mastodon" />
+          </Link>
+        </HStack>
+      </VStack>
+    </VStack>
+  </ModalDialog>
+
+
+  <Avatar
+    url="{$props.url}"
+    size="xs"
+    onClick="{ userProfileDialog.open({
+        avatar_url: $props.item.avatar_url,
+        display_name: $props.item.display_name,
+        username: $props.item.username,
+        header_url: $props.item.header_url,
+        note: $props.item.note,
+        followers_count: $props.item.followers_count,
+        following_count: $props.item.following_count,
+        statuses_count: $props.item.statuses_count,
+        url: $props.item.url,
+        created_at: $props.item.created_at
+        })
+      }"
+  />
+
+</Component>
