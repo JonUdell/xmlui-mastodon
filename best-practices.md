@@ -1,4 +1,4 @@
-We are working on ~/xmlui-hub. Relevant resources you can access:
+We are working on ~/xmlui-mastodon. Relevant resources you can access:
 
 ```
 {
@@ -13,19 +13,24 @@ We are working on ~/xmlui-hub. Relevant resources you can access:
         "/Users/jonudell/xmlui-github",
         "/Users/jonudell/xmlui",
         "/Users/jonudell/sqlite-server",
-        "/Users/jonudell/xmlui-mastodon"
+        "/Users/jonudell/xmlui-mastodon",
         "/Users/jonudell/steampipe-mod-mastodon-insights"
       ]
     },
     "steampipe": {
       "command": "npx",
+      "args": ["-y", "@turbot/steampipe-mcp"]
+    },
+    "xmlui": {
+      "command": "node",
       "args": [
-        "-y",
-        "@turbot/steampipe-mcp"
+        "/Users/jonudell/xmlui-mcp/dist/index.js",
+        "/Users/jonudell/xmlui"
       ]
     }
   }
 }
+
 ```
 
 Rules:
@@ -54,5 +59,6 @@ steampipe-mod-mastodon-insights is a steampipe mod that uses the mastodon plugin
 
 xmlui-mastodon is the seed of our port. initially it has a table of recent toots in Home.xmlui.
 
-Ready to go?
+We proceed in cycles, and update pages/ProjectLog.md on each cycle. I will provide a screenshot, e.g. resources/snapshot16.png. You will report our progress during the cycle as an entry in log. The snapshots are reverse chron so you'll add each new entry to the beginning of the snapshots section.
+
 

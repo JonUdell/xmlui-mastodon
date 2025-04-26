@@ -31,6 +31,7 @@
       <Button
         label="{appState.value.loading ? 'Loading...' : 'Run Query'}"
         onClick="{ window.updateQueryWithNonce(sqlQueryInput.value, appState.update) }"
+        enabled="{!appState.value.loading}"
       />
 
       <Fragment when="{appState.value.example }">

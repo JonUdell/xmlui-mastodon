@@ -9,6 +9,7 @@
 - [Purpose](#purpose)
 - [Setup](#setup)
 - [Rules for AI helpers](#rules-for-ai-helpers)
+- [Snapshot 16](#snapshot-16)
 - [Snapshot 15](#snapshot-15)
 - [Snapshot 14](#snapshot-14)
 - [Snapshot 13](#snapshot-13)
@@ -149,6 +150,18 @@ Get detailed information about a specific Steampipe table, including column defi
 
 9 keep complex functions and expressions out of xmlui, they can live in index.html
 
+# Snapshot 16
+
+![snapshot16](../resources/snapshot16.png)
+
+- Added button disabling to both Query and QueryExample components when a query is running
+- Used the documented `enabled` property on Button components, tied to `appState.value.loading`
+- The main query button shows "Loading..." while disabled
+- All query buttons are disabled simultaneously through shared state
+- This prevents users from triggering multiple overlapping queries
+
+We used the XMLUI documentation tools to find the correct syntax for the Button component's `enabled` property, ensuring we followed rule 7 by only using documented features rather than making assumptions about the component's API.
+
 # Snapshot 15
 
 ![snapshot15](../resources/snapshot15.png)
@@ -214,7 +227,7 @@ Cursor:
 > Currently, you cannot directly "store" custom rules in my persistent memory, as I do not have long-term memory between sessions or the ability to save user-defined rules for future conversations. Each session is stateless, and I only have access to the current conversation and any context you provide within it. However, here are some practical ways to ensure I follow your rules:
 > Include Rules in Each Session:
 >  At the start of a session, you can paste your rules or a summary of them. I will then reference them throughout that session.
-> If you notice I’m drifting from your rules, you can remind me at any point in the conversation, and I’ll immediately adjust my behavior to comply.
+> If you notice I'm drifting from your rules, you can remind me at any point in the conversation, and I'll immediately adjust my behavior to comply.
 
 Jon:
 
