@@ -1,21 +1,29 @@
+<img
+  src="resources/snapshot15.png"
+  alt="snapshot15"
+/>
+
+
 # Contents
 
 - [Purpose](#purpose)
 - [Setup](#setup)
 - [Rules for AI helpers](#rules-for-ai-helpers)
-- [Snapshot 1](#snapshot-1)
-- [Snapshot 2](#snapshot-2)
-- [Snapshot 3](#snapshot-3)
-- [Snapshot 4](#snapshot-4)
-- [Snapshot 5](#snapshot-5)
-- [Snapshot 6](#snapshot-6)
-- [Snapshot 7](#snapshot-7)
-- [Snapshot 8](#snapshot-8)
-- [Snapshot 9](#snapshot-9)
-- [Snapshot 10](#snapshot-10)
-- [Snapshot 11](#snapshot-11)
-- [Snapshot 12](#snapshot-12)
+- [Snapshot 15](#snapshot-15)
+- [Snapshot 14](#snapshot-14)
 - [Snapshot 13](#snapshot-13)
+- [Snapshot 12](#snapshot-12)
+- [Snapshot 11](#snapshot-11)
+- [Snapshot 10](#snapshot-10)
+- [Snapshot 9](#snapshot-9)
+- [Snapshot 8](#snapshot-8)
+- [Snapshot 7](#snapshot-7)
+- [Snapshot 6](#snapshot-6)
+- [Snapshot 5](#snapshot-5)
+- [Snapshot 4](#snapshot-4)
+- [Snapshot 3](#snapshot-3)
+- [Snapshot 2](#snapshot-2)
+- [Snapshot 1](#snapshot-1)
 
 # Purpose
 
@@ -121,7 +129,6 @@ List all available Steampipe tables. Use schema and filter parameters to narrow 
 Get detailed information about a specific Steampipe table, including column definitions, data types, and descriptions.
 
 
-
 # Rules for AI helpers
 
 1 use the filesystem mcp tool to read and write repos.
@@ -142,19 +149,517 @@ Get detailed information about a specific Steampipe table, including column defi
 
 9 keep complex functions and expressions out of xmlui, they can live in index.html
 
-# Snapshot 1
+# Snapshot 15
 
-![snapshot1](../resources/snapshot1.png)
+![snapshot15](../resources/snapshot15.png)
 
-We've created a basic Mastodon home timeline viewer that displays toots with proper formatting. Our initial implementation:
+In this cycle, we reversed the order of the project log and its table of contents to display snapshots in reverse chronological order (most recent first). This makes it easier to see the latest progress at a glance and will help both users and AI assistants work more efficiently as the log grows.
 
-- Replaced the simple Table view with a more readable Card-based layout
-- Added support for displaying HTML content from toots using the Markdown component
-- Implemented proper handling of boosts/reblogs with visual differentiation
-- Added engagement metrics (replies, boosts, favorites)
-- Created proper links to view posts on Mastodon using instance-qualified URLs when available
-- Formatted dates for better readability
-- We aim to follow the <a href="https://blog.jonudell.net/2022/12/17/a-bloomberg-terminal-for-mastodon/">Bloomberg terminal for Mastodon</a> design philosophy with high information density
+- Updated the table of contents to list the newest snapshot first
+- Reordered all snapshot entries so the most recent is at the top
+- Verified that all content was preserved and links still work
+- This change will make future updates faster and more reliable, since only the top of the file needs to be read or written for new entries
+
+# Snapshot 14
+
+![snapshot14](../resources/snapshot14.gif)
+
+In this cycle, we modularized the image zoom control and improved the UI for settings:
+
+- Moved the image zoom slider into a new `Tools` component, using AppState for shared state
+- Embedded the slider in a modal dialog, activated by a settings (cog) icon at the top of the Home timeline
+- The modal dialog uses the documented imperative API for open/close
+- The slider now controls image zoom for posts and reblogs via shared AppState, and is accessible from the modal
+- This refactor sets the stage for adding more tools in a modular, scalable way
+
+We accomplished this in a series of small, testable steps:
+
+1. **Converted the zoom variable to AppState**: Replaced the local variable with a shared AppState bucket, ensuring future modularity.
+2. **Created a Tools component**: Moved the slider into its own component, confirming that state sharing worked as expected.
+3. **Embedded Tools in Home**: Verified that the slider continued to control image zoom when rendered as a child component.
+4. **Added a modal dialog**: Introduced a settings (cog) icon at the top of Home, and used the imperative API to open a modal containing the Tools component.
+5. **Tested each step**: At each stage, we confirmed that the UI and zoom functionality worked as intended before proceeding.
+
+This continues our focus on information density and modular, discoverable controls, while strictly following XMLUI documentation and best practices.
+
+# Snapshot 13
+
+![snapshot13](../resources/snapshot13.gif)
+
+In this iteration, we added a slider to control image zoom for posts and reblogs.
+
+- Introduced a `Slider` component at the top of the Home timeline
+- The slider is labeled "Image Zoom" and enabled users to set image size from 0% to 100%
+- The slider is bound to the `imageZoom` variable, which is used to set the width of images in posts and reblogs
+- Ensured all numeric props are passed as numbers using curly braces, and used the correct event handler (`onDidChange`)
+
+This change further supports our information density goal by letting users control how much space images occupy in the timeline.
+
+Cursor broke rule 7 again.
+
+Jon:
+
+> Do you remember rule 7?  Do not invent any XMLUI syntax. Only use constructs for which you can find examples in the docs and sample apps. You broke it by not checking the docs, you invented `didChange` instead of researching and using `onDidChange`.
+
+Cursor:
+
+> I should never guess or make up XMLUI component properties, event names, or syntax. I must always rely on documented features or patterns found in the official XMLUI documentation or in real sample code from your project. If I am unsure or cannot find an example, I should ask for clarification or do more research, rather than inventing or assuming how something might work. Thank you for reinforcing this important guideline! If you have further feedback or want me to review a specific suggestion for compliance, let me know.
+
+Jon:
+
+> where can i put the rules so you will remember them?
+
+Cursor:
+
+> Currently, you cannot directly "store" custom rules in my persistent memory, as I do not have long-term memory between sessions or the ability to save user-defined rules for future conversations. Each session is stateless, and I only have access to the current conversation and any context you provide within it. However, here are some practical ways to ensure I follow your rules:
+> Include Rules in Each Session:
+>  At the start of a session, you can paste your rules or a summary of them. I will then reference them throughout that session.
+> If you notice I’m drifting from your rules, you can remind me at any point in the conversation, and I’ll immediately adjust my behavior to comply.
+
+Jon:
+
+> ok i will remind you every time.
+
+# Snapshot 12
+
+![snapshot12](../resources/snapshot12.png)
+
+Added images to posts and reblogs. Initially at 20%, in keeping with the information density goal.
+
+Next: add a slider to make images zoomable.
+
+# Snapshot 11
+
+![snapshot11](../resources/snapshot11.png)
+
+  - Added several window utility functions in index.html:
+    - getDisplayName() - Gets display name with fallback to username
+    - getReblogDisplayName() - Gets reblog display name with fallback to username
+    - getUsername() and getReblogUsername() - Get username values with empty string fallback
+    - getCreatedDate() and getReblogCreatedDate() - Format dates with proper fallbacks
+
+  - Updated Home.xmlui to use these functions:
+    - Replaced all conditional expressions with function calls
+    - Made the code much cleaner and easier to read
+
+  - Updated MastodonAvatar.xmlui to use the same functions:
+    - Refactored the dialog parameter setup into a more organized format
+    - Used the utility functions for all name and username access
+    - Added a new intermediate constant for dialog parameters to make the code clearer
+
+# Snapshot 10
+
+![snapshot10](../resources/snapshot10.png)
+
+We added the first version of the Followers page.
+
+Here's what we learned in this snapshot:
+
+- **Column widths**:
+
+ - Column width units can only be star sizing (`*`, `2*`, etc.) or fixed pixel (`80px`)
+
+ - Star sizing would make columns share available space proportionally but that isn't what we want
+
+ - So we're using fixed pixel widths to shrink numeric columns (Followers, Following, Posts)
+
+ - We also learned that colums can contain components, e.g.:
+
+ ```
+       <Column header="" width="60px">
+        <MastodonAvatar
+          url="{$item.avatar_url}"
+          size="xs"
+          name="{$item.display_name || $item.username}"
+          item="{$item}"
+        />
+      </Column>
+      <Column header="Name" bindTo="display_name" canSort="true">
+        <Fragment when="{$item.instance_qualified_account_url}">
+          <Link to="{$item.instance_qualified_account_url}" target="_blank">
+            {$item.display_name || $item.username}
+          </Link>
+        </Fragment>
+      </Column>
+```
+
+- **Table Sorting**:
+
+- Columns support sorting via the canSort="true" attribute
+
+- Table also has `sortBy`, which overrides column sorting
+
+- We want to sort all columns so omitted the Table-level `sortBy`
+
+- **Avatar Implementation Challenges**:
+
+We discovered that avatar URLs aren't directly available in the mastodon_my_follower table, so would require joining with a toot table (`mastodon_toot_home`). This is a more complex data modeling problem that we'll revisit later. Seems like the plugin should include that info but I wrote the plugin and seem to remember there's a reason it doesn't. Investigate later, for now avatars are empty circles in Followers but the rest looks good.
+
+- **Custom followers table**:
+
+ - To avoid repeatedly fetching all followers to ensure freshness, we sync mastodon_my_follower daily to a table in the public schema of our Pipes database, using this scheduled query:
+
+ ```
+ with
+  ins as (
+    insert into
+      followers
+    select
+      account_id,
+      id,
+      acct,
+      created_at,
+      url,
+      instance_qualified_account_url,
+      username,
+      server,
+      display_name,
+      followers_count,
+      following_count,
+      statuses_count,
+      note
+    from
+      mastodon_my_follower
+    on conflict (id) do update
+    set
+      account_id = excluded.account_id,
+      acct = excluded.acct,
+      created_at = excluded.created_at,
+      url = excluded.url,
+      instance_qualified_account_url = excluded.instance_qualified_account_url,
+      username = excluded.username,
+      server = excluded.server,
+      display_name = excluded.display_name,
+      followers_count = excluded.followers_count,
+      following_count = excluded.following_count,
+      statuses_count = excluded.statuses_count,
+      note = excluded.note
+    returning
+      xmax = 0 as inserted -- true if it was a fresh insert
+  )
+select
+  count(*)
+from
+  ins
+where
+  inserted;
+```
+
+If this gets expensive we'll consider self-hosting. This could be done in sqlite with the steampipe extension, and https://github.com/jonudell/sqlite-server/ now supports that.
+
+
+# Snapshot 9
+
+![snapshot9](../resources/snapshot9.png)
+
+In this iteration we refactored the Avatar component into a specialized MastodonAvatar component.
+
+We made some mistakes at first. Initially we didn't move the ModalDialog from Home into MastodonAvatar, instead tried to pass a reference to it, that didn't seem to work. But it was better to move the ModalDialog in out of Main and into MastodonAvatar anyway, it was cluttering Main along with all those verbose calls to userProfileDialog, each passing 10 args.
+
+Along with moving the 60-line ModalDialog out of Main, we changed three of these:
+
+```
+<Avatar
+  url="{$item.avatar_url}"
+  size="xs"
+  name="{$item.display_name || $item.username}"
+  onClick="userProfileDialog.open({
+    avatar_url: $item.avatar_url,
+    display_name: $item.display_name,
+    username: $item.username,
+    header_url: $item.header_url,
+    note: $item.note,
+    followers_count: $item.followers_count,
+    following_count: $item.following_count,
+    statuses_count: $item.statuses_count,
+    url: $item.url,
+    created_at: $item.created_at
+  })"
+/>
+```
+
+Into these:
+
+```
+<Avatar
+  url="{$item.avatar_url}"
+  size="xs"
+  name="{$item.display_name || $item.username}"
+/>
+```
+
+That was our next mistake. All three live in Fragments inside the same Items loop, so we need to pass $item.
+
+
+```
+<Avatar
+  url="{$item.avatar_url}"
+  size="xs"
+  name="{$item.display_name || $item.username}"
+  item="$item"
+/>
+```
+
+And then reference it as $props.item in MastodonAvatar.
+
+```
+  <Avatar
+    url="{$props.url}"
+    size="xs"
+    onClick="{ userProfileDialog.open({
+        avatar_url: $props.item.avatar_url,
+        display_name: $props.item.display_name,
+        username: $props.item.username,
+        header_url: $props.item.header_url,
+        note: $props.item.note,
+        followers_count: $props.item.followers_count,
+        following_count: $props.item.following_count,
+        statuses_count: $props.item.statuses_count,
+        url: $props.item.url,
+        created_at: $props.item.created_at
+        })
+      }"
+  />
+```
+
+With all that done, we have gained a nice simplification of Main, a resusable MastodonAvatar component, and a better understanding of how to do this kind of refactoring.
+
+Another thing we noted, not having used ModalDialog before, is that it calls its arguments $param.X not $props.X.
+
+```
+<Component name="MastodonAvatar">
+
+  <!-- Enhanced User Profile Modal Dialog -->
+  <ModalDialog id="userProfileDialog" title="">
+    <VStack gap="1rem">
+      <!-- Header Image -->
+      <Image
+        src="{$param.header_url}"
+        alt="Profile header image"
+      />
+```
+
+# Snapshot 8
+
+![snapshot8](../resources/snapshot8.png)
+
+In this iteration, we focused on enhancing the user profile modal dialog and improving our understanding of XMLUI's component-based styling approach:
+
+- **Enhanced User Profile Information**:
+  - Used steampipe-mcp to explore the Mastodon API data schema and discover available profile fields:
+    - Identified additional profile metadata including header images, bio notes, and follower/following counts
+    - Wrote test queries to verify field availability and proper JSON path extraction
+    - Updated our SQL query in index.html to extract these fields using PostgreSQL JSON operators:
+      ```sql
+      account::json->>'header' as header_url,
+      account::json->>'note' as note,
+      account::json->>'followers_count' as followers_count,
+      account::json->>'following_count' as following_count,
+      account::json->>'statuses_count' as statuses_count,
+      ```
+    - Added parallel extraction for reblogged content profile information
+    - Used CASE statements to handle conditional data extraction for reblog scenarios
+
+  - **Profile Modal Implementation**:
+    - Used xmlui-mcp to research common components for social media profiles
+    - Selected appropriate components by reviewing documentation:
+      - `Avatar` for user profile pictures
+      - `Image` for header photos
+      - `Markdown` for rendering formatted bio text
+      - `Card` for visually grouping profile sections
+      - `HStack` and `VStack` for layout organization
+    - Created a comprehensive profile view following social media conventions:
+      - Header image at the top
+      - Larger profile avatar overlapping the header (visual hierarchy)
+      - Username and display name in prominent position
+      - Statistics section showing follower/following counts
+      - Bio section with properly rendered Markdown content
+      - Join date with appropriate icon
+      - Link to view the full profile on Mastodon
+
+- **Component-Based Styling**: We identified that our `Avatar` component was using unnecessary inline styles:
+  - Removed explicit height and border-radius properties from Avatar components
+  - Discovered through documentation that Avatar has built-in styling based on the `size` prop
+  - Confirmed that Avatar automatically applies appropriate border-radius (4px by default)
+
+- **Theme System Understanding**: Gained deeper insight into how XMLUI components encapsulate styling:
+  - Components like Avatar handle their own presentation details internally
+  - The `size` prop (e.g., "xs", "lg") controls multiple style properties simultaneously
+  - This encapsulation follows design system principles where presentation details are abstracted
+
+- **Documentation-Driven Development**: Used the XMLUI documentation to understand component capabilities:
+  - Explored the Avatar component docs to verify styling properties
+  - Confirmed that border-radius is built into the component (4px default)
+  - Learned that size tokens (xs, sm, md, lg) are preferred over raw pixel values
+
+# Snapshot 7
+
+![snapshot7](../resources/snapshot7.png)
+
+In this iteration we punted on username lookup in favor of visual refinement.
+
+- **Icon Semantics and Visual Language**:
+  - Distinguished between relationship indicators and action metrics
+  - Used directional arrow (→) to show the relationship between reblogger and original author
+  - Used different icons for the metrics section to represent actions (reply, boost, favorite)
+
+> hm. in this screenshot we have rightarrow between post user and reblog user, the semantics of rightarrow is good but the look is bad: too small and sparse compared to the emoji. but now we diverge from the reaction row which is using the share icon which is richer and somehow more semantically appropriate in that context. do you see what i mean?
+
+>> You're absolutely right. There's a visual and semantic inconsistency now:
+>> The "arrowright" icon between users is too thin and sparse compared to the emoji it replaced - it lacks visual weight
+>> We're using "share" for reblogs in the reaction row but "arrowright" in the user relationship line
+>> Since reblogging is fundamentally about sharing content, the "share" icon makes more semantic sense in both places. Let me fix this for better consistency:
+>> Now we have better consistency - the "share" icon is used in both places to represent reblogging/sharing content. This creates visual harmony and is semantically accurate since reblogging is a form of sharing.
+>> The "share" icon likely has more visual weight than the thin arrow icon, which should make it stand out better between the user names. This should create a clearer visual relationship while maintaining a consistent conceptual model throughout the interface.
+
+- **Icons vs Emoji**
+  - The emoji we were using for icons conflicted with emoji that appear in usernames
+  - We switched to XMLUI icons
+  - Created circular icon containers with consistent border styling
+
+- **CHStack for Icon Layout**:
+  - Initially wrapped icons in Text components which created unwanted visual artifacts (dots/periods after icons)
+  - Through documentation exploration, identified CHStack (Centered HStack) as the proper container
+  - Created circular icon containers using CHStack with border styling
+  - Achieved perfect icon centering and consistent visual appearance
+  - Cursor found the CHStack solution on its own thanks to xmlui-mcp!
+
+# Snapshot 6
+
+![snapshot6](../resources/snapshot6.png)
+
+In this iteration, we focused on further improving information density and introducing interactive elements:
+
+- **Consolidated Reblog Display**: We completely redesigned the reblog display to follow a single-row pattern:
+  - Reblogger and original author now appear side-by-side on the same line
+  - Connected by a right arrow emoji (➡️) that visually indicates the reblog relationship
+  - Both avatars use the `xs` (Extra small) size to maximize information density
+  - Original content is now indented with a slight left margin for visual hierarchy
+
+- **User Profile Modal Dialog**: Added a `ModalDialog` component to view user profiles:
+  - Clicking on any avatar now opens a profile dialog
+  - Displays avatar, display name, and username in a clean centered layout
+  - Creates a more interactive experience without leaving the timeline
+  - Provides quick access to user information without excess clutter
+
+- **Consistent Visual Language**: Updated our visual indicators for better clarity:
+  - Replaced the recycling icon (♻️) with right arrow (➡️) in both reblog display and reaction counts
+  - This creates a cohesive visual language where the same symbol indicates the same concept throughout the UI
+  - Makes it immediately clear what the relationship is between users in a reblog
+
+- **Reply Indicators**: Added initial support for showing reply relationships:
+  - Posts that are replies now display "💬 Replying to @account_id"
+  - Sets the groundwork for our next iteration which will show actual usernames
+
+These changes continue our Bloomberg-terminal inspired approach of maximizing information density while maintaining readability. The single-row reblog display significantly reduces vertical space consumption compared to our previous approach, allowing more content to be visible on screen without scrolling.
+
+By adding interactive elements like the profile dialog, we've begun to embrace the strengths of XMLUI as a modern UI framework while staying true to our information-dense design philosophy. This creates a hybrid approach that combines the best of both worlds: high information density with modern interactive features.
+
+Next steps will include enhancing the reply indicators to show usernames instead of account IDs and implementing a more comprehensive user profile view.
+
+# Snapshot 5
+
+![snapshot5](../resources/snapshot5.png)
+
+In this iteration, we focused on improving information density to better align with our "Bloomberg terminal for Mastodon" design philosophy:
+
+- Reduced the size of primary avatars from `md` (Medium) to `sm` (Small) to decrease vertical space consumption
+- Maintained the visual hierarchy between different types of authors:
+  - Primary post authors now use `sm` size avatars (default size in XMLUI)
+  - Rebloggers still use `xs` (Extra small) to indicate their secondary importance
+- This simple but effective change allows more content to be visible on screen without scrolling
+- Preserved the visual distinction between original content and reblogs
+
+We studied the Avatar component documentation through `xmlui-mcp` tools to understand the available size options (`xs`, `sm`, `md`, `lg`) and made an informed choice about which values would best balance readability with information density.
+
+The result is a more compact timeline that still maintains clear visual hierarchy and readability. This change demonstrates that small, targeted adjustments can significantly improve the user experience when backed by proper component understanding and documentation.
+
+By comparing our implementation to modern Mastodon clients like Elk, we identified that reducing unnecessary vertical spacing is key to achieving better information density. This approach allows us to display more content in the available screen space while maintaining a clean, readable interface.
+
+Future density improvements could include:
+- Further reducing spacing between elements
+- More compact rendering of links and media attachments
+- Optimizing the layout of interaction metrics
+- Potential grid-based views for even higher density when appropriate
+
+# Snapshot 4
+
+![snapshot4](../resources/snapshot4.png)
+
+In this iteration we added avatars.
+
+First we used steampipe-mcp to explore the Mastodon API, figure out where to get the avatar urls, and how to query for them. We ran test queries to verify, then updated our `tootsHome` query.
+
+```
+window.tootsHome = function (count) {
+    return {
+        sql: `select
+            id,
+            username,
+            display_name,
+            created_at,
+            url,
+            instance_qualified_url,
+            status,
+            reblog,
+            (status->>'replies_count')::int as replies_count,
+            (status->>'reblogs_count')::int as reblogs_count,
+            (status->>'favourites_count')::int as favourites_count,
+            account::json->>'avatar' as avatar_url,
+            CASE
+              WHEN reblog IS NOT NULL THEN
+                reblog::json->'account'->>'avatar'
+              ELSE
+                NULL
+            END AS reblog_avatar_url
+        from mastodon_toot_home
+        order by created_at desc
+        limit ${count}
+      `}
+}
+```
+
+- Initially used `Image` components with direct CSS properties (`width`, `height`, `borderRadius`) for avatars
+- Discovered these properties worked but weren't documented for the `Image` component
+- Explored XMLUI docs using the `xmlui-mcp` tooling to find the proper component for our use case
+- Switched to the dedicated `Avatar` component with appropriate properties:
+  - Used `url` property instead of `src` to specify the avatar image
+  - Utilized the predefined `size` property with values `md` for standard avatars and `xs` for smaller ones
+  - Added `name` property to display user initials as fallback when images don't load
+- Enhanced theming with properly documented theme variables:
+  - Added `borderRadius-Avatar: "50%"` to the theme to make avatars circular
+  - Maintained a clean separation between component structure and styling
+
+This iteration demonstrates our improved understanding of XMLUI's component system and theming approach:
+
+1. **Proper Component Selection**: We used the `mcp_xmlui_list_components` and `mcp_xmlui_xmlui_docs` tools to discover and understand the appropriate components for our needs.
+
+2. **Theme-Based Styling**: Rather than inline styles, we applied styling through the theme system, enhancing maintainability.
+
+3. **Documentation-First Development**: We verified all properties and components in the documentation before implementation.
+
+4. **Steampipe Integration**: We continue to leverage the Steampipe Mastodon plugin for data retrieval.
+
+The timeline now better matches modern Mastodon clients like Elk, with proper avatar display while maintaining the information density of our "Bloomberg terminal for Mastodon" design philosophy. By comparing our implementation to Elk, we identified additional refinements for future iterations, such as media previews and improved spacing.
+
+# Snapshot 3
+
+![snapshot3](../resources/snapshot3.png)
+
+In this iteration, we focused on improving the display of reblogs to better match how modern Mastodon clients like Elk present them.
+
+- Restructured the component to clearly distinguish between regular posts and reblogs
+- Implemented a proper hierarchy for reblogs:
+  - Reblogger's name appears at the top with a small reblog icon (♻️)
+  - Original author is displayed prominently with their username and post date
+  - Original content is shown with proper formatting
+- Created a more consistent UI pattern where both regular posts and reblogs maintain the same visual structure
+- Used Fragment components with conditional rendering to show only the appropriate content
+- Fixed ampersand issues in conditional expressions using the ternary operator pattern
+- Improved media attachment handling for both regular posts and reblogs
+- Maintained the dense information display following the "Bloomberg terminal for Mastodon" design philosophy
+
+While this is a good milestone, we noted that the visual differentiation between regular posts and reblogs is still too subtle. In future iterations, we'll focus on making this distinction more immediately apparent without sacrificing information density or readability.
 
 # Snapshot 2
 
@@ -258,502 +763,16 @@ A specific example where we broke rule 7 was attempting to use a nested structur
 - `ListItem` is an HTML element available in Markdown contexts, not a top-level XMLUI component
 - The proper pattern is to use either `Items` with direct children or `List` with a render function
 
-# Snapshot 3
-
-![snapshot3](../resources/snapshot3.png)
-
-In this iteration, we focused on improving the display of reblogs to better match how modern Mastodon clients like Elk present them.
-
-- Restructured the component to clearly distinguish between regular posts and reblogs
-- Implemented a proper hierarchy for reblogs:
-  - Reblogger's name appears at the top with a small reblog icon (♻️)
-  - Original author is displayed prominently with their username and post date
-  - Original content is shown with proper formatting
-- Created a more consistent UI pattern where both regular posts and reblogs maintain the same visual structure
-- Used Fragment components with conditional rendering to show only the appropriate content
-- Fixed ampersand issues in conditional expressions using the ternary operator pattern
-- Improved media attachment handling for both regular posts and reblogs
-- Maintained the dense information display following the "Bloomberg terminal for Mastodon" design philosophy
-
-While this is a good milestone, we noted that the visual differentiation between regular posts and reblogs is still too subtle. In future iterations, we'll focus on making this distinction more immediately apparent without sacrificing information density or readability.
-
-# Snapshot 4
-
-![snapshot4](../resources/snapshot4.png)
-
-In this iteration we added avatars.
-
-First we used steampipe-mcp to explore the Mastodon API, figure out where to get the avatar urls, and how to query for them. We ran test queries to verify, then updated our `tootsHome` query.
-
-```
-window.tootsHome = function (count) {
-    return {
-        sql: `select
-            id,
-            username,
-            display_name,
-            created_at,
-            url,
-            instance_qualified_url,
-            status,
-            reblog,
-            (status->>'replies_count')::int as replies_count,
-            (status->>'reblogs_count')::int as reblogs_count,
-            (status->>'favourites_count')::int as favourites_count,
-            account::json->>'avatar' as avatar_url,
-            CASE
-              WHEN reblog IS NOT NULL THEN
-                reblog::json->'account'->>'avatar'
-              ELSE
-                NULL
-            END AS reblog_avatar_url
-        from mastodon_toot_home
-        order by created_at desc
-        limit ${count}
-      `}
-}
-```
-
-- Initially used `Image` components with direct CSS properties (`width`, `height`, `borderRadius`) for avatars
-- Discovered these properties worked but weren't documented for the `Image` component
-- Explored XMLUI docs using the `xmlui-mcp` tooling to find the proper component for our use case
-- Switched to the dedicated `Avatar` component with appropriate properties:
-  - Used `url` property instead of `src` to specify the avatar image
-  - Utilized the predefined `size` property with values `md` for standard avatars and `xs` for smaller ones
-  - Added `name` property to display user initials as fallback when images don't load
-- Enhanced theming with properly documented theme variables:
-  - Added `borderRadius-Avatar: "50%"` to the theme to make avatars circular
-  - Maintained a clean separation between component structure and styling
-
-This iteration demonstrates our improved understanding of XMLUI's component system and theming approach:
-
-1. **Proper Component Selection**: We used the `mcp_xmlui_list_components` and `mcp_xmlui_xmlui_docs` tools to discover and understand the appropriate components for our needs.
-
-2. **Theme-Based Styling**: Rather than inline styles, we applied styling through the theme system, enhancing maintainability.
-
-3. **Documentation-First Development**: We verified all properties and components in the documentation before implementation.
-
-4. **Steampipe Integration**: We continue to leverage the Steampipe Mastodon plugin for data retrieval.
-
-The timeline now better matches modern Mastodon clients like Elk, with proper avatar display while maintaining the information density of our "Bloomberg terminal for Mastodon" design philosophy. By comparing our implementation to Elk, we identified additional refinements for future iterations, such as media previews and improved spacing.
-
-# Snapshot 5
-
-![snapshot5](../resources/snapshot5.png)
-
-In this iteration, we focused on improving information density to better align with our "Bloomberg terminal for Mastodon" design philosophy:
-
-- Reduced the size of primary avatars from `md` (Medium) to `sm` (Small) to decrease vertical space consumption
-- Maintained the visual hierarchy between different types of authors:
-  - Primary post authors now use `sm` size avatars (default size in XMLUI)
-  - Rebloggers still use `xs` (Extra small) to indicate their secondary importance
-- This simple but effective change allows more content to be visible on screen without scrolling
-- Preserved the visual distinction between original content and reblogs
-
-We studied the Avatar component documentation through `xmlui-mcp` tools to understand the available size options (`xs`, `sm`, `md`, `lg`) and made an informed choice about which values would best balance readability with information density.
-
-The result is a more compact timeline that still maintains clear visual hierarchy and readability. This change demonstrates that small, targeted adjustments can significantly improve the user experience when backed by proper component understanding and documentation.
-
-By comparing our implementation to modern Mastodon clients like Elk, we identified that reducing unnecessary vertical spacing is key to achieving better information density. This approach allows us to display more content in the available screen space while maintaining a clean, readable interface.
-
-Future density improvements could include:
-- Further reducing spacing between elements
-- More compact rendering of links and media attachments
-- Optimizing the layout of interaction metrics
-- Potential grid-based views for even higher density when appropriate
-
-# Snapshot 6
-
-![snapshot6](../resources/snapshot6.png)
-
-In this iteration, we focused on further improving information density and introducing interactive elements:
-
-- **Consolidated Reblog Display**: We completely redesigned the reblog display to follow a single-row pattern:
-  - Reblogger and original author now appear side-by-side on the same line
-  - Connected by a right arrow emoji (➡️) that visually indicates the reblog relationship
-  - Both avatars use the `xs` (Extra small) size to maximize information density
-  - Original content is now indented with a slight left margin for visual hierarchy
-
-- **User Profile Modal Dialog**: Added a `ModalDialog` component to view user profiles:
-  - Clicking on any avatar now opens a profile dialog
-  - Displays avatar, display name, and username in a clean centered layout
-  - Creates a more interactive experience without leaving the timeline
-  - Provides quick access to user information without excess clutter
-
-- **Consistent Visual Language**: Updated our visual indicators for better clarity:
-  - Replaced the recycling icon (♻️) with right arrow (➡️) in both reblog display and reaction counts
-  - This creates a cohesive visual language where the same symbol indicates the same concept throughout the UI
-  - Makes it immediately clear what the relationship is between users in a reblog
-
-- **Reply Indicators**: Added initial support for showing reply relationships:
-  - Posts that are replies now display "💬 Replying to @account_id"
-  - Sets the groundwork for our next iteration which will show actual usernames
-
-These changes continue our Bloomberg-terminal inspired approach of maximizing information density while maintaining readability. The single-row reblog display significantly reduces vertical space consumption compared to our previous approach, allowing more content to be visible on screen without scrolling.
-
-By adding interactive elements like the profile dialog, we've begun to embrace the strengths of XMLUI as a modern UI framework while staying true to our information-dense design philosophy. This creates a hybrid approach that combines the best of both worlds: high information density with modern interactive features.
-
-Next steps will include enhancing the reply indicators to show usernames instead of account IDs and implementing a more comprehensive user profile view.
-
-# Snapshot 7
-
-![snapshot7](../resources/snapshot7.png)
-
-In this iteration we punted on username lookup in favor of visual refinement.
-
-- **Icon Semantics and Visual Language**:
-  - Distinguished between relationship indicators and action metrics
-  - Used directional arrow (→) to show the relationship between reblogger and original author
-  - Used different icons for the metrics section to represent actions (reply, boost, favorite)
-
-> hm. in this screenshot we have rightarrow between post user and reblog user, the semantics of rightarrow is good but the look is bad: too small and sparse compared to the emoji. but now we diverge from the reaction row which is using the share icon which is richer and somehow more semantically appropriate in that context. do you see what i mean?
-
->> You're absolutely right. There's a visual and semantic inconsistency now:
->> The "arrowright" icon between users is too thin and sparse compared to the emoji it replaced - it lacks visual weight
->> We're using "share" for reblogs in the reaction row but "arrowright" in the user relationship line
->> Since reblogging is fundamentally about sharing content, the "share" icon makes more semantic sense in both places. Let me fix this for better consistency:
->> Now we have better consistency - the "share" icon is used in both places to represent reblogging/sharing content. This creates visual harmony and is semantically accurate since reblogging is a form of sharing.
->> The "share" icon likely has more visual weight than the thin arrow icon, which should make it stand out better between the user names. This should create a clearer visual relationship while maintaining a consistent conceptual model throughout the interface.
-
-- **Icons vs Emoji**
-  - The emoji we were using for icons conflicted with emoji that appear in usernames
-  - We switched to XMLUI icons
-  - Created circular icon containers with consistent border styling
-
-- **CHStack for Icon Layout**:
-  - Initially wrapped icons in Text components which created unwanted visual artifacts (dots/periods after icons)
-  - Through documentation exploration, identified CHStack (Centered HStack) as the proper container
-  - Created circular icon containers using CHStack with border styling
-  - Achieved perfect icon centering and consistent visual appearance
-  - Cursor found the CHStack solution on its own thanks to xmlui-mcp!
-
-# Snapshot 8
-
-![snapshot8](../resources/snapshot8.png)
-
-In this iteration, we focused on enhancing the user profile modal dialog and improving our understanding of XMLUI's component-based styling approach:
-
-- **Enhanced User Profile Information**:
-  - Used steampipe-mcp to explore the Mastodon API data schema and discover available profile fields:
-    - Identified additional profile metadata including header images, bio notes, and follower/following counts
-    - Wrote test queries to verify field availability and proper JSON path extraction
-    - Updated our SQL query in index.html to extract these fields using PostgreSQL JSON operators:
-      ```sql
-      account::json->>'header' as header_url,
-      account::json->>'note' as note,
-      account::json->>'followers_count' as followers_count,
-      account::json->>'following_count' as following_count,
-      account::json->>'statuses_count' as statuses_count,
-      ```
-    - Added parallel extraction for reblogged content profile information
-    - Used CASE statements to handle conditional data extraction for reblog scenarios
-
-  - **Profile Modal Implementation**:
-    - Used xmlui-mcp to research common components for social media profiles
-    - Selected appropriate components by reviewing documentation:
-      - `Avatar` for user profile pictures
-      - `Image` for header photos
-      - `Markdown` for rendering formatted bio text
-      - `Card` for visually grouping profile sections
-      - `HStack` and `VStack` for layout organization
-    - Created a comprehensive profile view following social media conventions:
-      - Header image at the top
-      - Larger profile avatar overlapping the header (visual hierarchy)
-      - Username and display name in prominent position
-      - Statistics section showing follower/following counts
-      - Bio section with properly rendered Markdown content
-      - Join date with appropriate icon
-      - Link to view the full profile on Mastodon
-
-- **Component-Based Styling**: We identified that our `Avatar` component was using unnecessary inline styles:
-  - Removed explicit height and border-radius properties from Avatar components
-  - Discovered through documentation that Avatar has built-in styling based on the `size` prop
-  - Confirmed that Avatar automatically applies appropriate border-radius (4px by default)
-
-- **Theme System Understanding**: Gained deeper insight into how XMLUI components encapsulate styling:
-  - Components like Avatar handle their own presentation details internally
-  - The `size` prop (e.g., "xs", "lg") controls multiple style properties simultaneously
-  - This encapsulation follows design system principles where presentation details are abstracted
-
-- **Documentation-Driven Development**: Used the XMLUI documentation to understand component capabilities:
-  - Explored the Avatar component docs to verify styling properties
-  - Confirmed that border-radius is built into the component (4px default)
-  - Learned that size tokens (xs, sm, md, lg) are preferred over raw pixel values
-
-# Snapshot 9
-
-![snapshot9](../resources/snapshot9.png)
-
-In this iteration we refactored the Avatar component into a specialized MastodonAvatar component.
-
-We made some mistakes at first. Initially we didn't move the ModalDialog from Home into MastodonAvatar, instead tried to pass a reference to it, that didn't seem to work. But it was better to move the ModalDialog in out of Main and into MastodonAvatar anyway, it was cluttering Main along with all those verbose calls to userProfileDialog, each passing 10 args.
-
-Along with moving the 60-line ModalDialog out of Main, we changed three of these:
-
-```
-<Avatar
-  url="{$item.avatar_url}"
-  size="xs"
-  name="{$item.display_name || $item.username}"
-  onClick="userProfileDialog.open({
-    avatar_url: $item.avatar_url,
-    display_name: $item.display_name,
-    username: $item.username,
-    header_url: $item.header_url,
-    note: $item.note,
-    followers_count: $item.followers_count,
-    following_count: $item.following_count,
-    statuses_count: $item.statuses_count,
-    url: $item.url,
-    created_at: $item.created_at
-  })"
-/>
-```
-
-Into these:
-
-```
-<Avatar
-  url="{$item.avatar_url}"
-  size="xs"
-  name="{$item.display_name || $item.username}"
-/>
-```
-
-That was our next mistake. All three live in Fragments inside the same Items loop, so we need to pass $item.
-
-
-```
-<Avatar
-  url="{$item.avatar_url}"
-  size="xs"
-  name="{$item.display_name || $item.username}"
-  item="$item"
-/>
-```
-
-And then reference it as $props.item in MastodonAvatar.
-
-```
-  <Avatar
-    url="{$props.url}"
-    size="xs"
-    onClick="{ userProfileDialog.open({
-        avatar_url: $props.item.avatar_url,
-        display_name: $props.item.display_name,
-        username: $props.item.username,
-        header_url: $props.item.header_url,
-        note: $props.item.note,
-        followers_count: $props.item.followers_count,
-        following_count: $props.item.following_count,
-        statuses_count: $props.item.statuses_count,
-        url: $props.item.url,
-        created_at: $props.item.created_at
-        })
-      }"
-  />
-```
-
-With all that done, we have gained a nice simplification of Main, a resusable MastodonAvatar component, and a better understanding of how to do this kind of refactoring.
-
-Another thing we noted, not having used ModalDialog before, is that it calls its arguments $param.X not $props.X.
-
-```
-<Component name="MastodonAvatar">
-
-  <!-- Enhanced User Profile Modal Dialog -->
-  <ModalDialog id="userProfileDialog" title="">
-    <VStack gap="1rem">
-      <!-- Header Image -->
-      <Image
-        src="{$param.header_url}"
-        alt="Profile header image"
-      />
-```
-
-# Snapshot 10
-
-![snapshot10](../resources/snapshot10.png)
-
-We added the first version of the Followers page.
-
-Here's what we learned in this snapshot:
-
-- **Column widths**:
-
- - Column width units can only be star sizing (`*`, `2*`, etc.) or fixed pixel (`80px`)
-
- - Star sizing would make columns share available space proportionally but that isn't what we want
-
- - So we're using fixed pixel widths to shrink numeric columns (Followers, Following, Posts)
-
- - We also learned that colums can contain components, e.g.:
-
- ```
-       <Column header="" width="60px">
-        <MastodonAvatar
-          url="{$item.avatar_url}"
-          size="xs"
-          name="{$item.display_name || $item.username}"
-          item="{$item}"
-        />
-      </Column>
-      <Column header="Name" bindTo="display_name" canSort="true">
-        <Fragment when="{$item.instance_qualified_account_url}">
-          <Link to="{$item.instance_qualified_account_url}" target="_blank">
-            {$item.display_name || $item.username}
-          </Link>
-        </Fragment>
-      </Column>
-```
-
-- **Table Sorting**:
-
-- Columns support sorting via the canSort="true" attribute
-
-- Table also has `sortBy`, which overrides column sorting
-
-- We want to sort all columns so omitted the Table-level `sortBy`
-
-- **Avatar Implementation Challenges**:
-
-We discovered that avatar URLs aren't directly available in the mastodon_my_follower table, so would require joining with a toot table (`mastodon_toot_home`). This is a more complex data modeling problem that we'll revisit later. Seems like the plugin should include that info but I wrote the plugin and seem to remember there's a reason it doesn't. Investigate later, for now avatars are empty circles in Followers but the rest looks good.
-
-- **Custom followers table**:
-
- - To avoid repeatedly fetching all followers to ensure freshness, we sync mastodon_my_follower daily to a table in the public schema of our Pipes database, using this scheduled query:
-
- ```
- with
-  ins as (
-    insert into
-      followers
-    select
-      account_id,
-      id,
-      acct,
-      created_at,
-      url,
-      instance_qualified_account_url,
-      username,
-      server,
-      display_name,
-      followers_count,
-      following_count,
-      statuses_count,
-      note
-    from
-      mastodon_my_follower
-    on conflict (id) do update
-    set
-      account_id = excluded.account_id,
-      acct = excluded.acct,
-      created_at = excluded.created_at,
-      url = excluded.url,
-      instance_qualified_account_url = excluded.instance_qualified_account_url,
-      username = excluded.username,
-      server = excluded.server,
-      display_name = excluded.display_name,
-      followers_count = excluded.followers_count,
-      following_count = excluded.following_count,
-      statuses_count = excluded.statuses_count,
-      note = excluded.note
-    returning
-      xmax = 0 as inserted -- true if it was a fresh insert
-  )
-select
-  count(*)
-from
-  ins
-where
-  inserted;
-```
-
-If this gets expensive we'll consider self-hosting. This could be done in sqlite with the steampipe extension, and https://github.com/jonudell/sqlite-server/ now supports that.
-
-
-# Snapshot 11
-
-![snapshot11](../resources/snapshot11.png)
-
-  - Added several window utility functions in index.html:
-    - getDisplayName() - Gets display name with fallback to username
-    - getReblogDisplayName() - Gets reblog display name with fallback to username
-    - getUsername() and getReblogUsername() - Get username values with empty string fallback
-    - getCreatedDate() and getReblogCreatedDate() - Format dates with proper fallbacks
-
-  - Updated Home.xmlui to use these functions:
-    - Replaced all conditional expressions with function calls
-    - Made the code much cleaner and easier to read
-
-  - Updated MastodonAvatar.xmlui to use the same functions:
-    - Refactored the dialog parameter setup into a more organized format
-    - Used the utility functions for all name and username access
-    - Added a new intermediate constant for dialog parameters to make the code clearer
-
-# Snapshot 12
-
-![snapshot12](../resources/snapshot12.png)
-
-Added images to posts and reblogs. Initially at 20%, in keeping with the information density goal.
-
-Next: add a slider to make images zoomable.
-
-# Snapshot 13
-
-![snapshot13](../resources/snapshot13.gif)
-
-In this iteration, we added a slider to control image zoom for posts and reblogs.
-
-- Introduced a `Slider` component at the top of the Home timeline
-- The slider is labeled "Image Zoom" and enabled users to set image size from 0% to 100%
-- The slider is bound to the `imageZoom` variable, which is used to set the width of images in posts and reblogs
-- Ensured all numeric props are passed as numbers using curly braces, and used the correct event handler (`onDidChange`)
-
-This change further supports our information density goal by letting users control how much space images occupy in the timeline.
-
-Cursor broke rule 7 again.
-
-Jon:
-
-> Do you remember rule 7?  Do not invent any XMLUI syntax. Only use constructs for which you can find examples in the docs and sample apps. You broke it by not checking the docs, you invented `didChange` instead of researching and using `onDidChange`.
-
-Cursor:
-
-> I should never guess or make up XMLUI component properties, event names, or syntax. I must always rely on documented features or patterns found in the official XMLUI documentation or in real sample code from your project. If I am unsure or cannot find an example, I should ask for clarification or do more research, rather than inventing or assuming how something might work. Thank you for reinforcing this important guideline! If you have further feedback or want me to review a specific suggestion for compliance, let me know.
-
-Jon:
-
-> where can i put the rules so you will remember them?
-
-Cursor:
-
-> Currently, you cannot directly "store" custom rules in my persistent memory, as I do not have long-term memory between sessions or the ability to save user-defined rules for future conversations. Each session is stateless, and I only have access to the current conversation and any context you provide within it. However, here are some practical ways to ensure I follow your rules:
-> Include Rules in Each Session:
->  At the start of a session, you can paste your rules or a summary of them. I will then reference them throughout that session.
-> If you notice I’m drifting from your rules, you can remind me at any point in the conversation, and I’ll immediately adjust my behavior to comply.
-
-Jon:
-
-> ok i will remind you every time.
-
-# Snapshot 14
-
-![snapshot14](../resources/snapshot14.gif)
-
-In this cycle, we modularized the image zoom control and improved the UI for settings:
-
-- Moved the image zoom slider into a new `Tools` component, using AppState for shared state
-- Embedded the slider in a modal dialog, activated by a settings (cog) icon at the top of the Home timeline
-- The modal dialog uses the documented imperative API for open/close
-- The slider now controls image zoom for posts and reblogs via shared AppState, and is accessible from the modal
-- This refactor sets the stage for adding more tools in a modular, scalable way
-
-We accomplished this in a series of small, testable steps:
-
-1. **Converted the zoom variable to AppState**: Replaced the local variable with a shared AppState bucket, ensuring future modularity.
-2. **Created a Tools component**: Moved the slider into its own component, confirming that state sharing worked as expected.
-3. **Embedded Tools in Home**: Verified that the slider continued to control image zoom when rendered as a child component.
-4. **Added a modal dialog**: Introduced a settings (cog) icon at the top of Home, and used the imperative API to open a modal containing the Tools component.
-5. **Tested each step**: At each stage, we confirmed that the UI and zoom functionality worked as intended before proceeding.
-
+# Snapshot 1
+
+![snapshot1](../resources/snapshot1.png)
+
+We've created a basic Mastodon home timeline viewer that displays toots with proper formatting. Our initial implementation:
+
+- Replaced the simple Table view with a more readable Card-based layout
+- Added support for displaying HTML content from toots using the Markdown component
+- Implemented proper handling of boosts/reblogs with visual differentiation
+- Added engagement metrics (replies, boosts, favorites)
+- Created proper links to view posts on Mastodon using instance-qualified URLs when available
+- Formatted dates for better readability
+- We aim to follow the <a href="https://blog.jonudell.net/2022/12/17/a-bloomberg-terminal-for-mastodon/">Bloomberg terminal for Mastodon</a> design philosophy with high information density

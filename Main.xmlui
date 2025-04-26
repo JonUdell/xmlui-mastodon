@@ -26,8 +26,8 @@
     <NavLink label="Home" to="/" icon="home" />
     <NavLink label="Followers" to="/followers" icon="users" />
     <NavLink label="Following" to="/following" icon="users" />
-    <NavLink label="ProjectLog" to="/projectLog" icon="" />
     <NavLink label="Query" to="/queryPlayground" icon="database" />
+    <NavLink label="ProjectLog" to="/projectLog" icon="doc-outline" />
   </NavPanel>
 
   <Pages inspect="true">
@@ -51,6 +51,11 @@
     <Page url="/queryPlayground">
       <Query />
     </Page>
+
+    <Page url="/icons">
+      <Icons />
+    </Page>
+
 
   </Pages>
 
