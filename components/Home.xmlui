@@ -12,7 +12,13 @@
   />
 
   <VStack>
-    <Tools />
+    <HStack>
+      <SpaceFiller />
+      <Icon name="cog" size="md" onClick="settingsDialog.open()" style="cursor:pointer" />
+    </HStack>
+    <ModalDialog id="settingsDialog" title="Settings">
+      <Tools />
+    </ModalDialog>
 
     <Items data="{tootsHome}">
       <VStack>
