@@ -10,6 +10,16 @@
   />
 
   <VStack>
+    <Slider
+      width="30%"
+      label="Image Zoom"
+      minValue="{0}"
+      maxValue="{100}"
+      step="{1}"
+      initialValue="{imageZoom}"
+      showValues="true"
+      onDidChange="(value) => { imageZoom = value }"
+    />
 
     <Items data="{tootsHome}">
       <VStack>

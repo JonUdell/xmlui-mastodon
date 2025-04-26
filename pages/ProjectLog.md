@@ -15,6 +15,7 @@
 - [Snapshot 10](#snapshot-10)
 - [Snapshot 11](#snapshot-11)
 - [Snapshot 12](#snapshot-12)
+- [Snapshot 13](#snapshot-13)
 
 # Purpose
 
@@ -697,3 +698,41 @@ If this gets expensive we'll consider self-hosting. This could be done in sqlite
 Added images to posts and reblogs. Initially at 20%, in keeping with the information density goal.
 
 Next: add a slider to make images zoomable.
+
+# Snapshot 13
+
+![snapshot13](../resources/snapshot13.gif)
+
+In this iteration, we added a slider to control image zoom for posts and reblogs.
+
+- Introduced a `Slider` component at the top of the Home timeline
+- The slider is labeled "Image Zoom" and enabled users to set image size from 0% to 100%
+- The slider is bound to the `imageZoom` variable, which is used to set the width of images in posts and reblogs
+- Ensured all numeric props are passed as numbers using curly braces, and used the correct event handler (`onDidChange`)
+
+This change further supports our information density goal by letting users control how much space images occupy in the timeline.
+
+Cursor broke rule 7 again.
+
+Jon:
+
+> Do you remember rule 7?  Do not invent any XMLUI syntax. Only use constructs for which you can find examples in the docs and sample apps. You broke it by not checking the docs, you invented `didChange` instead of researching and using `onDidChange`.
+
+Cursor:
+
+> I should never guess or make up XMLUI component properties, event names, or syntax. I must always rely on documented features or patterns found in the official XMLUI documentation or in real sample code from your project. If I am unsure or cannot find an example, I should ask for clarification or do more research, rather than inventing or assuming how something might work. Thank you for reinforcing this important guideline! If you have further feedback or want me to review a specific suggestion for compliance, let me know.
+
+Jon:
+
+> where can i put the rules so you will remember them?
+
+Cursor:
+
+> Currently, you cannot directly "store" custom rules in my persistent memory, as I do not have long-term memory between sessions or the ability to save user-defined rules for future conversations. Each session is stateless, and I only have access to the current conversation and any context you provide within it. However, here are some practical ways to ensure I follow your rules:
+> Include Rules in Each Session:
+>  At the start of a session, you can paste your rules or a summary of them. I will then reference them throughout that session.
+> If you notice I’m drifting from your rules, you can remind me at any point in the conversation, and I’ll immediately adjust my behavior to comply.
+
+Jon:
+
+> ok i will remind you every time.
