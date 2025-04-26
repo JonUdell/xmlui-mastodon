@@ -1,6 +1,7 @@
-# Dependency directories
+sqlite-server
+data.db
 xmlui/
-
-# Configuration files with sensitive data
 config.js
+
+
 

@@ -116,7 +116,12 @@
                   else null
                 end as reblog_account_url,
                 json_extract(status, '$.in_reply_to_id') as in_reply_to_id,
-                json_extract(status, '$.in_reply_to_account_id') as in_reply_to_account_id
+                json_extract(status, '$.in_reply_to_account_id') as in_reply_to_account_id,
+                json_extract(status, '$.media_attachments[0].preview_url') as preview_url,
+                case
+                  when reblog is not null then json_extract(reblog, '$.media_attachments[0].preview_url')
+                  else null
+                end as reblog_preview_url
             from mastodon_toot_home
             order by created_at desc
             limit ${count}

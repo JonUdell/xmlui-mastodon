@@ -75,6 +75,7 @@
             </HStack>
             <SpaceFiller />
             <Text variant="caption">{window.getReblogCreatedDate($item)}</Text>
+
           </HStack>
 
           <!-- Original content -->
@@ -85,6 +86,11 @@
               <Text variant="caption">🖼️ {$item.reblog.media_attachments.length} media</Text>
             </Fragment>
           </VStack>
+
+            <Fragment when="{$item.reblog_preview_url}">
+              <Image src="{$item.reblog_preview_url}" width="20%"/>
+            </Fragment>
+
         </Fragment>
 
         <!-- Reactions - same for both types -->
@@ -109,8 +115,11 @@
           </HStack>
         </HStack>
       </VStack>
+
+
       <ContentSeparator/>
     </Items>
+
   </VStack>
 
 </Component>
