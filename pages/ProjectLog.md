@@ -1,9 +1,3 @@
-<img
-  src="resources/snapshot15.png"
-  alt="snapshot15"
-/>
-
-
 # Contents
 
 - [Purpose](#purpose)
