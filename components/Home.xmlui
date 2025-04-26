@@ -1,4 +1,6 @@
-<Component name="Home">
+<Component name="Home"
+  var.imageZoom="{20}"
+>
 
   <DataSource
     id="tootsHome"
@@ -16,7 +18,8 @@
           <!-- Reply indicator if this is a reply -->
           <Fragment when="{$item.in_reply_to_id != null}">
             <HStack gap="0.5rem">
-              <CHStack border="1px solid $color-surface-300" borderRadius="50%" width="1.4rem" height="1.4rem">
+              <CHStack border="1px solid $color-surface-300" borderRadius="50%" width="1.4rem"
+                height="1.4rem">
                 <Icon name="reply" size="sm" />
               </CHStack>
               <Text variant="caption">Replying to @{$item.in_reply_to_account_id}</Text>
@@ -43,9 +46,17 @@
               <Markdown content="{$item.content}" />
             </Fragment>
 
-            <Fragment when="{$item.status ? ($item.status.media_attachments ? $item.status.media_attachments.length > 0 : false) : false}">
+            <!--
+            <Fragment
+              when="{$item.status ? ($item.status.media_attachments ? $item.status.media_attachments.length > 0 : false) : false}">
               <Text variant="caption">🖼️ {$item.status.media_attachments.length} media</Text>
             </Fragment>
+            -->
+
+            <Fragment when="{$item.preview_url}">
+              <Image src="{$item.preview_url}" width="{imageZoom}%" />
+            </Fragment>
+
           </VStack>
         </Fragment>
 
@@ -60,7 +71,8 @@
               item="{$item}"
             />
             <Text variant="caption">{window.getDisplayName($item)}</Text>
-            <CHStack border="1px solid $color-surface-300" borderRadius="50%" width="1.4rem" height="1.4rem">
+            <CHStack border="1px solid $color-surface-300" borderRadius="50%" width="1.4rem"
+              height="1.4rem">
               <Icon name="arrowright" size="md" />
             </CHStack>
             <MastodonAvatar
@@ -79,36 +91,41 @@
           </HStack>
 
           <!-- Original content -->
-          <VStack marginLeft="0.5rem" backgroundColor="$color-surface-100" padding="$space-4" borderRadius="0.25rem">
+          <VStack marginLeft="0.5rem" backgroundColor="$color-surface-100" padding="$space-4"
+            borderRadius="0.25rem">
             <Markdown content="{$item.reblog_content}" />
 
-            <Fragment when="{$item.reblog.media_attachments ? $item.reblog.media_attachments.length > 0 : false}">
+            <Fragment
+              when="{$item.reblog.media_attachments ? $item.reblog.media_attachments.length > 0 : false}">
               <Text variant="caption">🖼️ {$item.reblog.media_attachments.length} media</Text>
             </Fragment>
           </VStack>
 
-            <Fragment when="{$item.reblog_preview_url}">
-              <Image src="{$item.reblog_preview_url}" width="20%"/>
-            </Fragment>
+          <Fragment when="{$item.reblog_preview_url}">
+            <Image src="{$item.reblog_preview_url}" width="{imageZoom}%" />
+          </Fragment>
 
         </Fragment>
 
         <!-- Reactions - same for both types -->
         <HStack verticalAlignment="center" gap="0.75rem">
           <HStack verticalAlignment="center" gap="0.25rem">
-            <CHStack border="1px solid $color-surface-300" borderRadius="50%" width="1.4rem" height="1.4rem">
+            <CHStack border="1px solid $color-surface-300" borderRadius="50%" width="1.4rem"
+              height="1.4rem">
               <Icon name="reply" size="sm" />
             </CHStack>
             <Text variant="caption">{$item.replies_count || 0}</Text>
           </HStack>
           <HStack verticalAlignment="center" gap="0.25rem">
-            <CHStack border="1px solid $color-surface-300" borderRadius="50%" width="1.4rem" height="1.4rem">
+            <CHStack border="1px solid $color-surface-300" borderRadius="50%" width="1.4rem"
+              height="1.4rem">
               <Icon name="trending-up" size="sm" />
             </CHStack>
             <Text variant="caption">{$item.reblogs_count || 0}</Text>
           </HStack>
           <HStack verticalAlignment="center" gap="0.25rem">
-            <CHStack border="1px solid $color-surface-300" borderRadius="50%" width="1.4rem" height="1.4rem">
+            <CHStack border="1px solid $color-surface-300" borderRadius="50%" width="1.4rem"
+              height="1.4rem">
               <Icon name="like" size="sm" />
             </CHStack>
             <Text variant="caption">{$item.favourites_count || 0}</Text>
@@ -117,7 +134,7 @@
       </VStack>
 
 
-      <ContentSeparator/>
+      <ContentSeparator />
     </Items>
 
   </VStack>
