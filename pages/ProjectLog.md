@@ -26,15 +26,23 @@ We are going to improve [steampipe-mod-mastodon-insights](https://github.com/tur
 
 This should result in a beautiful Mastodon reader which, because database backed, will also (unlike the stock Mastodon client or others like Elk and Mona) have a long memory and enable powerful search and data visualization.
 
-It will be usable either hosted in Turbot Pipes (for propellerheads) or locally in SQLite (for civilians).
+It will be usable either hosted in Turbot Pipes or locally with SQLite embedding the plugin.
 
 # Setup
 
 Repo: [xmlui-mastodon](https://github.com/jonudell/xmlui-mastodon)
 
-We are using sqlite-server, but only for its CORS proxy. Although we could be using the steampipe Mastodon plugin in sqlite (see xmlui-github), here we are using a remote steampipe in a Turbot Pipes workspace, our queries use the Pipes query API via the local CORS proxy.
+We have used [sqlite-server](https://github.com/jonudell/sqlite-server) in both of its modes: for its CORS (/proxy) endpoint when talking to a Pipes workspace, and for its query (/query) endpoint when using SQLite with the Mastodon plugin loaded as an extension.
 
-We are working with two assistants, Cursor and Claude, both augmented with these  MCP (Model Context Protocol) servers.
+We are working mainly with two assistants, Cursor and Claude, both augmented with these  MCP (Model Context Protocol) servers.
+
+![mcp servers](../resources/mcp-servers.png)
+
+The filesystem tool enables the AIs to search local repos for context, and write to the repo we are developing.
+
+The steampipe tool enables them to run queries against the Mastodon plugin.
+
+The [xmlui tool](https://github.com/jonudell/xmlui-mcp) enables them to read the XMLUI docs in a focused way.
 
 ```
 {
@@ -49,79 +57,24 @@ We are working with two assistants, Cursor and Claude, both augmented with these
         "/Users/jonudell/xmlui-github",
         "/Users/jonudell/xmlui",
         "/Users/jonudell/sqlite-server",
-        "/Users/jonudell/xmlui-mastodon"
+        "/Users/jonudell/xmlui-mastodon",
         "/Users/jonudell/steampipe-mod-mastodon-insights"
       ]
     },
     "steampipe": {
       "command": "npx",
+      "args": ["-y", "@turbot/steampipe-mcp"]
+    },
+    "xmlui": {
+      "command": "node",
       "args": [
-        "-y",
-        "@turbot/steampipe-mcp"
+        "/Users/jonudell/xmlui-mcp/dist/index.js",
+        "/Users/jonudell/xmlui"
       ]
     }
   }
 }
 ```
-
-The filesystem tool enables the AIs to search local repos for context, and write to the repo we are developing.
-
-The steampipe tool enables them to run queries against the Mastodon plugin
-
-## Available MCP tools
-
-### From server: filesystem
-
-#### create_directory
-Create a new directory or ensure a directory exists. Can create multiple nested directories in one operation. If the directory already exists, this operation will succeed silently. Perfect for setting up directory structures for projects or ensuring required paths exist. Only works within allowed directories.
-
-#### directory_tree
-Get a recursive tree view of files and directories as a JSON structure. Each entry includes 'name', 'type' (file/directory), and 'children' for directories. Files have no children array, while directories always have a children array (which may be empty). The output is formatted with 2-space indentation for readability. Only works within allowed directories.
-
-#### edit_file
-Make line-based edits to a text file. Each edit replaces exact line sequences with new content. Returns a git-style diff showing the changes made. Only works within allowed directories.
-
-#### get_file_info
-Retrieve detailed metadata about a file or directory. Returns comprehensive information including size, creation time, last modified time, permissions, and type. This tool is perfect for understanding file characteristics without reading the actual content. Only works within allowed directories.
-
-#### list_allowed_directories
-Returns the list of directories that this server is allowed to access. Use this to understand which directories are available before trying to access files.
-
-#### list_directory
-Get a detailed listing of all files and directories in a specified path. Results clearly distinguish between files and directories with [FILE] and [DIR] prefixes. This tool is essential for understanding directory structure and finding specific files within a directory. Only works within allowed directories.
-
-#### move_file
-Move or rename files and directories. Can move files between directories and rename them in a single operation. If the destination exists, the operation will fail. Works across different directories and can be used for simple renaming within the same directory. Both source and destination must be within allowed directories.
-
-#### read_file
-Read the complete contents of a file from the file system. Handles various text encodings and provides detailed error messages if the file cannot be read. Use this tool when you need to examine the contents of a single file. Only works within allowed directories.
-
-#### read_multiple_files
-Read the contents of multiple files simultaneously. This is more efficient than reading files one by one when you need to analyze or compare multiple files. Each file's content is returned with its path as a reference. Failed reads for individual files won't stop the entire operation. Only works within allowed directories.
-
-#### search_files
-Recursively search for files and directories matching a pattern. Searches through all subdirectories from the starting path. The search is case-insensitive and matches partial names. Returns full paths to all matching items. Great for finding files when you don't know their exact location. Only searches within allowed directories.
-
-#### write_file
-Create a new file or completely overwrite an existing file with new content. Use with caution as it will overwrite existing files without warning. Handles text content with proper encoding. Only works within allowed directories.
-
-
-### From server: steampipe
-
-#### steampipe_plugin_list
-List all Steampipe plugins installed on the system. Plugins provide access to different data sources like AWS, GCP, or Azure.
-
-#### steampipe_plugin_show
-Get details for a specific Steampipe plugin installation, including version, memory limits, and configuration.
-
-#### steampipe_query
-Query cloud infrastructure, SaaS, APIs, code and more with SQL. Queries are read-only and must use PostgreSQL syntax. For best performance limit the columns requested and use CTEs instead of joins. Trust the search path unless sure you need to specify a schema. Check available tables and columns before querying using steampipe_table_list and steampipe_table_show.
-
-#### steampipe_table_list
-List all available Steampipe tables. Use schema and filter parameters to narrow down results.
-
-#### steampipe_table_show
-Get detailed information about a specific Steampipe table, including column definitions, data types, and descriptions.
 
 
 # Rules for AI helpers
