@@ -96,9 +96,25 @@
                   else null
                 end as reblog_statuses_count,
                 case
+                  when reblog is not null then json_extract(reblog, '$.account.display_name')
+                  else null
+                end as reblog_display_name,
+                case
+                  when reblog is not null then json_extract(reblog, '$.account.username')
+                  else null
+                end as reblog_username,
+                case
                   when reblog is not null then json_extract(reblog, '$.content')
                   else null
                 end as reblog_content,
+                case
+                  when reblog is not null then json_extract(reblog, '$.created_at')
+                  else null
+                end as reblog_created_at,
+                case
+                  when reblog is not null then json_extract(reblog, '$.account.url')
+                  else null
+                end as reblog_account_url,
                 json_extract(status, '$.in_reply_to_id') as in_reply_to_id,
                 json_extract(status, '$.in_reply_to_account_id') as in_reply_to_account_id
             from mastodon_toot_home

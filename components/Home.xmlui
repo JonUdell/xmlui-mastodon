@@ -27,11 +27,11 @@
             <MastodonAvatar
               url="{$item.avatar_url}"
               size="xs"
-              name="{$item.display_name || $item.username}"
+              name="{$item.display_name ? $item.display_name : $item.username}"
               item="{$item}"
             />
             <HStack gap="0.5rem">
-              <Text variant="strong">{$item.display_name || $item.username}</Text>
+              <Text variant="strong">{$item.display_name ? $item.display_name : $item.username}</Text>
               <Text variant="caption">@{$item.username}</Text>
             </HStack>
             <SpaceFiller />
@@ -56,22 +56,25 @@
             <MastodonAvatar
               url="{$item.avatar_url}"
               size="xs"
-              name="{$item.display_name || $item.username}"
+              name="{$item.display_name ? $item.display_name : $item.username}"
               item="{$item}"
             />
-            <Text variant="caption">{$item.display_name || $item.username}</Text>
+            <Text variant="caption">{$item.display_name ? $item.display_name : $item.username}</Text>
             <CHStack border="1px solid $color-surface-300" borderRadius="50%" width="1.4rem" height="1.4rem">
               <Icon name="arrowright" size="md" />
             </CHStack>
             <MastodonAvatar
               url="{$item.reblog_avatar_url}"
               size="xs"
-              name="{$item.reblog.account ? $item.reblog.account.display_name : $item.reblog.account ? $item.reblog.account.username : ''}"
+              name="{$item.reblog_display_name ? $item.reblog_display_name : $item.reblog_username}"
               item="{$item}"
             />
-            <Text variant="strong">{$item.reblog.account ? $item.reblog.account.display_name : ''}</Text>
+            <HStack gap="0.5rem">
+              <Text variant="strong">{$item.reblog_display_name ? $item.reblog_display_name : $item.reblog_username}</Text>
+              <Text variant="caption">@{$item.reblog_username || ''}</Text>
+            </HStack>
             <SpaceFiller />
-            <Text variant="caption">{window.formatDate($item.reblog.created_at || $item.created_at)}</Text>
+            <Text variant="caption">{window.formatDate($item.reblog_created_at || $item.created_at)}</Text>
           </HStack>
 
           <!-- Original content -->

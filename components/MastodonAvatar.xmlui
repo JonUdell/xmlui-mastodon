@@ -4,7 +4,7 @@
   <ModalDialog id="userProfileDialog" title="">
     <VStack gap="1rem">
       <!-- Header Image (only shown if available and not a placeholder) -->
-      <Fragment when="{$param.header_url && !$param.header_url.includes('/missing.png')}">  
+      <Fragment when="{$param.header_url && !$param.header_url.includes('/missing.png')}">
         <Image
           src="{$param.header_url}"
           alt="Profile header image"
@@ -15,29 +15,29 @@
       </Fragment>
 
       <!-- Profile Info -->
-      <VStack gap="0.5rem" padding="0 1rem">
+      <VStack gap="0" padding="0 1rem">
         <!-- Avatar (positioned to overlap header) -->
         <Avatar
           url="{$param.avatar_url}"
           size="lg"
-          name="{$param.display_name || $param.username}"
+          name="{$param.display_name ? $param.display_name : $param.username}"
         />
 
         <!-- User Info -->
-        <Text variant="strong" fontSize="1.2rem">{$param.display_name || $param.username}</Text>
+        <Text variant="strong" fontSize="1.2rem">{$param.display_name ? $param.display_name : $param.username}</Text>
         <Text variant="caption">@{$param.username}</Text>
 
         <!-- Stats -->
-        <HStack gap="1rem" marginTop="0.5rem" justifyContent="center">
-          <VStack alignItems="center">
+        <HStack marginTop="0.5rem" justifyContent="center">
+          <VStack gap="0" alignItems="center">
             <Text variant="strong">{$param.followers_count || 0}</Text>
             <Text variant="caption">Followers</Text>
           </VStack>
-          <VStack alignItems="center">
+          <VStack gap="0" alignItems="center">
             <Text variant="strong">{$param.following_count || 0}</Text>
             <Text variant="caption">Following</Text>
           </VStack>
-          <VStack alignItems="center">
+          <VStack gap="0" alignItems="center">
             <Text variant="strong">{$param.statuses_count || 0}</Text>
             <Text variant="caption">Posts</Text>
           </VStack>
@@ -80,18 +80,18 @@
       // If it's a reblog avatar, use the reblog account data
       userProfileDialog.open(isReblogAvatar ? {
         avatar_url: $props.item.reblog_avatar_url,
-        display_name: $props.item.reblog.account.display_name,
-        username: $props.item.reblog.account.username,
+        display_name: $props.item.reblog_display_name ? $props.item.reblog_display_name : $props.item.reblog_username,
+        username: $props.item.reblog_username || '',
         header_url: $props.item.reblog_header_url,
         note: $props.item.reblog_note,
         followers_count: $props.item.reblog_followers_count,
         following_count: $props.item.reblog_following_count,
         statuses_count: $props.item.reblog_statuses_count,
-        url: $props.item.reblog.account.url,
-        created_at: $props.item.reblog.created_at
+        url: $props.item.reblog_account_url || '',
+        created_at: $props.item.reblog_created_at || ''
       } : {
         avatar_url: $props.item.avatar_url,
-        display_name: $props.item.display_name,
+        display_name: $props.item.display_name ? $props.item.display_name : $props.item.username,
         username: $props.item.username,
         header_url: $props.item.header_url,
         note: $props.item.note,
