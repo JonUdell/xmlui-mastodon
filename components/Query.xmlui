@@ -36,7 +36,7 @@
       <Fragment when="{appState.value.example }">
         <DataSource
           id="queryResults"
-          url="{ window.xmluiQuery }"
+          url="{ window.query }"
           body="{ window.customSql(appState.value.example) }"
           method="POST"
           onLoaded="{ appState.update( { loading: false, results: queryResults.value } ) }"
@@ -53,6 +53,7 @@
 
       <h2>Canned queries</h2>
 
+<!--
       <QueryExample
         title="Issues for xmlui"
         example="example1"
@@ -77,6 +78,8 @@
         title="SQLite master"
         example="example4"
       />
+
+ -->
 
      <Markdown><![CDATA[
       <details>

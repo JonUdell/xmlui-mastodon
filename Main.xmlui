@@ -5,11 +5,29 @@
   defaultTheme="earthtone"
 >
 
+  <DataSource
+    id="data"
+    url="{ window.query }"
+    body="{ window.init() }"
+    method="POST"
+  />
+
+  <DataSource
+    id="account"
+    url="{ window.query }"
+    body="{ window.customSql('select * from mastodon_my_account') }"
+    method="POST"
+    onLoaded="console.log('account loaded:', account.value)"
+  />
+
+
+
   <NavPanel>
     <NavLink label="Home" to="/" icon="home" />
     <NavLink label="Followers" to="/followers" icon="users" />
+    <NavLink label="Following" to="/following" icon="users" />
     <NavLink label="ProjectLog" to="/projectLog" icon="" />
-    <NavLink label="Icons" to="/icons" icon="home" />
+    <NavLink label="Query" to="/queryPlayground" icon="database" />
   </NavPanel>
 
   <Pages inspect="true">
@@ -22,12 +40,16 @@
       <Followers />
     </Page>
 
+    <Page url="/following">
+      <Following />
+    </Page>
+
     <Page url="/projectLog">
       <Markdown data="/pages/projectLog.md" />
     </Page>
 
-    <Page url="/icons">
-      <Icons />
+    <Page url="/queryPlayground">
+      <Query />
     </Page>
 
   </Pages>

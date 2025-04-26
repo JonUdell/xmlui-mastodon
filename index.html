@@ -9,9 +9,16 @@
   <script src="config.js"></script>
   <!-- <script src="scripts/followers.js"></script> -->
   <script>
-    window.pipesQuery = 'http://localhost:8080/proxy/pipes.turbot.com/api/latest/user/jonudell/workspace/mastodon/query'
 
-    window.windowValue = 0;
+    window.init = function () {
+      sql = `select steampipe_configure_mastodon('access_token="${window.config.mastodonToken}"
+    server="${window.config.server}"
+    app="${window.config.app}"')`
+      console.log(sql)
+      return { sql: sql }
+    }
+
+    window.query = 'http://localhost:8080/query'
 
     window.updateQueryWithNonce = function (query, appStateUpdateFn) {
       console.log('Executing query:', query);
@@ -44,66 +51,61 @@
 
     window.tootsHome = function (count) {
       return {
-        sql: `select
-                    id,
-                    username,
-                    display_name,
-                    created_at,
-                    url,
-                    instance_qualified_url,
-                    status,
-                    reblog,
-                    (status->>'replies_count')::int as replies_count,
-                    (status->>'reblogs_count')::int as reblogs_count,
-                    (status->>'favourites_count')::int as favourites_count,
-                    account::json->>'avatar' as avatar_url,
-                    account::json->>'header' as header_url,
-                    account::json->>'note' as note,
-                    account::json->>'followers_count' as followers_count,
-                    account::json->>'following_count' as following_count,
-                    account::json->>'statuses_count' as statuses_count,
-                    CASE
-                      WHEN reblog IS NOT NULL THEN
-                        reblog::json->'account'->>'avatar'
-                      ELSE
-                        NULL
-                    END AS reblog_avatar_url,
-                    CASE
-                      WHEN reblog IS NOT NULL THEN
-                        reblog::json->'account'->>'header'
-                      ELSE
-                        NULL
-                    END AS reblog_header_url,
-                    CASE
-                      WHEN reblog IS NOT NULL THEN
-                        reblog::json->'account'->>'note'
-                      ELSE
-                        NULL
-                    END AS reblog_note,
-                    CASE
-                      WHEN reblog IS NOT NULL THEN
-                        reblog::json->'account'->>'followers_count'
-                      ELSE
-                        NULL
-                    END AS reblog_followers_count,
-                    CASE
-                      WHEN reblog IS NOT NULL THEN
-                        reblog::json->'account'->>'following_count'
-                      ELSE
-                        NULL
-                    END AS reblog_following_count,
-                    CASE
-                      WHEN reblog IS NOT NULL THEN
-                        reblog::json->'account'->>'statuses_count'
-                      ELSE
-                        NULL
-                    END AS reblog_statuses_count,
-                    status->>'in_reply_to_id' as in_reply_to_id,
-                    status->>'in_reply_to_account_id' as in_reply_to_account_id
-                from mastodon_toot_home
-                order by created_at desc
-                limit ${count}
-              `}
+        sql: `
+            select
+                id,
+                username,
+                display_name,
+                created_at,
+                url,
+                instance_qualified_url,
+                status,
+                reblog,
+                json_extract(status, '$.content') as content,
+                cast(json_extract(status, '$.replies_count') as integer) as replies_count,
+                cast(json_extract(status, '$.reblogs_count') as integer) as reblogs_count,
+                cast(json_extract(status, '$.favourites_count') as integer) as favourites_count,
+                json_extract(account, '$.avatar') as avatar_url,
+                json_extract(account, '$.header') as header_url,
+                json_extract(account, '$.note') as note,
+                json_extract(account, '$.followers_count') as followers_count,
+                json_extract(account, '$.following_count') as following_count,
+                json_extract(account, '$.statuses_count') as statuses_count,
+                case
+                  when reblog is not null then json_extract(reblog, '$.account.avatar')
+                  else null
+                end as reblog_avatar_url,
+                case
+                  when reblog is not null then json_extract(reblog, '$.account.header')
+                  else null
+                end as reblog_header_url,
+                case
+                  when reblog is not null then json_extract(reblog, '$.account.note')
+                  else null
+                end as reblog_note,
+                case
+                  when reblog is not null then json_extract(reblog, '$.account.followers_count')
+                  else null
+                end as reblog_followers_count,
+                case
+                  when reblog is not null then json_extract(reblog, '$.account.following_count')
+                  else null
+                end as reblog_following_count,
+                case
+                  when reblog is not null then json_extract(reblog, '$.account.statuses_count')
+                  else null
+                end as reblog_statuses_count,
+                case
+                  when reblog is not null then json_extract(reblog, '$.content')
+                  else null
+                end as reblog_content,
+                json_extract(status, '$.in_reply_to_id') as in_reply_to_id,
+                json_extract(status, '$.in_reply_to_account_id') as in_reply_to_account_id
+            from mastodon_toot_home
+            order by created_at desc
+            limit ${count}
+            `
+          }
     }
 
     window.formatDate = function (dateString) {
@@ -160,22 +162,48 @@
 
     window.followers = function () {
       return {
-        sql: `select
-            f.account_id,
-            f.id,
-            f.acct,
-            f.created_at,
-            f.url,
-            f.instance_qualified_account_url,
-            f.username,
-            f.server,
-            f.display_name,
-            f.followers_count,
-            f.following_count,
-            f.statuses_count,
-            f.note
-        from followers f
-        order by f.created_at desc
+        sql: `
+          select
+            account_id,
+            id,
+            acct,
+            created_at,
+            url,
+            instance_qualified_account_url,
+            username,
+            server,
+            display_name,
+            followers_count,
+            following_count,
+            statuses_count,
+            note,
+            json_extract(account, '$.avatar') as avatar_url
+          from follower
+          order by created_at desc
+        `
+      }
+    }
+
+    window.following = function () {
+      return {
+        sql: `
+          select
+            account_id,
+            id,
+            acct,
+            created_at,
+            url,
+            instance_qualified_account_url,
+            username,
+            server,
+            display_name,
+            followers_count,
+            following_count,
+            statuses_count,
+            note,
+            json_extract(account, '$.avatar') as avatar_url
+          from follow
+          order by created_at desc
         `
       }
     }

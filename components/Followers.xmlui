@@ -2,10 +2,8 @@
 
   <DataSource
     id="followers"
-    url="{ window.pipesQuery }"
-    headers='{ {Authorization: "Bearer " + window.config.pipesToken, "content-type":"application/json" } }'
+    url="{ window.query }"
     body="{ window.followers() }"
-    resultSelector="items"
     method="POST"
   />
 

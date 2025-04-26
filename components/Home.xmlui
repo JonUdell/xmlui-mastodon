@@ -2,10 +2,8 @@
 
   <DataSource
     id="tootsHome"
-    url="{ window.pipesQuery }"
-    headers='{ {Authorization: "Bearer " + window.config.pipesToken, "content-type":"application/json" } }'
+    url="{ window.query }"
     body="{ window.tootsHome(40) }"
-    resultSelector="items"
     method="POST"
   />
 
@@ -41,8 +39,8 @@
           </HStack>
 
           <VStack>
-            <Fragment when="{$item.status ? $item.status.content : false}">
-              <Markdown content="{$item.status.content}" />
+            <Fragment when="{$item.content}">
+              <Markdown content="{$item.content}" />
             </Fragment>
 
             <Fragment when="{$item.status ? ($item.status.media_attachments ? $item.status.media_attachments.length > 0 : false) : false}">
@@ -78,7 +76,7 @@
 
           <!-- Original content -->
           <VStack marginLeft="0.5rem" backgroundColor="$color-surface-100" padding="$space-4" borderRadius="0.25rem">
-            <Markdown content="{$item.reblog.content}" />
+            <Markdown content="{$item.reblog_content}" />
 
             <Fragment when="{$item.reblog.media_attachments ? $item.reblog.media_attachments.length > 0 : false}">
               <Text variant="caption">🖼️ {$item.reblog.media_attachments.length} media</Text>
