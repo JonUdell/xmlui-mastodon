@@ -736,3 +736,24 @@ Cursor:
 Jon:
 
 > ok i will remind you every time.
+
+# Snapshot 14
+
+![snapshot14](../resources/snapshot14.gif)
+
+In this cycle, we modularized the image zoom control and improved the UI for settings:
+
+- Moved the image zoom slider into a new `Tools` component, using AppState for shared state
+- Embedded the slider in a modal dialog, activated by a settings (cog) icon at the top of the Home timeline
+- The modal dialog uses the documented imperative API for open/close
+- The slider now controls image zoom for posts and reblogs via shared AppState, and is accessible from the modal
+- This refactor sets the stage for adding more tools in a modular, scalable way
+
+We accomplished this in a series of small, testable steps:
+
+1. **Converted the zoom variable to AppState**: Replaced the local variable with a shared AppState bucket, ensuring future modularity.
+2. **Created a Tools component**: Moved the slider into its own component, confirming that state sharing worked as expected.
+3. **Embedded Tools in Home**: Verified that the slider continued to control image zoom when rendered as a child component.
+4. **Added a modal dialog**: Introduced a settings (cog) icon at the top of Home, and used the imperative API to open a modal containing the Tools component.
+5. **Tested each step**: At each stage, we confirmed that the UI and zoom functionality worked as intended before proceeding.
+

@@ -1,0 +1,13 @@
+<Component name="Tools">
+  <AppState id="toolsState" bucket="toolsState" />
+  <Slider
+    width="30%"
+    label="Image Zoom"
+    minValue="{0}"
+    maxValue="{100}"
+    step="{1}"
+    initialValue="{toolsState.value.zoom}"
+    showValues="true"
+    onDidChange="(value) => { toolsState.update({ zoom: value }) }"
+  />
+</Component>
