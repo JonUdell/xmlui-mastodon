@@ -27,15 +27,15 @@
             <MastodonAvatar
               url="{$item.avatar_url}"
               size="xs"
-              name="{$item.display_name ? $item.display_name : $item.username}"
+              name="{window.getDisplayName($item)}"
               item="{$item}"
             />
             <HStack gap="0.5rem">
-              <Text variant="strong">{$item.display_name ? $item.display_name : $item.username}</Text>
-              <Text variant="caption">@{$item.username}</Text>
+              <Text variant="strong">{window.getDisplayName($item)}</Text>
+              <Text variant="caption">@{window.getUsername($item)}</Text>
             </HStack>
             <SpaceFiller />
-            <Text variant="caption">{window.formatDate($item.created_at)}</Text>
+            <Text variant="caption">{window.getCreatedDate($item)}</Text>
           </HStack>
 
           <VStack>
@@ -56,25 +56,25 @@
             <MastodonAvatar
               url="{$item.avatar_url}"
               size="xs"
-              name="{$item.display_name ? $item.display_name : $item.username}"
+              name="{window.getDisplayName($item)}"
               item="{$item}"
             />
-            <Text variant="caption">{$item.display_name ? $item.display_name : $item.username}</Text>
+            <Text variant="caption">{window.getDisplayName($item)}</Text>
             <CHStack border="1px solid $color-surface-300" borderRadius="50%" width="1.4rem" height="1.4rem">
               <Icon name="arrowright" size="md" />
             </CHStack>
             <MastodonAvatar
               url="{$item.reblog_avatar_url}"
               size="xs"
-              name="{$item.reblog_display_name ? $item.reblog_display_name : $item.reblog_username}"
+              name="{window.getReblogDisplayName($item)}"
               item="{$item}"
             />
             <HStack gap="0.5rem">
-              <Text variant="strong">{$item.reblog_display_name ? $item.reblog_display_name : $item.reblog_username}</Text>
-              <Text variant="caption">@{$item.reblog_username || ''}</Text>
+              <Text variant="strong">{window.getReblogDisplayName($item)}</Text>
+              <Text variant="caption">@{window.getReblogUsername($item)}</Text>
             </HStack>
             <SpaceFiller />
-            <Text variant="caption">{window.formatDate($item.reblog_created_at || $item.created_at)}</Text>
+            <Text variant="caption">{window.getReblogCreatedDate($item)}</Text>
           </HStack>
 
           <!-- Original content -->

@@ -153,6 +153,42 @@
       const num = parseInt(value, 10);
       return isNaN(num) ? 0 : num;
     }
+    
+    // Display name with fallback to username
+    window.getDisplayName = function(item) {
+      if (!item) return '';
+      return item.display_name ? item.display_name : item.username || '';
+    }
+    
+    // Get reblog display name with fallback to username
+    window.getReblogDisplayName = function(item) {
+      if (!item) return '';
+      return item.reblog_display_name ? item.reblog_display_name : item.reblog_username || '';
+    }
+    
+    // Get username with empty string fallback
+    window.getUsername = function(item) {
+      if (!item) return '';
+      return item.username || '';
+    }
+    
+    // Get reblog username with empty string fallback
+    window.getReblogUsername = function(item) {
+      if (!item) return '';
+      return item.reblog_username || '';
+    }
+    
+    // Get created date with fallback logic
+    window.getCreatedDate = function(item) {
+      if (!item) return '';
+      return window.formatDate(item.created_at || '');
+    }
+    
+    // Get reblog created date with fallback to original created date
+    window.getReblogCreatedDate = function(item) {
+      if (!item) return '';
+      return window.formatDate(item.reblog_created_at || item.created_at || '');
+    }
 
     // Function to look up a username from an account ID - used by tootsHome
     window.lookupUsername = function (accountId) {

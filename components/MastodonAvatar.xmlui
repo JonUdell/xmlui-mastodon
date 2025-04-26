@@ -20,12 +20,12 @@
         <Avatar
           url="{$param.avatar_url}"
           size="lg"
-          name="{$param.display_name ? $param.display_name : $param.username}"
+          name="{window.getDisplayName($param)}"
         />
 
         <!-- User Info -->
-        <Text variant="strong" fontSize="1.2rem">{$param.display_name ? $param.display_name : $param.username}</Text>
-        <Text variant="caption">@{$param.username}</Text>
+        <Text variant="strong" fontSize="1.2rem">{window.getDisplayName($param)}</Text>
+        <Text variant="caption">@{window.getUsername($param)}</Text>
 
         <!-- Stats -->
         <HStack marginTop="0.5rem" justifyContent="center">
@@ -80,8 +80,8 @@
       // If it's a reblog avatar, use the reblog account data
       userProfileDialog.open(isReblogAvatar ? {
         avatar_url: $props.item.reblog_avatar_url,
-        display_name: $props.item.reblog_display_name ? $props.item.reblog_display_name : $props.item.reblog_username,
-        username: $props.item.reblog_username || '',
+        display_name: window.getReblogDisplayName($props.item),
+        username: window.getReblogUsername($props.item),
         header_url: $props.item.reblog_header_url,
         note: $props.item.reblog_note,
         followers_count: $props.item.reblog_followers_count,
@@ -91,8 +91,8 @@
         created_at: $props.item.reblog_created_at || ''
       } : {
         avatar_url: $props.item.avatar_url,
-        display_name: $props.item.display_name ? $props.item.display_name : $props.item.username,
-        username: $props.item.username,
+        display_name: window.getDisplayName($props.item),
+        username: window.getUsername($props.item),
         header_url: $props.item.header_url,
         note: $props.item.note,
         followers_count: $props.item.followers_count,
