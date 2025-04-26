@@ -12,6 +12,7 @@
 - [Snapshot 7](#snapshot-7)
 - [Snapshot 8](#snapshot-8)
 - [Snapshot 9](#snapshot-9)
+- [Snapshot 10](#snapshot-10)
 
 # Purpose
 
@@ -478,6 +479,8 @@ In this iteration, we focused on enhancing the user profile modal dialog and imp
 
 # Snapshot 9
 
+![snapshot9](../resources/snapshot9.png)
+
 In this iteration we refactored the Avatar component into a specialized MastodonAvatar component.
 
 We made some mistakes at first. Initially we didn't move the ModalDialog from Home into MastodonAvatar, instead tried to pass a reference to it, that didn't seem to work. But it was better to move the ModalDialog in out of Main and into MastodonAvatar anyway, it was cluttering Main along with all those verbose calls to userProfileDialog, each passing 10 args.
@@ -564,3 +567,103 @@ Another thing we noted, not having used ModalDialog before, is that it calls its
         alt="Profile header image"
       />
 ```
+
+# Snapshot 10
+
+![snapshot10](../resources/snapshot10.png)
+
+We added the first version of the Followers page.
+
+Here's what we learned in this snapshot:
+
+- **Column widths**:
+
+ - Column width units can only be star sizing (`*`, `2*`, etc.) or fixed pixel (`80px`)
+
+ - Star sizing would make columns share available space proportionally but that isn't what we want
+
+ - So we're using fixed pixel widths to shrink numeric columns (Followers, Following, Posts)
+
+ - We also learned that colums can contain components, e.g.:
+
+ ```
+       <Column header="" width="60px">
+        <MastodonAvatar
+          url="{$item.avatar_url}"
+          size="xs"
+          name="{$item.display_name || $item.username}"
+          item="{$item}"
+        />
+      </Column>
+      <Column header="Name" bindTo="display_name" canSort="true">
+        <Fragment when="{$item.instance_qualified_account_url}">
+          <Link to="{$item.instance_qualified_account_url}" target="_blank">
+            {$item.display_name || $item.username}
+          </Link>
+        </Fragment>
+      </Column>
+```
+
+- **Table Sorting**:
+
+- Columns support sorting via the canSort="true" attribute
+
+- Table also has `sortBy`, which overrides column sorting
+
+- We want to sort all columns so omitted the Table-level `sortBy`
+
+- **Avatar Implementation Challenges**:
+
+We discovered that avatar URLs aren't directly available in the mastodon_my_follower table, so would require joining with a toot table (`mastodon_toot_home`). This is a more complex data modeling problem that we'll revisit later. Seems like the plugin should include that info but I wrote the plugin and seem to remember there's a reason it doesn't. Investigate later, for now avatars are empty circles in Followers but the rest looks good.
+
+- **Custom followers table**:
+
+ - To avoid repeatedly fetching all followers to ensure freshness, we sync mastodon_my_follower daily to a table in the public schema of our Pipes database, using this scheduled query:
+
+ ```
+ with
+  ins as (
+    insert into
+      followers
+    select
+      account_id,
+      id,
+      acct,
+      created_at,
+      url,
+      instance_qualified_account_url,
+      username,
+      server,
+      display_name,
+      followers_count,
+      following_count,
+      statuses_count,
+      note
+    from
+      mastodon_my_follower
+    on conflict (id) do update
+    set
+      account_id = excluded.account_id,
+      acct = excluded.acct,
+      created_at = excluded.created_at,
+      url = excluded.url,
+      instance_qualified_account_url = excluded.instance_qualified_account_url,
+      username = excluded.username,
+      server = excluded.server,
+      display_name = excluded.display_name,
+      followers_count = excluded.followers_count,
+      following_count = excluded.following_count,
+      statuses_count = excluded.statuses_count,
+      note = excluded.note
+    returning
+      xmax = 0 as inserted -- true if it was a fresh insert
+  )
+select
+  count(*)
+from
+  ins
+where
+  inserted;
+```
+
+If this gets expensive we'll consider self-hosting. This could be done in sqlite with the steampipe extension, and https://github.com/jonudell/sqlite-server/ now supports that.

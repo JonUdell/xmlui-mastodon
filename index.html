@@ -2,48 +2,49 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <script src="xmlui/0.9.13.js"></script>
-    <script src="xmlui/charts-0.1.12.js"></script>
-    <script src="config.js"></script>
-    <script>
-        window.pipesQuery = 'http://localhost:8080/proxy/pipes.turbot.com/api/latest/user/jonudell/workspace/mastodon/query'
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="xmlui/0.9.13.js"></script>
+  <script src="xmlui/charts-0.1.12.js"></script>
+  <script src="config.js"></script>
+  <!-- <script src="scripts/followers.js"></script> -->
+  <script>
+    window.pipesQuery = 'http://localhost:8080/proxy/pipes.turbot.com/api/latest/user/jonudell/workspace/mastodon/query'
 
-        window.windowValue = 0;
+    window.windowValue = 0;
 
-        window.updateQueryWithNonce = function(query, appStateUpdateFn) {
-            console.log('Executing query:', query);
-            // Get the raw query without any existing nonce comment
-            const rawQuery = query.replace(/^-- [0-9]+\n\n/, '');
-            // Add nonce comment at the beginning
-            const queryWithNonce = `-- ${Date.now()}\n\n${rawQuery}`;
-            console.log('Modified query with nonce:', queryWithNonce);
+    window.updateQueryWithNonce = function (query, appStateUpdateFn) {
+      console.log('Executing query:', query);
+      // Get the raw query without any existing nonce comment
+      const rawQuery = query.replace(/^-- [0-9]+\n\n/, '');
+      // Add nonce comment at the beginning
+      const queryWithNonce = `-- ${Date.now()}\n\n${rawQuery}`;
+      console.log('Modified query with nonce:', queryWithNonce);
 
-            // Update the app state
-            appStateUpdateFn({
-                example: queryWithNonce,
-                loading: true,
-                results: []
-            });
+      // Update the app state
+      appStateUpdateFn({
+        example: queryWithNonce,
+        loading: true,
+        results: []
+      });
 
-            return queryWithNonce;
-        }
+      return queryWithNonce;
+    }
 
-        // Custom SQL query function
-        window.customSql = function(query) {
-            console.log('Running query:', query);
-            return {
-                sql: query
-            }
-        }
+    // Custom SQL query function
+    window.customSql = function (query) {
+      console.log('Running query:', query);
+      return {
+        sql: query
+      }
+    }
 
-        // Cache for usernames to avoid duplicate queries
-        window.usernameCache = {};
+    // Cache for usernames to avoid duplicate queries
+    window.usernameCache = {};
 
-        window.tootsHome = function (count) {
-            return {
-                sql: `select
+    window.tootsHome = function (count) {
+      return {
+        sql: `select
                     id,
                     username,
                     display_name,
@@ -103,71 +104,84 @@
                 order by created_at desc
                 limit ${count}
               `}
+    }
+
+    window.formatDate = function (dateString) {
+      if (!dateString) return '';
+      try {
+        const date = new Date(dateString);
+        return date.toLocaleString();
+      } catch (e) {
+        return dateString || '';
+      }
+    }
+
+    window.formatShortDate = function (dateString) {
+      if (!dateString) return '';
+      try {
+        const date = new Date(dateString);
+        return date.toLocaleDateString();
+      } catch (e) {
+        return dateString || '';
+      }
+    }
+
+    window.getCount = function (obj, property) {
+      if (!obj || !property) return 0;
+      const value = obj[property];
+      if (value === undefined || value === null) return 0;
+
+      // Try to convert to number, return 0 if it fails
+      const num = parseInt(value, 10);
+      return isNaN(num) ? 0 : num;
+    }
+
+    // Function to look up a username from an account ID - used by tootsHome
+    window.lookupUsername = function (accountId) {
+      if (!accountId) return null;
+
+      // Return from cache if available
+      if (window.usernameCache[accountId]) {
+        return { username: window.usernameCache[accountId] };
+      }
+
+      return {
+        sql: `SELECT username FROM mastodon_account WHERE id = '${accountId}'`,
+        then: function (result) {
+          if (result && result.length > 0) {
+            // Store username in cache for future use
+            window.usernameCache[accountId] = result[0].username;
+            return { username: result[0].username };
+          }
+          return { username: null };
         }
+      };
+    }
 
-        window.formatDate = function(dateString) {
-            if (!dateString) return '';
-            try {
-                const date = new Date(dateString);
-                return date.toLocaleString();
-            } catch (e) {
-                return dateString || '';
-            }
-        }
+    window.followers = function () {
+      return {
+        sql: `select
+            f.account_id,
+            f.id,
+            f.acct,
+            f.created_at,
+            f.url,
+            f.instance_qualified_account_url,
+            f.username,
+            f.server,
+            f.display_name,
+            f.followers_count,
+            f.following_count,
+            f.statuses_count,
+            f.note
+        from followers f
+        order by f.created_at desc
+        `
+      }
+    }
 
-        window.getCount = function(obj, property) {
-            if (!obj || !property) return 0;
-            const value = obj[property];
-            if (value === undefined || value === null) return 0;
 
-            // Try to convert to number, return 0 if it fails
-            const num = parseInt(value, 10);
-            return isNaN(num) ? 0 : num;
-        }
-
-        // Function to look up a username from an account ID - used by tootsHome
-        window.lookupUsername = function(accountId) {
-            if (!accountId) return null;
-
-            // Return from cache if available
-            if (window.usernameCache[accountId]) {
-                return { username: window.usernameCache[accountId] };
-            }
-
-            return {
-                sql: `SELECT username FROM mastodon_account WHERE id = '${accountId}'`,
-                then: function(result) {
-                    if (result && result.length > 0) {
-                        // Store username in cache for future use
-                        window.usernameCache[accountId] = result[0].username;
-                        return { username: result[0].username };
-                    }
-                    return { username: null };
-                }
-            };
-        }
-
-        // Helper functions to open profile dialog
-        window.openUserProfile = function(itemId) {
-            // Find the item in the data
-            const items = document.querySelector('[data="{tootsHome}"]').__antmlData;
-            if (!items || !items.length) return;
-
-            const item = items.find(i => i.id === itemId);
-            if (!item) return;
-
-            // Open the dialog with profile info
-            const dialog = document.getElementById('userProfileDialog');
-            if (dialog && dialog.__antmlComponent && dialog.__antmlComponent.open) {
-                dialog.__antmlComponent.open({
-                    avatar_url: item.avatar_url,
-                    display_name: item.display_name,
-                    username: item.username
-                });
-            }
-        }
-
-    </script>
+  </script>
 </head>
 
 <body>

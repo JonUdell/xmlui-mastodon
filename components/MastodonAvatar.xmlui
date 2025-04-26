@@ -4,7 +4,7 @@
   <ModalDialog id="userProfileDialog" title="">
     <VStack gap="1rem">
       <!-- Header Image (only shown if available and not a placeholder) -->
-      <Fragment when="{$param.header_url && !$param.header_url.includes('/missing.png')}">
+      <Fragment when="{$param.header_url && !$param.header_url.includes('/missing.png')}">  
         <Image
           src="{$param.header_url}"
           alt="Profile header image"

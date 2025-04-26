@@ -4,7 +4,7 @@
     id="tootsHome"
     url="{ window.pipesQuery }"
     headers='{ {Authorization: "Bearer " + window.config.pipesToken, "content-type":"application/json" } }'
-    body="{ window.tootsHome(20) }"
+    body="{ window.tootsHome(40) }"
     resultSelector="items"
     method="POST"
   />

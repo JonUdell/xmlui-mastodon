@@ -1,0 +1,45 @@
+<Component name="Followers">
+
+  <DataSource
+    id="followers"
+    url="{ window.pipesQuery }"
+    headers='{ {Authorization: "Bearer " + window.config.pipesToken, "content-type":"application/json" } }'
+    body="{ window.followers() }"
+    resultSelector="items"
+    method="POST"
+  />
+
+  <VStack>
+
+    <Table
+      data="{followers}"
+    >
+    <Column header="" width="60px">
+      <MastodonAvatar
+        url="{$item.avatar_url}"
+        size="xs"
+        name="{$item.display_name || $item.username}"
+        item="{$item}"
+      />
+    </Column>
+    <Column header="Name" bindTo="display_name" canSort="true">
+      <Fragment when="{$item.instance_qualified_account_url}">
+        <Link to="{$item.instance_qualified_account_url}" target="_blank">
+          {$item.display_name || $item.username}
+        </Link>
+      </Fragment>
+    </Column>
+    <Column header="Username" bindTo="username" canSort="true">
+        @{$item.username}
+      </Column>
+      <Column header="Server" bindTo="server" canSort="true" />
+      <Column header="Followers" bindTo="followers_count" canSort="true" width="80px" />
+      <Column header="Following" bindTo="following_count" canSort="true" width="80px" />
+      <Column header="Posts" bindTo="statuses_count" canSort="true" width="80px" />
+      <Column header="Joined" bindTo="created_at" canSort="true">
+        {window.formatShortDate($item.created_at)}
+      </Column>
+    </Table>
+  </VStack>
+
+</Component>
