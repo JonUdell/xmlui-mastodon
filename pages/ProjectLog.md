@@ -667,3 +667,30 @@ where
 ```
 
 If this gets expensive we'll consider self-hosting. This could be done in sqlite with the steampipe extension, and https://github.com/jonudell/sqlite-server/ now supports that.
+
+
+
+
+
+ I've successfully refactored the code to use utility functions:
+
+  1. Added several window utility functions in index.html:
+    - getDisplayName() - Gets display name with fallback to username
+    - getReblogDisplayName() - Gets reblog display name with fallback to username
+    - getUsername() and getReblogUsername() - Get username values with empty string fallback
+    - getCreatedDate() and getReblogCreatedDate() - Format dates with proper fallbacks
+  2. Updated Home.xmlui to use these functions:
+    - Replaced all conditional expressions with function calls
+    - Made the code much cleaner and easier to read
+  3. Updated MastodonAvatar.xmlui to use the same functions:
+    - Refactored the dialog parameter setup into a more organized format
+    - Used the utility functions for all name and username access
+    - Added a new intermediate constant for dialog parameters to make the code clearer
+
+  The benefits of this approach:
+  - Much cleaner XMLUI markup without complex conditionals
+  - Centralized logic for handling falsy/null values
+  - Consistent handling of display names and usernames
+  - Easier to maintain as changes now only need to be made in one place
+  - Better separation of concerns between data handling and presentation
+

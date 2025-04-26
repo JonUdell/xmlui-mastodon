@@ -153,37 +153,37 @@
       const num = parseInt(value, 10);
       return isNaN(num) ? 0 : num;
     }
-    
+
     // Display name with fallback to username
     window.getDisplayName = function(item) {
       if (!item) return '';
       return item.display_name ? item.display_name : item.username || '';
     }
-    
+
     // Get reblog display name with fallback to username
     window.getReblogDisplayName = function(item) {
       if (!item) return '';
       return item.reblog_display_name ? item.reblog_display_name : item.reblog_username || '';
     }
-    
+
     // Get username with empty string fallback
     window.getUsername = function(item) {
       if (!item) return '';
       return item.username || '';
     }
-    
+
     // Get reblog username with empty string fallback
     window.getReblogUsername = function(item) {
       if (!item) return '';
       return item.reblog_username || '';
     }
-    
+
     // Get created date with fallback logic
     window.getCreatedDate = function(item) {
       if (!item) return '';
       return window.formatDate(item.created_at || '');
     }
-    
+
     // Get reblog created date with fallback to original created date
     window.getReblogCreatedDate = function(item) {
       if (!item) return '';
@@ -260,6 +260,108 @@
       }
     }
 
+    window.updateFollower = `
+        insert into follower (
+          _ctx,
+          account,
+          account_id,
+          acct,
+          created_at,
+          display_name,
+          followers_count,
+          following_count,
+          id,
+          instance_qualified_account_url,
+          note,
+          server,
+          sp_connection_name,
+          sp_ctx,
+          statuses_count,
+          url,
+          username
+        )
+        select
+          _ctx,
+          account,
+          account_id,
+          acct,
+          created_at,
+          display_name,
+          followers_count,
+          following_count,
+          id,
+          instance_qualified_account_url,
+          note,
+          server,
+          sp_connection_name,
+          sp_ctx,
+          statuses_count,
+          url,
+          username
+        from
+          mastodon_my_follower src
+        where
+          not exists (
+            select 1
+            from follower
+            where follower.id = src.id
+        );
+      `
+
+      window.countFollow = `
+        select count(*) from follow
+      `
+      window.updateFollow = `
+        insert into follow (
+          _ctx,
+          account,
+          account_id,
+          acct,
+          created_at,
+          display_name,
+          followers_count,
+          following_count,
+          id,
+          instance_qualified_account_url,
+          note,
+          server,
+          sp_connection_name,
+          sp_ctx,
+          statuses_count,
+          url,
+          username
+        )
+        select
+          _ctx,
+          account,
+          account_id,
+          acct,
+          created_at,
+          display_name,
+          followers_count,
+          following_count,
+          id,
+          instance_qualified_account_url,
+          note,
+          server,
+          sp_connection_name,
+          sp_ctx,
+          statuses_count,
+          url,
+          username
+        from
+          mastodon_my_following src
+        where
+          not exists (
+            select 1
+            from follow
+            where follow.id = src.id
+  );
+      `
+
+      window.countFollower = `
+        select count(*) from follower
+      `
 
   </script>
 </head>
