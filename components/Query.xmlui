@@ -53,33 +53,26 @@
 
       <h2>Canned queries</h2>
 
-<!--
       <QueryExample
-        title="Issues for xmlui"
-        example="example1"
+        title="updateFollow"
+        example="updateFollow"
       />
 
       <QueryExample
-        title="Commits for xmlui (local: sqlite cache of github via steampipe)"
-        example="example3"
+        title="countFollow"
+        example="countFollow"
       />
 
       <QueryExample
-        title="Commits for xmlui (remote: github via steampipe)"
-        example="example5"
+        title="updateFollower"
+        example="updateFollower"
       />
 
       <QueryExample
-        title="Commits for xmlui by day for person"
-        example="example2"
+        title="countFollower"
+        example="countFollower"
       />
 
-      <QueryExample
-        title="SQLite master"
-        example="example4"
-      />
-
- -->
 
      <Markdown><![CDATA[
       <details>

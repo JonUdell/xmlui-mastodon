@@ -1,0 +1,20 @@
+<Component name="QueryExample">
+
+<AppState id="appState" bucket="queryState" />
+
+  <HStack>
+      <Button
+        size="xs"
+        icon="chevronleft"
+        onClick="{
+          appState.update({
+            example: window[$props.example],
+            loading: true,
+            results: []
+          })
+        }"
+      />
+      <Text>{$props.title}</Text>
+  </HStack>
+
+</Component>
