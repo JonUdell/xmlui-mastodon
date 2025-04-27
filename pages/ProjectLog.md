@@ -3,6 +3,7 @@
 - [Purpose](#purpose)
 - [Setup](#setup)
 - [Rules for AI helpers](#rules-for-ai-helpers)
+- [Snapshot 20](#snapshot-20)
 - [Snapshot 19](#snapshot-19)
 - [Snapshot 18](#snapshot-18)
 - [Snapshot 17](#snapshot-17)
@@ -99,6 +100,112 @@ The [xmlui tool](https://github.com/jonudell/xmlui-mcp) enables them to read the
 8 never touch the dom. we only work within xmlui abstractions inside the <App> realm, with help from vars and functions defined on the window variable in index.html
 
 9 keep complex functions and expressions out of xmlui, they can live in index.html
+
+# Snapshot 20
+
+![snapshot20](../resources/snapshot20.png)
+
+We added indicators to the Followers and Following pages to show when the relationship is mutual, using the binding icon.
+
+The plugin provides a `mastodon_relationship` table that enables this:
+
+```
+select id, following, followed_by
+from mastodon_relationship
+where id in (
+  '114393904294335355',
+  '114326629840726666',
+  '109355200276248381',
+  '112899957037139169',
+  '114383723743324025',
+  '114406366261921876',
+  '109365395570899000',
+  '114326352694276997',
+  '114220333580006531',
+  '110064054202593701'
+);
+```
+
+It is infeasible to do that for 1000s of accounts. And there is no need because we are already have the local SQLite tables `follow` and `follower`. They were built like this:
+
+```
+create table follower as select * from mastodon_my_follower
+```
+
+Updates aren't yet automated but can be done manually in the SQL playground by clicking `updateFollow` and `updateFollowing`. This are quick operations and can be done on page load, we'll get to that later.
+
+To get the info for mutual indicators we join like this:
+
+```
+select
+  f.account_id,
+  f.id,
+  f.acct,
+  f.created_at,
+  f.url,
+  f.instance_qualified_account_url,
+  f.username,
+  f.server,
+  f.display_name,
+  f.followers_count,
+  f.following_count,
+  f.statuses_count,
+  f.note,
+  json_extract(f.account, '$.avatar') as avatar_url,
+  case when fl.id is not null then 1 else 0 end as mutual -- check the corresponding table for a match
+from follower f
+left join following fl on fl.id = f.id
+order by f.created_at desc
+```
+
+Here was the original XMLUI part of the solution:
+
+```
+<Column width="80px" header="Mutual" bindTo="mutual" canSort="true">
+  <Fragment when="{$item.mutual}">
+    <HStack width="100%" horizontalAlignment="center">
+      <Icon name="binding" />
+    </HStack>
+  </Fragment>
+</Column>
+```
+
+The Fragment only renders when there's a match, we leave the column empty otherwise.
+
+We then realized this shorthand is better.
+
+```
+<CHStack width="100%">
+  <Icon name="binding" />
+</CHStack>
+```
+
+The 100% width is still required, though. Why?
+
+> By default, a Stack (and its variants like HStack, CHStack) only grows as large as its children. It does not automatically expand to fill its parent’s width or height. This is why, if you want to center content (like an icon) within the full width of a parent, you must explicitly set width="100%" on the stack.
+
+Why not default to 100%?
+
+> It would force all stacks to fill their parent, which is not always desired and could break many layouts. The current default (shrink to fit children) is more flexible and predictable for most layout needs.
+
+@istvan / @gergo those statements were synthesized from the docs. When I asked for citations the answer was:
+
+
+> That conclusion is based on the following evidence.
+
+>Documentation Examples:
+> In the Stack documentation, every example that demonstrates centering or alignment across the full width explicitly sets width="100%" on the Stack. For example:
+> If width="100%" were the default, this explicit setting would not be necessary in every example.
+
+> Absence of Default Width in Props: The Stack documentation lists all properties and their defaults, but does not mention a default width of 100%. Instead, it only describes the width property as optional, implying that if not set, the Stack will size to its content.
+
+> General UI Layout Convention: Most UI layout engines (including CSS Flexbox, which XMLUI is conceptually similar to) default to “shrink to fit content” unless a width is specified. The documentation and examples are consistent with this convention.
+
+> No Contradictory Statement: Nowhere in the documentation does it state that Stack or its variants will fill the parent by default.
+
+> Summary: The evidence is indirect but clear: the need to always specify width="100%" in examples, and the lack of any mention of a default full-width behavior, together indicate that the default is to size to content.
+
+Should we add this to the docs? Six months ago I'd have said yes, absolutely. Now: maybe, but not a priority if we expect people to be using AI helpers that can figure these things out, and especially if those helpers have access via MCP not only to the docs but also to code and commentary like what we are building here.
 
 # Snapshot 19
 

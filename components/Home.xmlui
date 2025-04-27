@@ -10,6 +10,7 @@
     method="post"
     url="{window.query}"
     body="{{ sql: window.updateTootsHome }}"
+    errorNotificationMessage="${error.statusCode}, {JSON.stringify($error.details)}"
   />
 
 

@@ -5,6 +5,7 @@
     url="{ window.query }"
     body="{ window.followers() }"
     method="POST"
+    errorNotificationMessage="${error.statusCode}, {JSON.stringify($error.details)}"
   />
 
   <VStack>
@@ -19,6 +20,13 @@
         name="{$item.display_name || $item.username}"
         item="{$item}"
       />
+    </Column>
+    <Column width="80px" header="Mutual" bindTo="mutual" canSort="true">
+      <Fragment when="{$item.mutual}">
+        <CHStack width="100%">
+          <Icon name="binding" />
+        </CHStack>
+      </Fragment>
     </Column>
     <Column header="Name" bindTo="display_name" canSort="true">
       <Fragment when="{$item.instance_qualified_account_url}">

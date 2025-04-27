@@ -252,108 +252,49 @@
       };
     }
 
-    window.followers = function () {
+    // followers
+
+    window.createFollower = function(){
       return {
         sql: `
-          select
-            account_id,
-            id,
-            acct,
-            created_at,
-            url,
-            instance_qualified_account_url,
-            username,
-            server,
-            display_name,
-            followers_count,
-            following_count,
-            statuses_count,
-            note,
-            json_extract(account, '$.avatar') as avatar_url
-          from follower
-          order by created_at desc
+          create table follower as select * from mastodon_my_follower
         `
       }
     }
 
-    window.following = function () {
+    window.followers = function () {
       return {
         sql: `
           select
-            account_id,
-            id,
-            acct,
-            created_at,
-            url,
-            instance_qualified_account_url,
-            username,
-            server,
-            display_name,
-            followers_count,
-            following_count,
-            statuses_count,
-            note,
-            json_extract(account, '$.avatar') as avatar_url
-          from follow
-          order by created_at desc
+            f.account_id,
+            f.id,
+            f.acct,
+            f.created_at,
+            f.url,
+            f.instance_qualified_account_url,
+            f.username,
+            f.server,
+            f.display_name,
+            f.followers_count,
+            f.following_count,
+            f.statuses_count,
+            f.note,
+            json_extract(f.account, '$.avatar') as avatar_url,
+            case when fl.id is not null then 1 else 0 end as mutual
+          from follower f
+          left join following fl on fl.id = f.id
+          order by f.created_at desc
         `
       }
     }
 
     window.updateFollower = `
-        insert into follower (
-          _ctx,
-          account,
-          account_id,
-          acct,
-          created_at,
-          display_name,
-          followers_count,
-          following_count,
-          id,
-          instance_qualified_account_url,
-          note,
-          server,
-          sp_connection_name,
-          sp_ctx,
-          statuses_count,
-          url,
-          username
-        )
-        select
-          _ctx,
-          account,
-          account_id,
-          acct,
-          created_at,
-          display_name,
-          followers_count,
-          following_count,
-          id,
-          instance_qualified_account_url,
-          note,
-          server,
-          sp_connection_name,
-          sp_ctx,
-          statuses_count,
-          url,
-          username
-        from
-          mastodon_my_follower src
-        where
-          not exists (
-            select 1
-            from follower
-            where follower.id = src.id
-        );
-      `
-
-    window.countFollow = `
-      select count(*) from follow
-    `
-
-    window.updateFollow = `
-      insert into follow (
+      with limited_followers as (
+        select *
+        from mastodon_my_follower
+        limit 20
+      )
+      insert into follower (
         _ctx,
         account,
         account_id,
@@ -390,23 +331,111 @@
         statuses_count,
         url,
         username
-      from
-        mastodon_my_following src
-      where
-        not exists (
-          select 1
-          from follow
-          where follow.id = src.id
-);
-    `
+      from limited_followers src
+      where not exists (
+        select 1
+        from follower
+        where follower.id = src.id
+      );
+      `
 
     window.countFollower = `
       select count(*) from follower
     `
 
-    window.countTootsHome = `
-      select count(*) from toots_home
+
+    // following
+
+    window.createFollowing = function(){
+      return {
+        sql: `
+          create table following as select * from mastodon_my_following
+        `
+      }
+    }
+
+    window.following = function () {
+      return {
+        sql: `
+        select
+          f.account_id,
+          f.id,
+          f.acct,
+          f.created_at,
+          f.url,
+          f.instance_qualified_account_url,
+          f.username,
+          f.server,
+          f.display_name,
+          f.followers_count,
+          f.following_count,
+          f.statuses_count,
+          f.note,
+          json_extract(f.account, '$.avatar') as avatar_url,
+          case when fl.id is not null then 1 else 0 end as mutual
+        from following f
+        left join follower fl on fl.id = f.id
+        order by f.created_at desc
+        `
+      }
+    }
+
+    window.updateFollowing = `
+      with limited_following as (
+        select *
+        from mastodon_my_following
+        limit 20
+      )
+      insert into following (
+        _ctx,
+        account,
+        account_id,
+        acct,
+        created_at,
+        display_name,
+        followers_count,
+        following_count,
+        id,
+        instance_qualified_account_url,
+        note,
+        server,
+        sp_connection_name,
+        sp_ctx,
+        statuses_count,
+        url,
+        username
+      )
+      select
+        _ctx,
+        account,
+        account_id,
+        acct,
+        created_at,
+        display_name,
+        followers_count,
+        following_count,
+        id,
+        instance_qualified_account_url,
+        note,
+        server,
+        sp_connection_name,
+        sp_ctx,
+        statuses_count,
+        url,
+        username
+      from limited_following src
+      where not exists (
+        select 1
+        from following
+        where following.id = src.id
+      );
+      `
+
+    window.countFollowing = `
+      select count(*) from following
     `
+
+    // home
 
     window.createTootsHome = `
       create table toots_home (
@@ -446,6 +475,9 @@
       select * from mastodon_toot_home
       order by created_at desc
       limit 40;
+    `
+    window.countTootsHome = `
+      select count(*) from toots_home
     `
 
   </script>

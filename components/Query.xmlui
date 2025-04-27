@@ -52,21 +52,26 @@
 
     <VStack width="50%">
 
-      <h2>Canned queries</h2>
+      <h2>Queries</h2>
 
       <QueryExample
-        title="updateFollow"
-        example="updateFollow"
+        title="createFollowing"
+        example="createFollowing"
       />
 
       <QueryExample
-        title="countFollow"
-        example="countFollow"
+        title="countFollowing"
+        example="countFollowing"
       />
 
       <QueryExample
-        title="updateFollower"
-        example="updateFollower"
+        title="updateFollowing"
+        example="updateFollowing"
+      />
+
+      <QueryExample
+        title="createFollower"
+        example="createFollower"
       />
 
       <QueryExample
@@ -75,13 +80,18 @@
       />
 
       <QueryExample
-        title="countTootsHome"
-        example="countTootsHome"
+        title="updateFollower"
+        example="updateFollower"
       />
 
       <QueryExample
         title="createTootsHome"
         example="createTootsHome"
+      />
+
+      <QueryExample
+        title="countTootsHome"
+        example="countTootsHome"
       />
 
       <QueryExample
