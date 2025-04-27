@@ -28,6 +28,24 @@
     completedNotificationMessage="tootsHome called"
   />
 
+  <!-- Test lookupAccount -->
+  <DataSource
+    id="testAccount"
+    url="{ window.query }"
+    method="POST"
+    body="{ window.lookupAccount('112844462759994990') }"
+    onLoaded="(data) => {
+      if (data && data.length > 0 && data[0].username) {
+        window.accountCache['112844462759994990'] = data[0];
+      }
+    }"
+    completedNotificationMessage="lookupAccount test"
+  >
+    <Text>Account info: {testAccount.value && testAccount.value.length > 0 && testAccount.value[0].username ? JSON.stringify(testAccount.value[0]) : 'Loading...'}</Text>
+  </DataSource>
+
+  <Text>accountCache: { JSON.stringify(window.accountCache) } </Text>
+
   <VStack>
 
     <HStack>

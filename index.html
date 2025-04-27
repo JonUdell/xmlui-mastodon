@@ -49,6 +49,21 @@
     // Cache for usernames to avoid duplicate queries
     window.usernameCache = {};
 
+    // Cache for account info to avoid duplicate queries
+    window.accountCache = {};
+
+    // Function to look up account info from an account ID
+    window.lookupAccount = function (accountId) {
+      // Return from cache if available
+      if (window.accountCache[accountId]) {
+        return { sql: 'select 1' };
+      }
+
+      return {
+        sql: `select id, username, display_name, url from mastodon_account where id = '${accountId}'`
+      };
+    }
+
     window.tootsHome = function (count) {
       return {
         sql: `
