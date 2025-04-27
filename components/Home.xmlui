@@ -16,9 +16,13 @@
 
     <HStack>
 
-      <Icon name="cog" size="md" onClick="settingsDialog.open()" style="cursor:pointer" />
-
       <VStack>
+        <Icon name="cog" size="md" onClick="settingsDialog.open()" style="cursor:pointer" />
+      </VStack>
+
+      <SpaceFiller/>
+
+      <VStack width="90%" maxWidth="90vw" marginRight="$space-4">
         <ModalDialog id="settingsDialog" title="Settings">
           <Tools />
         </ModalDialog>
