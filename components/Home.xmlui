@@ -17,7 +17,7 @@
   <DataSource
     id="tootsHome"
     url="{ window.query }"
-    body="{ window.tootsHome(100) }"
+    body="{ window.tootsHome(50) }"
     method="POST"
     onLoaded="
     if (!initialLoadState.value.loaded) {

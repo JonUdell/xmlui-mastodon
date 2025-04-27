@@ -94,6 +94,7 @@
                 created_at,
                 url,
                 instance_qualified_url,
+                instance_qualified_account_url,
                 status,
                 reblog,
                 json_extract(status, '$.content') as content,
@@ -156,7 +157,8 @@
                 case
                   when reblog is not null then json_extract(reblog, '$.media_attachments[0].preview_url')
                   else null
-                end as reblog_preview_url
+                end as reblog_preview_url,
+            instance_qualified_account_url
             from mastodon_toot_home
             order by created_at desc
             limit ${count}

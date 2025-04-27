@@ -28,7 +28,7 @@
         <Text variant="caption">@{window.getUsername($param)}</Text>
 
         <!-- Stats -->
-        <HStack marginTop="0.5rem" justifyContent="center">
+        <HStack marginTop="0.5rem">
           <VStack gap="0" alignItems="center">
             <Text variant="strong">{$param.followers_count || 0}</Text>
             <Text variant="caption">Followers</Text>
@@ -44,7 +44,7 @@
         </HStack>
 
         <!-- Profile Bio -->
-        <Card padding="$space-1" marginTop="0.5rem">
+        <Card padding="$space-1" marginTop="1rem">
           <Fragment when="{$param.note}">
             <Markdown content="{$param.note}" />
           </Fragment>
@@ -53,18 +53,20 @@
           </Fragment>
         </Card>
 
-        <!-- Join Date -->
-        <HStack gap="0.5rem" alignItems="center" justifyContent="center" marginTop="0.5rem">
-          <Icon name="calendar" size="sm" />
-          <Text variant="caption">Joined {window.formatDate($param.created_at)}</Text>
-        </HStack>
+        <Text marginTop="1rem" variant="caption">Joined {window.formatDate($param.created_at)}</Text>
 
-        <!-- Profile Link -->
-        <HStack justifyContent="center" marginTop="0.5rem">
-          <Link url="{$param.url}" target="_blank">
-            <Button label="View on Mastodon" />
-          </Link>
-        </HStack>
+        <!--
+        <Text preserveLinebreaks="true">{JSON.stringify($param, null, 2)}</Text>
+        -->
+
+        <Fragment when="{$param.url}">
+          <!-- Profile Link -->
+          <HStack marginTop="1rem">
+            <Link to="{$param.url}" target="_blank">
+              <Button size="xs" label="View on Mastodon" />
+            </Link>
+          </HStack>
+        </Fragment>
       </VStack>
     </VStack>
   </ModalDialog>
@@ -87,9 +89,9 @@
         followers_count: $props.item.reblog_followers_count,
         following_count: $props.item.reblog_following_count,
         statuses_count: $props.item.reblog_statuses_count,
-        url: $props.item.reblog_account_url || '',
+        url: null,
         created_at: $props.item.reblog_created_at || ''
-      } : {
+        } : {
         avatar_url: $props.item.avatar_url,
         display_name: window.getDisplayName($props.item),
         username: window.getUsername($props.item),
@@ -98,7 +100,7 @@
         followers_count: $props.item.followers_count,
         following_count: $props.item.following_count,
         statuses_count: $props.item.statuses_count,
-        url: $props.item.url,
+        url: $props.item.instance_qualified_account_url,
         created_at: $props.item.created_at
       })
     }"
