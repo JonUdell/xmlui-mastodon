@@ -10,7 +10,6 @@
     method="post"
     url="{window.query}"
     body="{{ sql: window.updateTootsHome }}"
-    completedNotificationMessage="updateTootsHome called"
   />
 
 
@@ -25,10 +24,9 @@
       updateTootsHome.execute()
     }
   "
-    completedNotificationMessage="tootsHome called"
   />
 
-  <!-- Test lookupAccount -->
+  <!--
   <DataSource
     id="testAccount"
     url="{ window.query }"
@@ -45,6 +43,7 @@
   </DataSource>
 
   <Text>accountCache: { JSON.stringify(window.accountCache) } </Text>
+  -->
 
   <VStack>
 
@@ -70,14 +69,22 @@
             <!-- Regular Post Display -->
             <Fragment when="{!$item.reblog}">
               <!-- Reply indicator if this is a reply -->
-              <Fragment when="{$item.in_reply_to_id != null}">
-                <HStack gap="0.5rem">
-                  <CHStack border="1px solid $color-surface-300" borderRadius="50%" width="1.4rem"
-                    height="1.4rem">
-                    <Icon name="reply" size="sm" />
-                  </CHStack>
-                  <Text variant="caption">Replying to @{$item.in_reply_to_account_id}</Text>
-                </HStack>
+              <Fragment when="{$item.in_reply_to_account_id}">
+                <DataSource
+                  id="replyAccount-{$item.id}"
+                  url="{window.query}"
+                  method="POST"
+                  body="{window.lookupAccount($item.in_reply_to_account_id)}"
+                  onLoaded="(data) => {
+                    if (data && data.length > 0 && data[0].username) {
+                      window.accountCache[$item.in_reply_to_account_id] = data[0];
+                    }
+                  }"
+                >
+                  <Text>
+                    Replying to: {replyAccount-{$item.id}.value && replyAccount-{$item.id}.value.length > 0 ? replyAccount-{$item.id}.value[0].display_name + ' (@' + replyAccount-{$item.id}.value[0].username + ')' : '...'}
+                  </Text>
+                </DataSource>
               </Fragment>
 
               <HStack>

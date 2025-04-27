@@ -3,6 +3,7 @@
 - [Purpose](#purpose)
 - [Setup](#setup)
 - [Rules for AI helpers](#rules-for-ai-helpers)
+- [Snapshot 19](#snapshot-19)
 - [Snapshot 18](#snapshot-18)
 - [Snapshot 17](#snapshot-17)
 - [Snapshot 16](#snapshot-16)
@@ -98,6 +99,38 @@ The [xmlui tool](https://github.com/jonudell/xmlui-mcp) enables them to read the
 8 never touch the dom. we only work within xmlui abstractions inside the <App> realm, with help from vars and functions defined on the window variable in index.html
 
 9 keep complex functions and expressions out of xmlui, they can live in index.html
+
+# Snapshot 19
+
+![snapshot19](../resources/snapshot19.png)
+
+**Upshot:**
+Display the display name and username of the account being replied to, for each toot that is a reply, using a cache-aware lookup and dynamic DataSource in XMLUI.
+
+**Challenge:**
+`mastodon_toot_home` only includes the `in_reply_to_account_id` for replies, not the full account details (such as display name, username, or avatar) of the account being replied to. We can join with `mastodon_account` but its tricky because all the mastodon toot tables are infinite, you have to limit to a subset in order to join against them. We can do that Postgres with materialized CTEs but discovered that won't work in SQLite, it just runs out of memory. That's what motivated the accumulator built in snapshot 17: it's a permanent construct with toot history that we can safely join against.
+
+**Surprise:**
+
+As it turns out, while we are glad to be accumulating everything in `toots_home`, we did *not* need it to solve this problem. When we see a replied-to id in the stream we can make a live call to `mastodon_account` to enrich it. Could be expensive but a) replies are rare, boosts (reblogs) much more common, and b) those lookups can be cached in a window var.
+
+**Steps Completed:**
+
+- Implemented a `lookupAccount` function in `index.html` that returns a harmless SQL query if the account is already cached, and otherwise queries the `mastodon_account` table.
+
+- Ensured the cache is only updated with real account data (not the result of `select 1`).
+
+- Added a test `DataSource` in `components/Home.xmlui` to verify the lookup and caching logic for a specific account.
+
+- Confirmed that the cache now holds the correct account data after a successful lookup.
+
+- Integrated a dynamic `DataSource` inside the `Items` loop (within a `Fragment` for replies) to look up and display the replied-to account's display name and username for each reply.
+
+- Discussed and handled linter warnings related to JS expressions in XMLUI attributes.
+
+**Notes:**
+- Among other things, this demonstrates that a DataSource can be safely used inside a Fragment for per-item dynamic data fetching.
+
 
 # Snapshot 18
 
