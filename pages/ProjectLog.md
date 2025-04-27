@@ -3,6 +3,7 @@
 - [Purpose](#purpose)
 - [Setup](#setup)
 - [Rules for AI helpers](#rules-for-ai-helpers)
+- [Snapshot 17](#snapshot-17)
 - [Snapshot 16](#snapshot-16)
 - [Snapshot 15](#snapshot-15)
 - [Snapshot 14](#snapshot-14)
@@ -96,6 +97,31 @@ The [xmlui tool](https://github.com/jonudell/xmlui-mcp) enables them to read the
 8 never touch the dom. we only work within xmlui abstractions inside the <App> realm, with help from vars and functions defined on the window variable in index.html
 
 9 keep complex functions and expressions out of xmlui, they can live in index.html
+
+# Snapshot 17
+
+![snapshot17](../resources/snapshot17.png)
+
+- Implemented responsive layout structure with flexible spacing
+- Main content area constrained to 90% viewport width with natural margins
+- Settings icon anchored left with SpaceFiller creating dynamic spacing
+- Image scaling now works predictably within constrained content area
+- Layout maintains proper proportions across different screen sizes
+
+Key components:
+```
+<VStack>
+  <HStack>
+    <VStack> <Icon/> </VStack>
+    <SpaceFiller/>
+    <VStack width="90%" maxWidth="90vw">
+      <Items>...</Items>
+    </VStack>
+  </HStack>
+</VStack>
+```
+
+The layout now uses relative units and flexible spacing to create a responsive design that works well across different screen sizes. The content area is constrained to 90% of the viewport width, preventing overly wide content while maintaining readability. Images scale proportionally within this constrained space, controlled by the zoom slider.
 
 # Snapshot 16
 
@@ -736,3 +762,48 @@ We've created a basic Mastodon home timeline viewer that displays toots with pro
 - Created proper links to view posts on Mastodon using instance-qualified URLs when available
 - Formatted dates for better readability
 - We aim to follow the <a href="https://blog.jonudell.net/2022/12/17/a-bloomberg-terminal-for-mastodon/">Bloomberg terminal for Mastodon</a> design philosophy with high information density
+
+# Project Log
+
+## Table of Contents
+
+1. [Snapshot 1: Basic app structure](#snapshot-1-basic-app-structure)
+2. [Snapshot 2: Query and display toots](#snapshot-2-query-and-display-toots)
+3. [Snapshot 3: Improved toot display](#snapshot-3-improved-toot-display)
+4. [Snapshot 4: Markdown and image support](#snapshot-4-markdown-and-image-support)
+5. [Snapshot 5: Improved layout](#snapshot-5-improved-layout)
+6. [Snapshot 6: Improved layout and styling](#snapshot-6-improved-layout-and-styling)
+7. [Snapshot 7: Improved layout and styling](#snapshot-7-improved-layout-and-styling)
+8. [Snapshot 8: Improved layout and styling](#snapshot-8-improved-layout-and-styling)
+9. [Snapshot 9: Improved layout and styling](#snapshot-9-improved-layout-and-styling)
+10. [Snapshot 10: Improved layout and styling](#snapshot-10-improved-layout-and-styling)
+11. [Snapshot 11: Improved layout and styling](#snapshot-11-improved-layout-and-styling)
+12. [Snapshot 12: Improved layout and styling](#snapshot-12-improved-layout-and-styling)
+13. [Snapshot 13: Improved layout and styling](#snapshot-13-improved-layout-and-styling)
+14. [Snapshot 14: Improved layout and styling](#snapshot-14-improved-layout-and-styling)
+15. [Snapshot 15: Improved layout and styling](#snapshot-15-improved-layout-and-styling)
+16. [Snapshot 16: Improved layout and styling](#snapshot-16-improved-layout-and-styling)
+17. [Snapshot 17: Layout improvements - responsive content width and image scaling](#snapshot-17-layout-improvements---responsive-content-width-and-image-scaling)
+
+## Snapshot 17: Layout improvements - responsive content width and image scaling
+
+- Implemented responsive layout structure with flexible spacing
+- Main content area constrained to 90% viewport width with natural margins
+- Settings icon anchored left with SpaceFiller creating dynamic spacing
+- Image scaling now works predictably within constrained content area
+- Layout maintains proper proportions across different screen sizes
+
+Key components:
+```
+<VStack>
+  <HStack>
+    <VStack> <Icon/> </VStack>
+    <SpaceFiller/>
+    <VStack width="90%" maxWidth="90vw">
+      <Items>...</Items>
+    </VStack>
+  </HStack>
+</VStack>
+```
+
+The layout now uses relative units and flexible spacing to create a responsive design that works well across different screen sizes. The content area is constrained to 90% of the viewport width, preventing overly wide content while maintaining readability. Images scale proportionally within this constrained space, controlled by the zoom slider.

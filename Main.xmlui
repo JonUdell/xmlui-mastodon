@@ -30,7 +30,7 @@
     <NavLink label="ProjectLog" to="/projectLog" icon="doc-outline" />
   </NavPanel>
 
-  <Pages inspect="true">
+  <Pages >
 
     <Page url="/">
       <Home />

@@ -23,7 +23,11 @@
       <SpaceFiller/>
 
       <VStack width="90%" maxWidth="90vw" marginRight="$space-4">
-        <ModalDialog id="settingsDialog" title="Settings">
+        <ModalDialog
+          id="settingsDialog"
+          title="Settings"
+          width="50%"
+        >
           <Tools />
         </ModalDialog>
 
