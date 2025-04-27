@@ -3,6 +3,7 @@
 - [Purpose](#purpose)
 - [Setup](#setup)
 - [Rules for AI helpers](#rules-for-ai-helpers)
+- [Snapshot 18](#snapshot-18)
 - [Snapshot 17](#snapshot-17)
 - [Snapshot 16](#snapshot-16)
 - [Snapshot 15](#snapshot-15)
@@ -97,6 +98,109 @@ The [xmlui tool](https://github.com/jonudell/xmlui-mcp) enables them to read the
 8 never touch the dom. we only work within xmlui abstractions inside the <App> realm, with help from vars and functions defined on the window variable in index.html
 
 9 keep complex functions and expressions out of xmlui, they can live in index.html
+
+# Snapshot 18
+
+![snapshot18](../resources/snapshot18.png)
+
+In this iteration, we implemented an accumulator pattern to solve the challenge of getting usernames and avatars for replied-to users. This journey started with a simple goal but led to a more powerful architectural pattern.
+
+Initially, we were displaying reply indicators with just the account ID:
+```xml
+<Fragment when="{$item.in_reply_to_id != null}">
+  <HStack gap="0.5rem">
+    <CHStack border="1px solid $color-surface-300" borderRadius="50%" width="1.4rem" height="1.4rem">
+      <Icon name="reply" size="sm" />
+    </CHStack>
+    <Text variant="caption">Replying to @{$item.in_reply_to_account_id}</Text>
+  </HStack>
+</Fragment>
+```
+
+We wanted to enhance this by showing the actual username and avatar of the person being replied to. Initially, we tried to join with the `mastodon_account` table, and found a solution that worked in PostgreSQL using materialized CTEs. However, when we tried to use this in SQLite (for local development), we discovered that SQLite doesn't support materialized CTEs.
+
+This limitation led us to create an accumulator pattern. Instead of trying to join tables in real-time, we decided to accumulate the data we need in a local SQLite table. The key components of this solution are:
+
+1. First, we created a `toots_home` table with a comprehensive schema cloned from `mastodon_toot_home`:
+
+```sql
+create table toots_home (
+  _ctx text,
+  account text,
+  account_id text,
+  account_url text,
+  content text,
+  created_at text,
+  display_name text,
+  followers integer,
+  following integer,
+  id text primary key,
+  in_reply_to_account_id text,
+  instance_qualified_account_url text,
+  instance_qualified_reblog_url text,
+  instance_qualified_url text,
+  list_id text,
+  query text,
+  reblog text,
+  reblog_content text,
+  reblog_server text,
+  reblog_username text,
+  reblogs_count integer,
+  replies_count integer,
+  server text,
+  sp_connection_name text,
+  sp_ctx text,
+  status text,
+  url text,
+  username text
+)
+```
+
+2. Then we implemented an `updateTootsHome` function that accumulates data:
+
+```sql
+insert or ignore into toots_home
+select * from mastodon_toot_home
+order by created_at desc
+limit 40;
+```
+
+3. We integrated this with the UI using an `APICall` component and an `AppState` to control when it runs:
+
+```xml
+<AppState id="initialLoadState" bucket="initialLoad" initialValue="{ { loaded: false } }" />
+
+<APICall
+  id="updateTootsHome"
+  method="post"
+  url="{window.query}"
+  body="{{ sql: window.updateTootsHome }}"
+  completedNotificationMessage="updateTootsHome called"
+/>
+
+<DataSource
+  id="tootsHome"
+  url="{ window.query }"
+  body="{ window.tootsHome(40) }"
+  method="POST"
+  onLoaded="
+  if (!initialLoadState.value.loaded) {
+    initialLoadState.update({ loaded: true });
+    updateTootsHome.execute()
+  }
+"
+  completedNotificationMessage="tootsHome called"
+/>
+```
+
+The implementation uses a semaphore pattern with `initialLoadState` to ensure we only accumulate data once per page load, preventing reactivity loops. This is a clean solution that maintains the app's performance while building up a local cache of data.
+
+This accumulator pattern is valuable beyond just getting reply usernames - it means we'll be able to search everything we've ever loaded.
+
+Next steps will include:
+- Implementing the reply username and avatar display using the accumulated data
+- Adding search functionality over the accumulated data
+- Potentially extending the pattern to other areas where we need to maintain historical data
 
 # Snapshot 17
 
