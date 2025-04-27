@@ -1,25 +1,32 @@
 <Component name="Home"
   var.imageZoom="{20}"
 >
+  <AppState id="initialLoadState" bucket="initialLoad" initialValue="{ { loaded: false } }" />
 
   <AppState id="toolsState" bucket="toolsState" initialValue="{ { zoom: 20 } }" />
-
 
   <APICall
     id="updateTootsHome"
     method="post"
     url="{window.query}"
     body="{{ sql: window.updateTootsHome }}"
+    completedNotificationMessage="updateTootsHome called"
   />
+
 
   <DataSource
     id="tootsHome"
     url="{ window.query }"
     body="{ window.tootsHome(40) }"
     method="POST"
-    onLoaded="{ updateTootsHome.execute() }"
+    onLoaded="
+    if (!initialLoadState.value.loaded) {
+      initialLoadState.update({ loaded: true });
+      updateTootsHome.execute()
+    }
+  "
+    completedNotificationMessage="tootsHome called"
   />
-
 
   <VStack>
 

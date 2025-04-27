@@ -313,106 +313,105 @@
         );
       `
 
-      window.countFollow = `
-        select count(*) from follow
-      `
-      window.updateFollow = `
-        insert into follow (
-          _ctx,
-          account,
-          account_id,
-          acct,
-          created_at,
-          display_name,
-          followers_count,
-          following_count,
-          id,
-          instance_qualified_account_url,
-          note,
-          server,
-          sp_connection_name,
-          sp_ctx,
-          statuses_count,
-          url,
-          username
-        )
-        select
-          _ctx,
-          account,
-          account_id,
-          acct,
-          created_at,
-          display_name,
-          followers_count,
-          following_count,
-          id,
-          instance_qualified_account_url,
-          note,
-          server,
-          sp_connection_name,
-          sp_ctx,
-          statuses_count,
-          url,
-          username
-        from
-          mastodon_my_following src
-        where
-          not exists (
-            select 1
-            from follow
-            where follow.id = src.id
-  );
-      `
+    window.countFollow = `
+      select count(*) from follow
+    `
 
-      window.countFollower = `
-        select count(*) from follower
-      `
+    window.updateFollow = `
+      insert into follow (
+        _ctx,
+        account,
+        account_id,
+        acct,
+        created_at,
+        display_name,
+        followers_count,
+        following_count,
+        id,
+        instance_qualified_account_url,
+        note,
+        server,
+        sp_connection_name,
+        sp_ctx,
+        statuses_count,
+        url,
+        username
+      )
+      select
+        _ctx,
+        account,
+        account_id,
+        acct,
+        created_at,
+        display_name,
+        followers_count,
+        following_count,
+        id,
+        instance_qualified_account_url,
+        note,
+        server,
+        sp_connection_name,
+        sp_ctx,
+        statuses_count,
+        url,
+        username
+      from
+        mastodon_my_following src
+      where
+        not exists (
+          select 1
+          from follow
+          where follow.id = src.id
+);
+    `
 
-      window.countTootsHome = `
-        select count(*) from toots_home
-      `
+    window.countFollower = `
+      select count(*) from follower
+    `
 
-      window.createTootsHome = `
-        create table toots_home (
-          _ctx text,
-          account text,
-          account_id text,
-          account_url text,
-          content text,
-          created_at text,
-          display_name text,
-          followers integer,
-          following integer,
-          id text primary key,
-          in_reply_to_account_id text,
-          instance_qualified_account_url text,
-          instance_qualified_reblog_url text,
-          instance_qualified_url text,
-          list_id text,
-          query text,
-          reblog text,
-          reblog_content text,
-          reblog_server text,
-          reblog_username text,
-          reblogs_count integer,
-          replies_count integer,
-          server text,
-          sp_connection_name text,
-          sp_ctx text,
-          status text,
-          url text,
-          username text
-        )
-      `
+    window.countTootsHome = `
+      select count(*) from toots_home
+    `
 
-      window.updateTootsHome = `
-        insert or ignore into toots_home
-        select * from mastodon_toot_home
-        order by created_at desc
-        limit 40;
-      `
+    window.createTootsHome = `
+      create table toots_home (
+        _ctx text,
+        account text,
+        account_id text,
+        account_url text,
+        content text,
+        created_at text,
+        display_name text,
+        followers integer,
+        following integer,
+        id text primary key,
+        in_reply_to_account_id text,
+        instance_qualified_account_url text,
+        instance_qualified_reblog_url text,
+        instance_qualified_url text,
+        list_id text,
+        query text,
+        reblog text,
+        reblog_content text,
+        reblog_server text,
+        reblog_username text,
+        reblogs_count integer,
+        replies_count integer,
+        server text,
+        sp_connection_name text,
+        sp_ctx text,
+        status text,
+        url text,
+        username text
+      )
+    `
 
-
+    window.updateTootsHome = `
+      insert or ignore into toots_home
+      select * from mastodon_toot_home
+      order by created_at desc
+      limit 40;
+    `
 
   </script>
 </head>
