@@ -3,26 +3,26 @@
 - [Purpose](#purpose)
 - [Setup](#setup)
 - [Rules for AI helpers](#rules-for-ai-helpers)
-- [Snapshot 20](#snapshot-20)
-- [Snapshot 19](#snapshot-19)
-- [Snapshot 18](#snapshot-18)
-- [Snapshot 17](#snapshot-17)
-- [Snapshot 16](#snapshot-16)
-- [Snapshot 15](#snapshot-15)
-- [Snapshot 14](#snapshot-14)
-- [Snapshot 13](#snapshot-13)
-- [Snapshot 12](#snapshot-12)
-- [Snapshot 11](#snapshot-11)
-- [Snapshot 10](#snapshot-10)
-- [Snapshot 9](#snapshot-9)
-- [Snapshot 8](#snapshot-8)
-- [Snapshot 7](#snapshot-7)
-- [Snapshot 6](#snapshot-6)
-- [Snapshot 5](#snapshot-5)
-- [Snapshot 4](#snapshot-4)
-- [Snapshot 3](#snapshot-3)
-- [Snapshot 2](#snapshot-2)
-- [Snapshot 1](#snapshot-1)
+- [Snapshot 20: add mutual indicators to Followers and Following](#snapshot-20-add-mutual-indicators-to-followers-and-following)
+- [Snapshot 19: show replied-to account display name and username in toots](#snapshot-19-show-replied-to-account-display-name-and-username-in-toots)
+- [Snapshot 18: implement accumulator pattern for reply usernames/avatars](#snapshot-18-implement-accumulator-pattern-for-reply-usernamesavatars)
+- [Snapshot 17: responsive layout, flexible spacing, image scaling](#snapshot-17-responsive-layout-flexible-spacing-image-scaling)
+- [Snapshot 16: disable query buttons while loading](#snapshot-16-disable-query-buttons-while-loading)
+- [Snapshot 15: reverse log order, newest snapshot first](#snapshot-15-reverse-log-order-newest-snapshot-first)
+- [Snapshot 14: modularize image zoom, add settings modal](#snapshot-14-modularize-image-zoom-add-settings-modal)
+- [Snapshot 13: add image zoom slider for posts/reblogs](#snapshot-13-add-image-zoom-slider-for-postsreblogs)
+- [Snapshot 12: add images to posts and reblogs](#snapshot-12-add-images-to-posts-and-reblogs)
+- [Snapshot 11: add utility functions for display names, usernames, dates](#snapshot-11-add-utility-functions-for-display-names-usernames-dates)
+- [Snapshot 10: add Followers page, column widths, sorting](#snapshot-10-add-followers-page-column-widths-sorting)
+- [Snapshot 9: refactor Avatar to MastodonAvatar, move ModalDialog](#snapshot-9-refactor-avatar-to-mastodonavatar-move-modaldialog)
+- [Snapshot 8: enhance user profile modal, component-based styling](#snapshot-8-enhance-user-profile-modal-component-based-styling)
+- [Snapshot 7: refine icon semantics, use CHStack for icon layout](#snapshot-7-refine-icon-semantics-use-chstack-for-icon-layout)
+- [Snapshot 6: redesign reblog display, add profile modal](#snapshot-6-redesign-reblog-display-add-profile-modal)
+- [Snapshot 5: reduce avatar size for information density](#snapshot-5-reduce-avatar-size-for-information-density)
+- [Snapshot 4: add avatars, switch to Avatar component](#snapshot-4-add-avatars-switch-to-avatar-component)
+- [Snapshot 3: improve reblog display, hierarchy, formatting](#snapshot-3-improve-reblog-display-hierarchy-formatting)
+- [Snapshot 2: improve timeline display, optimize queries](#snapshot-2-improve-timeline-display-optimize-queries)
+- [Snapshot 1: basic Mastodon home timeline viewer](#snapshot-1-basic-mastodon-home-timeline-viewer)
 
 # Purpose
 
@@ -101,7 +101,7 @@ The [xmlui tool](https://github.com/jonudell/xmlui-mcp) enables them to read the
 
 9 keep complex functions and expressions out of xmlui, they can live in index.html
 
-# Snapshot 20
+# Snapshot 20: add mutual indicators to Followers and Following
 
 ![snapshot20](../resources/snapshot20.png)
 
@@ -182,7 +182,7 @@ We then realized this shorthand is better.
 
 The 100% width is still required, though. Why?
 
-> By default, a Stack (and its variants like HStack, CHStack) only grows as large as its children. It does not automatically expand to fill its parent’s width or height. This is why, if you want to center content (like an icon) within the full width of a parent, you must explicitly set width="100%" on the stack.
+> By default, a Stack (and its variants like HStack, CHStack) only grows as large as its children. It does not automatically expand to fill its parent's width or height. This is why, if you want to center content (like an icon) within the full width of a parent, you must explicitly set width="100%" on the stack.
 
 Why not default to 100%?
 
@@ -199,7 +199,7 @@ Why not default to 100%?
 
 > Absence of Default Width in Props: The Stack documentation lists all properties and their defaults, but does not mention a default width of 100%. Instead, it only describes the width property as optional, implying that if not set, the Stack will size to its content.
 
-> General UI Layout Convention: Most UI layout engines (including CSS Flexbox, which XMLUI is conceptually similar to) default to “shrink to fit content” unless a width is specified. The documentation and examples are consistent with this convention.
+> General UI Layout Convention: Most UI layout engines (including CSS Flexbox, which XMLUI is conceptually similar to) default to "shrink to fit content" unless a width is specified. The documentation and examples are consistent with this convention.
 
 > No Contradictory Statement: Nowhere in the documentation does it state that Stack or its variants will fill the parent by default.
 
@@ -207,7 +207,7 @@ Why not default to 100%?
 
 Should we add this to the docs? Six months ago I'd have said yes, absolutely. Now: maybe, but not a priority if we expect people to be using AI helpers that can figure these things out, and especially if those helpers have access via MCP not only to the docs but also to code and commentary like what we are building here.
 
-# Snapshot 19
+# Snapshot 19: show replied-to account display name and username in toots
 
 ![snapshot19](../resources/snapshot19.png)
 
@@ -239,7 +239,7 @@ As it turns out, while we are glad to be accumulating everything in `toots_home`
 - Among other things, this demonstrates that a DataSource can be safely used inside a Fragment for per-item dynamic data fetching.
 
 
-# Snapshot 18
+# Snapshot 18: implement accumulator pattern for reply usernames/avatars
 
 ![snapshot18](../resources/snapshot18.png)
 
@@ -342,7 +342,7 @@ Next steps will include:
 - Adding search functionality over the accumulated data
 - Potentially extending the pattern to other areas where we need to maintain historical data
 
-# Snapshot 17
+# Snapshot 17: responsive layout, flexible spacing, image scaling
 
 ![snapshot17](../resources/snapshot17.png)
 
@@ -367,7 +367,7 @@ Key components:
 
 The layout now uses relative units and flexible spacing to create a responsive design that works well across different screen sizes. The content area is constrained to 90% of the viewport width, preventing overly wide content while maintaining readability. Images scale proportionally within this constrained space, controlled by the zoom slider.
 
-# Snapshot 16
+# Snapshot 16: disable query buttons while loading
 
 ![snapshot16](../resources/snapshot16.png)
 
@@ -379,7 +379,7 @@ The layout now uses relative units and flexible spacing to create a responsive d
 
 We used the XMLUI documentation tools to find the correct syntax for the Button component's `enabled` property, ensuring we followed rule 7 by only using documented features rather than making assumptions about the component's API.
 
-# Snapshot 15
+# Snapshot 15: reverse log order, newest snapshot first
 
 ![snapshot15](../resources/snapshot15.png)
 
@@ -390,7 +390,7 @@ In this cycle, we reversed the order of the project log and its table of content
 - Verified that all content was preserved and links still work
 - This change will make future updates faster and more reliable, since only the top of the file needs to be read or written for new entries
 
-# Snapshot 14
+# Snapshot 14: modularize image zoom, add settings modal
 
 ![snapshot14](../resources/snapshot14.gif)
 
@@ -412,7 +412,7 @@ We accomplished this in a series of small, testable steps:
 
 This continues our focus on information density and modular, discoverable controls, while strictly following XMLUI documentation and best practices.
 
-# Snapshot 13
+# Snapshot 13: add image zoom slider for posts/reblogs
 
 ![snapshot13](../resources/snapshot13.gif)
 
@@ -450,7 +450,7 @@ Jon:
 
 > ok i will remind you every time.
 
-# Snapshot 12
+# Snapshot 12: add images to posts and reblogs
 
 ![snapshot12](../resources/snapshot12.png)
 
@@ -458,7 +458,7 @@ Added images to posts and reblogs. Initially at 20%, in keeping with the informa
 
 Next: add a slider to make images zoomable.
 
-# Snapshot 11
+# Snapshot 11: add utility functions for display names, usernames, dates
 
 ![snapshot11](../resources/snapshot11.png)
 
@@ -477,7 +477,7 @@ Next: add a slider to make images zoomable.
     - Used the utility functions for all name and username access
     - Added a new intermediate constant for dialog parameters to make the code clearer
 
-# Snapshot 10
+# Snapshot 10: add Followers page, column widths, sorting
 
 ![snapshot10](../resources/snapshot10.png)
 
@@ -578,7 +578,7 @@ where
 If this gets expensive we'll consider self-hosting. This could be done in sqlite with the steampipe extension, and https://github.com/jonudell/sqlite-server/ now supports that.
 
 
-# Snapshot 9
+# Snapshot 9: refactor Avatar to MastodonAvatar, move ModalDialog
 
 ![snapshot9](../resources/snapshot9.png)
 
@@ -669,7 +669,7 @@ Another thing we noted, not having used ModalDialog before, is that it calls its
       />
 ```
 
-# Snapshot 8
+# Snapshot 8: enhance user profile modal, component-based styling
 
 ![snapshot8](../resources/snapshot8.png)
 
@@ -722,7 +722,7 @@ In this iteration, we focused on enhancing the user profile modal dialog and imp
   - Confirmed that border-radius is built into the component (4px default)
   - Learned that size tokens (xs, sm, md, lg) are preferred over raw pixel values
 
-# Snapshot 7
+# Snapshot 7: refine icon semantics, use CHStack for icon layout
 
 ![snapshot7](../resources/snapshot7.png)
 
@@ -754,7 +754,7 @@ In this iteration we punted on username lookup in favor of visual refinement.
   - Achieved perfect icon centering and consistent visual appearance
   - Cursor found the CHStack solution on its own thanks to xmlui-mcp!
 
-# Snapshot 6
+# Snapshot 6: redesign reblog display, add profile modal
 
 ![snapshot6](../resources/snapshot6.png)
 
@@ -787,7 +787,7 @@ By adding interactive elements like the profile dialog, we've begun to embrace t
 
 Next steps will include enhancing the reply indicators to show usernames instead of account IDs and implementing a more comprehensive user profile view.
 
-# Snapshot 5
+# Snapshot 5: reduce avatar size for information density
 
 ![snapshot5](../resources/snapshot5.png)
 
@@ -812,7 +812,7 @@ Future density improvements could include:
 - Optimizing the layout of interaction metrics
 - Potential grid-based views for even higher density when appropriate
 
-# Snapshot 4
+# Snapshot 4: add avatars, switch to Avatar component
 
 ![snapshot4](../resources/snapshot4.png)
 
@@ -872,7 +872,7 @@ This iteration demonstrates our improved understanding of XMLUI's component syst
 
 The timeline now better matches modern Mastodon clients like Elk, with proper avatar display while maintaining the information density of our "Bloomberg terminal for Mastodon" design philosophy. By comparing our implementation to Elk, we identified additional refinements for future iterations, such as media previews and improved spacing.
 
-# Snapshot 3
+# Snapshot 3: improve reblog display, hierarchy, formatting
 
 ![snapshot3](../resources/snapshot3.png)
 
@@ -891,7 +891,7 @@ In this iteration, we focused on improving the display of reblogs to better matc
 
 While this is a good milestone, we noted that the visual differentiation between regular posts and reblogs is still too subtle. In future iterations, we'll focus on making this distinction more immediately apparent without sacrificing information density or readability.
 
-# Snapshot 2
+# Snapshot 2: improve timeline display, optimize queries
 
 ![snapshot2](../resources/snapshot2.png)
 
@@ -993,7 +993,7 @@ A specific example where we broke rule 7 was attempting to use a nested structur
 - `ListItem` is an HTML element available in Markdown contexts, not a top-level XMLUI component
 - The proper pattern is to use either `Items` with direct children or `List` with a render function
 
-# Snapshot 1
+# Snapshot 1: basic Mastodon home timeline viewer
 
 ![snapshot1](../resources/snapshot1.png)
 
@@ -1007,47 +1007,3 @@ We've created a basic Mastodon home timeline viewer that displays toots with pro
 - Formatted dates for better readability
 - We aim to follow the <a href="https://blog.jonudell.net/2022/12/17/a-bloomberg-terminal-for-mastodon/">Bloomberg terminal for Mastodon</a> design philosophy with high information density
 
-# Project Log
-
-## Table of Contents
-
-1. [Snapshot 1: Basic app structure](#snapshot-1-basic-app-structure)
-2. [Snapshot 2: Query and display toots](#snapshot-2-query-and-display-toots)
-3. [Snapshot 3: Improved toot display](#snapshot-3-improved-toot-display)
-4. [Snapshot 4: Markdown and image support](#snapshot-4-markdown-and-image-support)
-5. [Snapshot 5: Improved layout](#snapshot-5-improved-layout)
-6. [Snapshot 6: Improved layout and styling](#snapshot-6-improved-layout-and-styling)
-7. [Snapshot 7: Improved layout and styling](#snapshot-7-improved-layout-and-styling)
-8. [Snapshot 8: Improved layout and styling](#snapshot-8-improved-layout-and-styling)
-9. [Snapshot 9: Improved layout and styling](#snapshot-9-improved-layout-and-styling)
-10. [Snapshot 10: Improved layout and styling](#snapshot-10-improved-layout-and-styling)
-11. [Snapshot 11: Improved layout and styling](#snapshot-11-improved-layout-and-styling)
-12. [Snapshot 12: Improved layout and styling](#snapshot-12-improved-layout-and-styling)
-13. [Snapshot 13: Improved layout and styling](#snapshot-13-improved-layout-and-styling)
-14. [Snapshot 14: Improved layout and styling](#snapshot-14-improved-layout-and-styling)
-15. [Snapshot 15: Improved layout and styling](#snapshot-15-improved-layout-and-styling)
-16. [Snapshot 16: Improved layout and styling](#snapshot-16-improved-layout-and-styling)
-17. [Snapshot 17: Layout improvements - responsive content width and image scaling](#snapshot-17-layout-improvements---responsive-content-width-and-image-scaling)
-
-## Snapshot 17: Layout improvements - responsive content width and image scaling
-
-- Implemented responsive layout structure with flexible spacing
-- Main content area constrained to 90% viewport width with natural margins
-- Settings icon anchored left with SpaceFiller creating dynamic spacing
-- Image scaling now works predictably within constrained content area
-- Layout maintains proper proportions across different screen sizes
-
-Key components:
-```
-<VStack>
-  <HStack>
-    <VStack> <Icon/> </VStack>
-    <SpaceFiller/>
-    <VStack width="90%" maxWidth="90vw">
-      <Items>...</Items>
-    </VStack>
-  </HStack>
-</VStack>
-```
-
-The layout now uses relative units and flexible spacing to create a responsive design that works well across different screen sizes. The content area is constrained to 90% of the viewport width, preventing overly wide content while maintaining readability. Images scale proportionally within this constrained space, controlled by the zoom slider.
