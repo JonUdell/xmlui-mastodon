@@ -74,6 +74,21 @@
         example="countFollower"
       />
 
+      <QueryExample
+        title="countTootsHome"
+        example="countTootsHome"
+      />
+
+      <QueryExample
+        title="createTootsHome"
+        example="createTootsHome"
+      />
+
+      <QueryExample
+        title="updateTootsHome"
+        example="updateTootsHome"
+      />
+
 
      <Markdown><![CDATA[
       <details>

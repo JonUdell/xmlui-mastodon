@@ -4,11 +4,20 @@
 
   <AppState id="toolsState" bucket="toolsState" initialValue="{ { zoom: 20 } }" />
 
+
+  <APICall
+    id="updateTootsHome"
+    method="post"
+    url="{window.query}"
+    body="{{ sql: window.updateTootsHome }}"
+  />
+
   <DataSource
     id="tootsHome"
     url="{ window.query }"
     body="{ window.tootsHome(40) }"
     method="POST"
+    onLoaded="{ updateTootsHome.execute() }"
   />
 
 
