@@ -11,140 +11,152 @@
     method="POST"
   />
 
-  <VStack marginLeft="$space-4" marginRight="$space-4">
+
+  <VStack>
+
     <HStack>
-      <SpaceFiller />
+
       <Icon name="cog" size="md" onClick="settingsDialog.open()" style="cursor:pointer" />
-    </HStack>
-    <ModalDialog id="settingsDialog" title="Settings">
-      <Tools />
-    </ModalDialog>
 
-    <Items data="{tootsHome}">
       <VStack>
-        <!-- Regular Post Display -->
-        <Fragment when="{!$item.reblog}">
-          <!-- Reply indicator if this is a reply -->
-          <Fragment when="{$item.in_reply_to_id != null}">
-            <HStack gap="0.5rem">
-              <CHStack border="1px solid $color-surface-300" borderRadius="50%" width="1.4rem"
-                height="1.4rem">
-                <Icon name="reply" size="sm" />
-              </CHStack>
-              <Text variant="caption">Replying to @{$item.in_reply_to_account_id}</Text>
-            </HStack>
-          </Fragment>
+        <ModalDialog id="settingsDialog" title="Settings">
+          <Tools />
+        </ModalDialog>
 
-          <HStack>
-            <MastodonAvatar
-              url="{$item.avatar_url}"
-              size="xs"
-              name="{window.getDisplayName($item)}"
-              item="{$item}"
-            />
-            <HStack gap="0.5rem">
-              <Text variant="strong">{window.getDisplayName($item)}</Text>
-              <Text variant="caption">@{window.getUsername($item)}</Text>
-            </HStack>
-            <SpaceFiller />
-            <Text variant="caption">{window.getCreatedDate($item)}</Text>
-          </HStack>
-
+        <Items data="{tootsHome}">
           <VStack>
-            <Fragment when="{$item.content}">
-              <Markdown content="{$item.content}" />
+            <!-- Regular Post Display -->
+            <Fragment when="{!$item.reblog}">
+              <!-- Reply indicator if this is a reply -->
+              <Fragment when="{$item.in_reply_to_id != null}">
+                <HStack gap="0.5rem">
+                  <CHStack border="1px solid $color-surface-300" borderRadius="50%" width="1.4rem"
+                    height="1.4rem">
+                    <Icon name="reply" size="sm" />
+                  </CHStack>
+                  <Text variant="caption">Replying to @{$item.in_reply_to_account_id}</Text>
+                </HStack>
+              </Fragment>
+
+              <HStack>
+                <MastodonAvatar
+                  url="{$item.avatar_url}"
+                  size="xs"
+                  name="{window.getDisplayName($item)}"
+                  item="{$item}"
+                />
+                <HStack gap="0.5rem">
+                  <Text variant="strong">{window.getDisplayName($item)}</Text>
+                  <Text variant="caption">@{window.getUsername($item)}</Text>
+                </HStack>
+                <SpaceFiller />
+                <Text variant="caption">{window.getCreatedDate($item)}</Text>
+              </HStack>
+
+              <VStack>
+                <Fragment when="{$item.content}">
+                  <Markdown content="{$item.content}" />
+                </Fragment>
+
+                <!--
+              <Fragment
+                when="{$item.status ? ($item.status.media_attachments ? $item.status.media_attachments.length > 0 :
+              false) : false}">
+                <Text variant="caption">🖼️ {$item.status.media_attachments.length} media</Text>
+              </Fragment>
+              -->
+
+                <Fragment when="{$item.preview_url}">
+                  <VStack alignItems="start">
+                    <Image src="{$item.preview_url}" width="{toolsState.value.zoom}%" />
+                  </VStack>
+                </Fragment>
+
+              </VStack>
             </Fragment>
 
-            <!--
-            <Fragment
-              when="{$item.status ? ($item.status.media_attachments ? $item.status.media_attachments.length > 0 : false) : false}">
-              <Text variant="caption">🖼️ {$item.status.media_attachments.length} media</Text>
+            <!-- Reblog Display -->
+            <Fragment when="{$item.reblog}">
+              <!-- Combined reblogger and original author info in a single row -->
+              <HStack verticalAlignment="center" gap="0.5rem">
+                <MastodonAvatar
+                  url="{$item.avatar_url}"
+                  size="xs"
+                  name="{window.getDisplayName($item)}"
+                  item="{$item}"
+                />
+                <Text variant="caption">{window.getDisplayName($item)}</Text>
+                <CHStack border="1px solid $color-surface-300" borderRadius="50%" width="1.4rem"
+                  height="1.4rem">
+                  <Icon name="arrowright" size="md" />
+                </CHStack>
+                <MastodonAvatar
+                  url="{$item.reblog_avatar_url}"
+                  size="xs"
+                  name="{window.getReblogDisplayName($item)}"
+                  item="{$item}"
+                />
+                <HStack gap="0.5rem">
+                  <Text variant="strong">{window.getReblogDisplayName($item)}</Text>
+                  <Text variant="caption">@{window.getReblogUsername($item)}</Text>
+                </HStack>
+                <SpaceFiller />
+                <Text variant="caption">{window.getReblogCreatedDate($item)}</Text>
+
+              </HStack>
+
+              <!-- Original content -->
+              <VStack marginLeft="0.5rem" backgroundColor="$color-surface-100" padding="$space-4"
+                borderRadius="0.25rem">
+                <Markdown content="{$item.reblog_content}" />
+
+                <Fragment
+                  when="{$item.reblog.media_attachments ? $item.reblog.media_attachments.length > 0 : false}">
+                  <Text variant="caption">🖼️ {$item.reblog.media_attachments.length} media</Text>
+                </Fragment>
+              </VStack>
+
+              <Fragment when="{$item.reblog_preview_url}">
+                <VStack maxWidth="800px" alignItems="start">
+                  <Image src="{$item.reblog_preview_url}" width="{toolsState.value.zoom}%" />
+                </VStack>
+              </Fragment>
+
             </Fragment>
-            -->
 
-            <Fragment when="{$item.preview_url}">
-              <Image src="{$item.preview_url}" width="{toolsState.value.zoom}%" />
-            </Fragment>
-
-          </VStack>
-        </Fragment>
-
-        <!-- Reblog Display -->
-        <Fragment when="{$item.reblog}">
-          <!-- Combined reblogger and original author info in a single row -->
-          <HStack verticalAlignment="center" gap="0.5rem">
-            <MastodonAvatar
-              url="{$item.avatar_url}"
-              size="xs"
-              name="{window.getDisplayName($item)}"
-              item="{$item}"
-            />
-            <Text variant="caption">{window.getDisplayName($item)}</Text>
-            <CHStack border="1px solid $color-surface-300" borderRadius="50%" width="1.4rem"
-              height="1.4rem">
-              <Icon name="arrowright" size="md" />
-            </CHStack>
-            <MastodonAvatar
-              url="{$item.reblog_avatar_url}"
-              size="xs"
-              name="{window.getReblogDisplayName($item)}"
-              item="{$item}"
-            />
-            <HStack gap="0.5rem">
-              <Text variant="strong">{window.getReblogDisplayName($item)}</Text>
-              <Text variant="caption">@{window.getReblogUsername($item)}</Text>
+            <!-- Reactions - same for both types -->
+            <HStack verticalAlignment="center" gap="0.75rem">
+              <HStack verticalAlignment="center" gap="0.25rem">
+                <CHStack border="1px solid $color-surface-300" borderRadius="50%" width="1.4rem"
+                  height="1.4rem">
+                  <Icon name="reply" size="sm" />
+                </CHStack>
+                <Text variant="caption">{$item.replies_count || 0}</Text>
+              </HStack>
+              <HStack verticalAlignment="center" gap="0.25rem">
+                <CHStack border="1px solid $color-surface-300" borderRadius="50%" width="1.4rem"
+                  height="1.4rem">
+                  <Icon name="trending-up" size="sm" />
+                </CHStack>
+                <Text variant="caption">{$item.reblogs_count || 0}</Text>
+              </HStack>
+              <HStack verticalAlignment="center" gap="0.25rem">
+                <CHStack border="1px solid $color-surface-300" borderRadius="50%" width="1.4rem"
+                  height="1.4rem">
+                  <Icon name="like" size="sm" />
+                </CHStack>
+                <Text variant="caption">{$item.favourites_count || 0}</Text>
+              </HStack>
             </HStack>
-            <SpaceFiller />
-            <Text variant="caption">{window.getReblogCreatedDate($item)}</Text>
-
-          </HStack>
-
-          <!-- Original content -->
-          <VStack marginLeft="0.5rem" backgroundColor="$color-surface-100" padding="$space-4"
-            borderRadius="0.25rem">
-            <Markdown content="{$item.reblog_content}" />
-
-            <Fragment
-              when="{$item.reblog.media_attachments ? $item.reblog.media_attachments.length > 0 : false}">
-              <Text variant="caption">🖼️ {$item.reblog.media_attachments.length} media</Text>
-            </Fragment>
           </VStack>
 
-          <Fragment when="{$item.reblog_preview_url}">
-            <Image src="{$item.reblog_preview_url}" width="{toolsState.value.zoom}%" />
-          </Fragment>
 
-        </Fragment>
+          <ContentSeparator />
+        </Items>
 
-        <!-- Reactions - same for both types -->
-        <HStack verticalAlignment="center" gap="0.75rem">
-          <HStack verticalAlignment="center" gap="0.25rem">
-            <CHStack border="1px solid $color-surface-300" borderRadius="50%" width="1.4rem"
-              height="1.4rem">
-              <Icon name="reply" size="sm" />
-            </CHStack>
-            <Text variant="caption">{$item.replies_count || 0}</Text>
-          </HStack>
-          <HStack verticalAlignment="center" gap="0.25rem">
-            <CHStack border="1px solid $color-surface-300" borderRadius="50%" width="1.4rem"
-              height="1.4rem">
-              <Icon name="trending-up" size="sm" />
-            </CHStack>
-            <Text variant="caption">{$item.reblogs_count || 0}</Text>
-          </HStack>
-          <HStack verticalAlignment="center" gap="0.25rem">
-            <CHStack border="1px solid $color-surface-300" borderRadius="50%" width="1.4rem"
-              height="1.4rem">
-              <Icon name="like" size="sm" />
-            </CHStack>
-            <Text variant="caption">{$item.favourites_count || 0}</Text>
-          </HStack>
-        </HStack>
       </VStack>
 
-
-      <ContentSeparator />
-    </Items>
+    </HStack>
 
   </VStack>
 
