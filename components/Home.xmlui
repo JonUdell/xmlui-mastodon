@@ -11,7 +11,7 @@
     method="POST"
   />
 
-  <VStack>
+  <VStack marginLeft="$space-4" marginRight="$space-4">
     <HStack>
       <SpaceFiller />
       <Icon name="cog" size="md" onClick="settingsDialog.open()" style="cursor:pointer" />

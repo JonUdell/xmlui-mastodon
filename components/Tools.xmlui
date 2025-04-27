@@ -5,7 +5,7 @@
     label="Image Zoom"
     minValue="{0}"
     maxValue="{100}"
-    step="{1}"
+    step="{10}"
     initialValue="{toolsState.value.zoom}"
     showValues="true"
     onDidChange="(value) => { toolsState.update({ zoom: value }) }"
