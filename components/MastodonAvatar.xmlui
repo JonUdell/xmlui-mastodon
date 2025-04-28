@@ -1,10 +1,9 @@
 <Component name="MastodonAvatar">
 
-  <!-- Enhanced User Profile Modal Dialog -->
   <ModalDialog id="userProfileDialog" title="">
     <VStack gap="1rem">
       <!-- Header Image (only shown if available and not a placeholder) -->
-      <Fragment when="{$param.header_url && !$param.header_url.includes('/missing.png')}">
+      <Fragment when="{window.hasHeader($param.header_url)}">
         <Image
           src="{$param.header_url}"
           alt="Profile header image"
@@ -15,8 +14,8 @@
       </Fragment>
 
       <!-- Profile Info -->
-      <VStack marginTop="-2rem" gap="0" padding="0 1rem">
-        <!-- Avatar (positioned to overlap header) -->
+        <!-- Avatar (positioned to overlap header if exists) -->
+        <VStack marginTop="{window.avatarTopMargin($param.header_url)}" gap="0" padding="0 1rem">
         <Avatar
           url="{$param.avatar_url}"
           size="lg"

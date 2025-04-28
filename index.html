@@ -497,39 +497,39 @@
     // SQL to update reaction counts for existing posts
     window.updateTootsHomeReactions = `
       update toots_home
-      set 
+      set
         reblogs_count = (
-          select 
-            case 
+          select
+            case
               when reblog is not null then cast(json_extract(reblog, '$.reblogs_count') as integer)
               else cast(json_extract(status, '$.reblogs_count') as integer)
             end
-          from mastodon_toot_home 
+          from mastodon_toot_home
           where mastodon_toot_home.id = toots_home.id
           limit 1
         ),
         replies_count = (
-          select 
-            case 
+          select
+            case
               when reblog is not null then cast(json_extract(reblog, '$.replies_count') as integer)
               else cast(json_extract(status, '$.replies_count') as integer)
             end
-          from mastodon_toot_home 
+          from mastodon_toot_home
           where mastodon_toot_home.id = toots_home.id
           limit 1
         ),
         favourites_count = (
-          select 
-            case 
+          select
+            case
               when reblog is not null then cast(json_extract(reblog, '$.favourites_count') as integer)
               else cast(json_extract(status, '$.favourites_count') as integer)
             end
-          from mastodon_toot_home 
+          from mastodon_toot_home
           where mastodon_toot_home.id = toots_home.id
           limit 1
         )
       where exists (
-        select 1 from mastodon_toot_home 
+        select 1 from mastodon_toot_home
         where mastodon_toot_home.id = toots_home.id
         limit 100
       )
@@ -729,6 +729,15 @@ window.updateQueryWithNonce = function (query, appStateUpdateFn) {
         }
       };
     }
+
+    window.hasHeader = function(header_url) {
+      return header_url && !header_url.includes('/missing.png')
+    }
+
+    window.avatarTopMargin = function(header_url) {
+      return window.hasHeader(header_url) ? '-2rem' : '0'
+    }
+
 
   </script>
 </head>
