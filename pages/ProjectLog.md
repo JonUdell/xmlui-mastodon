@@ -104,6 +104,8 @@ The [xmlui tool](https://github.com/jonudell/xmlui-mcp) enables them to read the
 
 # Snapshot 21: Use permanent toots table for display and fix initial reaction counts
 
+![snapshot21](../resources/snapshot21.png)
+
 We implemented a two-tier data storage approach for the Mastodon timeline.
 
 Ephemeral Table (mastodon_toot_home): Directly connected to the Mastodon API
