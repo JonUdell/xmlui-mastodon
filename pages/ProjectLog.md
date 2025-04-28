@@ -3,6 +3,7 @@
 - [Purpose](#purpose)
 - [Setup](#setup)
 - [Rules for AI helpers](#rules-for-ai-helpers)
+- [Snapshot 24: Adding a Notifications Page to the Mastodon App](#snapshot-24-adding-a-notifications-page-to-the-mastodon-app)
 - [Snapshot 23: Resolving Steampipe Cache Issues with Mastodon Plugin (SQLite Embedded)](#snapshot-23-resolving-steampipe-cache-issues-with-mastodon-plugin-sqlite-embedded)
 - [Snapshot 22: robust-header-image-logic-and-reusable-helpers](#snapshot-22-robust-header-image-logic-and-reusable-helpers)
 - [Snapshot 21: use-permanent-toots-table-for-display-and-fix-initial-reaction-counts](#snapshot-21-use-permanent-toots-table-for-display-and-fix-initial-reaction-counts)
@@ -104,10 +105,37 @@ The [xmlui tool](https://github.com/jonudell/xmlui-mcp) enables them to read the
 
 9. keep complex functions and expressions out of xmlui, they should live in index.html
 
+# Snapshot 24: Adding a Notifications Page to the Mastodon App
+
+![snapshot24](../resources/snapshot24.png)
+
+## Overview
+
+In this development phase, we extended the Mastodon app with a Notifications page, following the same pattern used for the Home timeline. The implementation involved creating SQL functions to fetch, store, and retrieve notification data from the Mastodon API via Steampipe, and adding UI components to display this information.
+
+1. **Added SQL Functions to `index.html`**:
+   - `createNotifications`: Creates the table schema for storing notifications
+   - `updateNotifications`: Fetches notifications from the Mastodon API and stores them in the local table
+   - `countNotifications`: Counts the number of notifications in the local table
+   - `permanentNotifications`: Reads notifications from the local table for display
+   - `getNotificationType`: Utility function for converting notification types to user-friendly text
+
+2. **Added Query Examples to `Query.xmlui`**:
+   - Added test buttons for all notification-related functions
+   - Enabled manual testing of each function before integration
+
+3. **Created a Simple Notifications Component**:
+   - Built a basic `Notifications.xmlui` component that displays notifications
+   - Implemented a clean, minimalist interface showing notification type, sender, and content
+
+4. **Updated Navigation**:
+   - Added a "Notifications" link to the navigation panel
+   - Added a new page route in Main.xmlui
+
+
 # Snapshot 23: Resolving Steampipe Cache Issues with Mastodon Plugin (SQLite Embedded)
 
 ![snapshot23](../resources/snapshot23.png)
-
 
 ## Problem
 
@@ -133,6 +161,8 @@ The [xmlui tool](https://github.com/jonudell/xmlui-mcp) enables them to read the
 3. Set `STEAMPIPE_CACHE=false` as an environment variable.
    - Result: **Worked successfully**.
 4. Modified the `sqlite-server.go` app to set the environment variable **programmatically** at startup:
+
+## Notes
 
 ```go
 func main() {

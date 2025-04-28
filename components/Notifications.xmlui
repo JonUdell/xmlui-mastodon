@@ -1,0 +1,45 @@
+<Component name="Notifications">
+  <DataSource
+    id="notifications"
+    url="{ window.query }"
+    body="{ window.permanentNotifications(50) }"
+    method="POST"
+  />
+
+  <VStack>
+    <HStack padding="$space-2" backgroundColor="$color-surface-100">
+      <Text variant="strong">All</Text>
+      <SpaceFiller />
+      <Text variant="caption">Mentions</Text>
+    </HStack>
+    
+    <Items data="{notifications}">
+      <VStack padding="$space-2">
+        <HStack gap="0.5rem" alignItems="center">
+          <MastodonAvatar
+            url="{$item.avatar_url}"
+            size="xs"
+            name="{$item.display_name}"
+            item="{$item}"
+          />
+          <Text variant="strong">{$item.display_name}</Text>
+          <Text>{window.getNotificationType($item.category)}</Text>
+          <SpaceFiller />
+          <Text variant="caption">{window.formatShortDate($item.created_at)}</Text>
+        </HStack>
+
+        <!-- Content if available -->
+        <Fragment when="{$item.status_content}">
+          <VStack marginLeft="2rem" padding="$space-2">
+            <Markdown content="{$item.status_content}" />
+            <Fragment when="{$item.preview_url}">
+              <Image src="{$item.preview_url}" width="80%" />
+            </Fragment>
+          </VStack>
+        </Fragment>
+
+        <ContentSeparator />
+      </VStack>
+    </Items>
+  </VStack>
+</Component>

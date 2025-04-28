@@ -690,6 +690,39 @@
       select count(*) as count from notifications
     `
 
+    // Function to read from the permanent notifications table
+    window.permanentNotifications = function (count) {
+      return {
+        sql: `
+          select
+            id,
+            category,
+            created_at,
+            account,
+            display_name,
+            account_url,
+            instance_qualified_account_url,
+            account_id,
+            status,
+            status_url,
+            instance_qualified_status_url,
+            status_content,
+            avatar_url,
+            header_url,
+            note,
+            followers_count,
+            following_count,
+            statuses_count,
+            in_reply_to_id,
+            in_reply_to_account_id,
+            preview_url
+          from notifications
+          order by created_at desc
+          limit ${count}
+        `
+      }
+    }
+
     // Utility function to get notification type display text
     window.getNotificationType = function(category) {
       if (!category) return '';

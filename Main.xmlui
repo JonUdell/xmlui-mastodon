@@ -23,6 +23,7 @@
 
   <NavPanel>
     <NavLink label="Home" to="/" icon="home" />
+    <NavLink label="Notifications" to="/notifications" icon="info" />
     <NavLink label="Followers" to="/followers" icon="users" />
     <NavLink label="Following" to="/following" icon="users" />
     <NavLink label="Query" to="/queryPlayground" icon="database" />
@@ -34,6 +35,10 @@
 
     <Page url="/">
       <Home />
+    </Page>
+
+    <Page url="/notifications">
+      <Notifications />
     </Page>
 
     <Page url="/followers">
