@@ -3,6 +3,7 @@
 - [Purpose](#purpose)
 - [Setup](#setup)
 - [Rules for AI helpers](#rules-for-ai-helpers)
+- [Snapshot 22: robust-header-image-logic-and-reusable-helpers](#snapshot-22-robust-header-image-logic-and-reusable-helpers)
 - [Snapshot 21: use-permanent-toots-table-for-display-and-fix-initial-reaction-counts](#snapshot-21-use-permanent-toots-table-for-display-and-fix-initial-reaction-counts)
 - [Snapshot 20: add mutual indicators to Followers and Following](#snapshot-20-add-mutual-indicators-to-followers-and-following)
 - [Snapshot 19: show replied-to account display name and username in toots](#snapshot-19-show-replied-to-account-display-name-and-username-in-toots)
@@ -101,6 +102,55 @@ The [xmlui tool](https://github.com/jonudell/xmlui-mcp) enables them to read the
 8 never touch the dom. we only work within xmlui abstractions inside the <App> realm, with help from vars and functions defined on the window variable in index.html
 
 9 keep complex functions and expressions out of xmlui, they can live in index.html
+
+# Snapshot 22: Robust header image logic and reusable helpers
+
+![snapshot22](../resources/snapshot22.png)
+
+
+Make header image display logic robust and DRY, and ensure avatar positioning works correctly whether or not a header image is present. Note: Elk actually doesn't do this!
+
+- Moved the logic for determining if a user has a real header image (not a placeholder) into a window-level helper: `window.hasHeader(header_url)`.
+
+- Added a second helper, `window.avatarTopMargin(header_url)`, to compute the correct top margin for the avatar based on header presence.
+
+- Updated XMLUI markup to use these helpers, so the logic is not repeated and is easy to maintain.
+
+
+```js
+window.hasHeader = function(header_url) {
+  return typeof header_url === "string" && header_url && !header_url.includes('/missing.png');
+}
+window.avatarTopMargin = function(header_url) {
+  return window.hasHeader(header_url) ? '-2rem' : '0';
+}
+```
+
+```xml
+<Fragment when="{window.hasHeader($param.header_url)}">
+  <Image
+    src="{$param.header_url}"
+    alt="Profile header image"
+    width="100%"
+    fit="cover"
+    aspectRatio="3 / 1"
+  />
+</Fragment>
+<VStack marginTop="{window.avatarTopMargin($param.header_url)}" gap="0" padding="0 1rem">
+  <Avatar
+    url="{$param.avatar_url}"
+    size="lg"
+    name="{window.getDisplayName($param)}"
+  />
+</VStack>
+```
+
+Initially I tried jamming this code into a component-level var.hasHeader, that didn't work for various reasons, it really needs to be a function call. The documented XMLUI way would be in a code-behind but I never do that, mainly because that scatters my functions across multiple files and I want to be able to see them and reason about them all in one place.
+
+I am increasingly confident that my rule 9 for AIs is a strong recommendation for everyone.
+
+> 9 keep complex functions and expressions out of xmlui, then can live in index.html
+
 
 # Snapshot 21: Use permanent toots table for display and fix initial reaction counts
 
