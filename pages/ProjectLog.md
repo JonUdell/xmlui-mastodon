@@ -3,6 +3,7 @@
 - [Purpose](#purpose)
 - [Setup](#setup)
 - [Rules for AI helpers](#rules-for-ai-helpers)
+- [Snapshot 21: use-permanent-toots-table-for-display-and-fix-initial-reaction-counts](#snapshot-21-use-permanent-toots-table-for-display-and-fix-initial-reaction-counts)
 - [Snapshot 20: add mutual indicators to Followers and Following](#snapshot-20-add-mutual-indicators-to-followers-and-following)
 - [Snapshot 19: show replied-to account display name and username in toots](#snapshot-19-show-replied-to-account-display-name-and-username-in-toots)
 - [Snapshot 18: implement accumulator pattern for reply usernames/avatars](#snapshot-18-implement-accumulator-pattern-for-reply-usernamesavatars)
@@ -100,6 +101,41 @@ The [xmlui tool](https://github.com/jonudell/xmlui-mcp) enables them to read the
 8 never touch the dom. we only work within xmlui abstractions inside the <App> realm, with help from vars and functions defined on the window variable in index.html
 
 9 keep complex functions and expressions out of xmlui, they can live in index.html
+
+# Snapshot 21: Use permanent toots table for display and fix initial reaction counts
+
+We implemented a two-tier data storage approach for the Mastodon timeline.
+
+Ephemeral Table (mastodon_toot_home): Directly connected to the Mastodon API
+
+Permanent Table (toots_home): Local SQLite storage that persists timeline data
+
+Schema Enhancement
+
+- Expanded the toots_home table schema to include all fields needed for UI display
+
+- Added proper columns for media attachments, user profiles, and reaction counts
+
+- Added favourites_count column to store likes/favorites
+
+Reaction Count Handling
+
+- Fixed issues with reaction counts not being displayed correctly
+
+- Ensured proper handling of like/favorite counts
+
+- Created specialized functions to update reaction counts for existing posts
+
+Data Flow Management
+
+- Used AppState for explicit coordination of data flow
+
+- Created a clear sequence: fetch → update → display
+
+Next Steps
+
+The mechanism for updating reaction counts is still flawed, we are having trouble getting SQLite to limit its use of `mastodon_home_too`. But we're snapshotting here to capture progress.
+
 
 # Snapshot 20: add mutual indicators to Followers and Following
 
