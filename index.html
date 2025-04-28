@@ -14,245 +14,14 @@
       sql = `select steampipe_configure_mastodon('access_token="${window.config.mastodonToken}"
     server="${window.config.server}"
     app="${window.config.app}"')`
-      console.log(sql)
+      //console.log(sql)
       return { sql: sql }
     }
 
     window.query = 'http://localhost:8080/query'
 
-    // window.updateQueryWithNonce
-    //
-    // This function is used to ensure that every query execution is unique, even if the SQL text is the same as a previous run.
-    // It does this by prepending a nonce (a timestamp comment) to the query string. This forces XMLUI's DataSource to treat each
-    // request as new, which is necessary for proper reactivity and UI state management.
-    //
-    // The function receives two arguments:
-    //   - query: The raw SQL query string.
-    //   - appStateUpdateFn: A function to update the AppState (typically from a Button click in Query.xmlui).
-    //
-    // When a Button in Query.xmlui is clicked, it calls this function, passing in the query and an AppState update function.
-    // The function strips any existing nonce, prepends a new one, and then updates the AppState with the new query and loading state.
-    // This ensures that the DataSource bound to the AppState will always see a new query and trigger a fetch, even if the SQL is unchanged.
-    //
-    // This pattern is essential for coordinating query execution and UI state across multiple components/buttons that may trigger queries.
-    //
-    // Example usage in Query.xmlui:
-    //   <Button onClick="window.updateQueryWithNonce(query, appState.update)" ... />
-    //
-    // This guarantees that every click results in a unique query and a proper UI loading cycle.
-    window.updateQueryWithNonce = function (query, appStateUpdateFn) {
-      console.log('Executing query:', query);
-      // Get the raw query without any existing nonce comment
-      const rawQuery = query.replace(/^-- [0-9]+\n\n/, '');
-      // Add nonce comment at the beginning
-      const queryWithNonce = `-- ${Date.now()}\n\n${rawQuery}`;
-      console.log('Modified query with nonce:', queryWithNonce);
 
-      // Update the app state
-      appStateUpdateFn({
-        example: queryWithNonce,
-        loading: true,
-        results: []
-      });
 
-      return queryWithNonce;
-    }
-
-    // Custom SQL query function
-    window.customSql = function (query) {
-      console.log('Running query:', query);
-      return {
-        sql: query
-      }
-    }
-
-    // Cache for usernames to avoid duplicate queries
-    window.usernameCache = {};
-
-    // Cache for account info to avoid duplicate queries
-    window.accountCache = {};
-
-    // Function to look up account info from an account ID
-    window.lookupAccount = function (accountId) {
-      // Return from cache if available
-      if (window.accountCache[accountId]) {
-        return { sql: 'select 1' };
-      }
-
-      return {
-        sql: `select id, username, display_name, url from mastodon_account where id = '${accountId}'`
-      };
-    }
-
-    window.tootsHome = function (count) {
-      return {
-        sql: `
-            select
-                id,
-                username,
-                display_name,
-                created_at,
-                url,
-                instance_qualified_url,
-                instance_qualified_account_url,
-                status,
-                reblog,
-                json_extract(status, '$.content') as content,
-                cast(json_extract(status, '$.replies_count') as integer) as replies_count,
-                cast(json_extract(status, '$.reblogs_count') as integer) as reblogs_count,
-                cast(json_extract(status, '$.favourites_count') as integer) as favourites_count,
-                json_extract(account, '$.avatar') as avatar_url,
-                json_extract(account, '$.header') as header_url,
-                json_extract(account, '$.note') as note,
-                json_extract(account, '$.followers_count') as followers_count,
-                json_extract(account, '$.following_count') as following_count,
-                json_extract(account, '$.statuses_count') as statuses_count,
-                case
-                  when reblog is not null then json_extract(reblog, '$.account.avatar')
-                  else null
-                end as reblog_avatar_url,
-                case
-                  when reblog is not null then json_extract(reblog, '$.account.header')
-                  else null
-                end as reblog_header_url,
-                case
-                  when reblog is not null then json_extract(reblog, '$.account.note')
-                  else null
-                end as reblog_note,
-                case
-                  when reblog is not null then json_extract(reblog, '$.account.followers_count')
-                  else null
-                end as reblog_followers_count,
-                case
-                  when reblog is not null then json_extract(reblog, '$.account.following_count')
-                  else null
-                end as reblog_following_count,
-                case
-                  when reblog is not null then json_extract(reblog, '$.account.statuses_count')
-                  else null
-                end as reblog_statuses_count,
-                case
-                  when reblog is not null then json_extract(reblog, '$.account.display_name')
-                  else null
-                end as reblog_display_name,
-                case
-                  when reblog is not null then json_extract(reblog, '$.account.username')
-                  else null
-                end as reblog_username,
-                case
-                  when reblog is not null then json_extract(reblog, '$.content')
-                  else null
-                end as reblog_content,
-                case
-                  when reblog is not null then json_extract(reblog, '$.created_at')
-                  else null
-                end as reblog_created_at,
-                case
-                  when reblog is not null then json_extract(reblog, '$.account.url')
-                  else null
-                end as reblog_account_url,
-                json_extract(status, '$.in_reply_to_id') as in_reply_to_id,
-                json_extract(status, '$.in_reply_to_account_id') as in_reply_to_account_id,
-                json_extract(status, '$.media_attachments[0].preview_url') as preview_url,
-                case
-                  when reblog is not null then json_extract(reblog, '$.media_attachments[0].preview_url')
-                  else null
-                end as reblog_preview_url,
-            instance_qualified_account_url
-            from mastodon_toot_home
-            order by created_at desc
-            limit ${count}
-            `
-          }
-    }
-
-    window.formatDate = function (dateString) {
-      if (!dateString) return '';
-      try {
-        const date = new Date(dateString);
-        return date.toLocaleString();
-      } catch (e) {
-        return dateString || '';
-      }
-    }
-
-    window.formatShortDate = function (dateString) {
-      if (!dateString) return '';
-      try {
-        const date = new Date(dateString);
-        return date.toLocaleDateString();
-      } catch (e) {
-        return dateString || '';
-      }
-    }
-
-    window.getCount = function (obj, property) {
-      if (!obj || !property) return 0;
-      const value = obj[property];
-      if (value === undefined || value === null) return 0;
-
-      // Try to convert to number, return 0 if it fails
-      const num = parseInt(value, 10);
-      return isNaN(num) ? 0 : num;
-    }
-
-    // Display name with fallback to username
-    window.getDisplayName = function(item) {
-      if (!item) return '';
-      return item.display_name ? item.display_name : item.username || '';
-    }
-
-    // Get reblog display name with fallback to username
-    window.getReblogDisplayName = function(item) {
-      if (!item) return '';
-      return item.reblog_display_name ? item.reblog_display_name : item.reblog_username || '';
-    }
-
-    // Get username with empty string fallback
-    window.getUsername = function(item) {
-      if (!item) return '';
-      return item.username || '';
-    }
-
-    // Get reblog username with empty string fallback
-    window.getReblogUsername = function(item) {
-      if (!item) return '';
-      return item.reblog_username || '';
-    }
-
-    // Get created date with fallback logic
-    window.getCreatedDate = function(item) {
-      if (!item) return '';
-      return window.formatDate(item.created_at || '');
-    }
-
-    // Get reblog created date with fallback to original created date
-    window.getReblogCreatedDate = function(item) {
-      if (!item) return '';
-      return window.formatDate(item.reblog_created_at || item.created_at || '');
-    }
-
-    // Function to look up a username from an account ID - used by tootsHome
-    window.lookupUsername = function (accountId) {
-      if (!accountId) return null;
-
-      // Return from cache if available
-      if (window.usernameCache[accountId]) {
-        return { username: window.usernameCache[accountId] };
-      }
-
-      return {
-        sql: `SELECT username FROM mastodon_account WHERE id = '${accountId}'`,
-        then: function (result) {
-          if (result && result.length > 0) {
-            // Store username in cache for future use
-            window.usernameCache[accountId] = result[0].username;
-            return { username: result[0].username };
-          }
-          return { username: null };
-        }
-      };
-    }
 
     // followers
 
@@ -439,6 +208,88 @@
 
     // home
 
+    window.tootsHome = function (count) {
+      return {
+        sql: `
+            select
+                id,
+                username,
+                display_name,
+                created_at,
+                url,
+                instance_qualified_url,
+                instance_qualified_account_url,
+                status,
+                reblog,
+                json_extract(status, '$.content') as content,
+                cast(json_extract(status, '$.replies_count') as integer) as replies_count,
+                cast(json_extract(status, '$.reblogs_count') as integer) as reblogs_count,
+                cast(json_extract(status, '$.favourites_count') as integer) as favourites_count,
+                json_extract(account, '$.avatar') as avatar_url,
+                json_extract(account, '$.header') as header_url,
+                json_extract(account, '$.note') as note,
+                json_extract(account, '$.followers_count') as followers_count,
+                json_extract(account, '$.following_count') as following_count,
+                json_extract(account, '$.statuses_count') as statuses_count,
+                case
+                  when reblog is not null then json_extract(reblog, '$.account.avatar')
+                  else null
+                end as reblog_avatar_url,
+                case
+                  when reblog is not null then json_extract(reblog, '$.account.header')
+                  else null
+                end as reblog_header_url,
+                case
+                  when reblog is not null then json_extract(reblog, '$.account.note')
+                  else null
+                end as reblog_note,
+                case
+                  when reblog is not null then json_extract(reblog, '$.account.followers_count')
+                  else null
+                end as reblog_followers_count,
+                case
+                  when reblog is not null then json_extract(reblog, '$.account.following_count')
+                  else null
+                end as reblog_following_count,
+                case
+                  when reblog is not null then json_extract(reblog, '$.account.statuses_count')
+                  else null
+                end as reblog_statuses_count,
+                case
+                  when reblog is not null then json_extract(reblog, '$.account.display_name')
+                  else null
+                end as reblog_display_name,
+                case
+                  when reblog is not null then json_extract(reblog, '$.account.username')
+                  else null
+                end as reblog_username,
+                case
+                  when reblog is not null then json_extract(reblog, '$.content')
+                  else null
+                end as reblog_content,
+                case
+                  when reblog is not null then json_extract(reblog, '$.created_at')
+                  else null
+                end as reblog_created_at,
+                case
+                  when reblog is not null then json_extract(reblog, '$.account.url')
+                  else null
+                end as reblog_account_url,
+                json_extract(status, '$.in_reply_to_id') as in_reply_to_id,
+                json_extract(status, '$.in_reply_to_account_id') as in_reply_to_account_id,
+                json_extract(status, '$.media_attachments[0].preview_url') as preview_url,
+                case
+                  when reblog is not null then json_extract(reblog, '$.media_attachments[0].preview_url')
+                  else null
+                end as reblog_preview_url,
+            instance_qualified_account_url
+            from mastodon_toot_home
+            order by created_at desc
+            limit ${count}
+            `
+          }
+    }
+
     window.createTootsHome = `
       create table toots_home (
         _ctx text,
@@ -469,7 +320,7 @@
         status text,
         url text,
         username text,
-        
+
         -- Additional fields for UI display
         avatar_url text,
         header_url text,
@@ -521,7 +372,7 @@
         status,
         url,
         username,
-        
+
         avatar_url,
         header_url,
         note,
@@ -572,7 +423,7 @@
         status,
         url,
         username,
-        
+
         json_extract(account, '$.avatar') as avatar_url,
         json_extract(account, '$.header') as header_url,
         json_extract(account, '$.note') as note,
@@ -624,9 +475,157 @@
       order by created_at desc
       limit 100 -- Increased from 40 to capture more toots
     `
+
     window.countTootsHome = `
       select count(*) from toots_home
     `
+
+// helpers
+
+window.updateQueryWithNonce = function (query, appStateUpdateFn) {
+    /*
+
+     window.updateQueryWithNonce
+
+     This function is used to ensure that every query execution is unique, even if the SQL text is the same as a previous run.
+     It does this by prepending a nonce (a timestamp comment) to the query string. This forces XMLUI's DataSource to treat each
+     request as new, which is necessary for proper reactivity and UI state management.
+
+     The function receives two arguments:
+       - query: The raw SQL query string.
+       - appStateUpdateFn: A function to update the AppState (typically from a Button click in Query.xmlui).
+
+     When a Button in Query.xmlui is clicked, it calls this function, passing in the query and an AppState update function.
+     The function strips any existing nonce, prepends a new one, and then updates the AppState with the new query and loading state.
+     This ensures that the DataSource bound to the AppState will always see a new query and trigger a fetch, even if the SQL is unchanged.
+
+     This pattern is essential for coordinating query execution and UI state across multiple components/buttons that may trigger queries.
+
+     Example usage in Query.xmlui:
+       <Button onClick="window.updateQueryWithNonce(query, appState.update)" ... />
+
+     This guarantees that every click results in a unique query and a proper UI loading cycle.
+    */
+
+      console.log('Executing query:', query);
+      // Get the raw query without any existing nonce comment
+      const rawQuery = query.replace(/^-- [0-9]+\n\n/, '');
+      // Add nonce comment at the beginning
+      const queryWithNonce = `-- ${Date.now()}\n\n${rawQuery}`;
+      console.log('Modified query with nonce:', queryWithNonce);
+
+      // Update the app state
+      appStateUpdateFn({
+        example: queryWithNonce,
+        loading: true,
+        results: []
+      });
+
+      return queryWithNonce;
+    }
+
+    window.customSql = function (query) {
+      //console.log('Running query:', query);
+      return {
+        sql: query
+      }
+    }
+
+    window.usernameCache = {};
+
+    window.accountCache = {};
+
+    window.lookupAccount = function (accountId) {
+      // Return from cache if available
+      if (window.accountCache[accountId]) {
+        return { sql: 'select 1' };
+      }
+
+      return {
+        sql: `select id, username, display_name, url from mastodon_account where id = '${accountId}'`
+      };
+    }
+
+    window.formatDate = function (dateString) {
+      if (!dateString) return '';
+      try {
+        const date = new Date(dateString);
+        return date.toLocaleString();
+      } catch (e) {
+        return dateString || '';
+      }
+    }
+
+    window.formatShortDate = function (dateString) {
+      if (!dateString) return '';
+      try {
+        const date = new Date(dateString);
+        return date.toLocaleDateString();
+      } catch (e) {
+        return dateString || '';
+      }
+    }
+
+    window.getCount = function (obj, property) {
+      if (!obj || !property) return 0;
+      const value = obj[property];
+      if (value === undefined || value === null) return 0;
+
+      // Try to convert to number, return 0 if it fails
+      const num = parseInt(value, 10);
+      return isNaN(num) ? 0 : num;
+    }
+
+    window.getDisplayName = function(item) {
+      if (!item) return '';
+      return item.display_name ? item.display_name : item.username || '';
+    }
+
+    window.getReblogDisplayName = function(item) {
+      if (!item) return '';
+      return item.reblog_display_name ? item.reblog_display_name : item.reblog_username || '';
+    }
+
+    window.getUsername = function(item) {
+      if (!item) return '';
+      return item.username || '';
+    }
+
+    window.getReblogUsername = function(item) {
+      if (!item) return '';
+      return item.reblog_username || '';
+    }
+
+    window.getCreatedDate = function(item) {
+      if (!item) return '';
+      return window.formatDate(item.created_at || '');
+    }
+
+    window.getReblogCreatedDate = function(item) {
+      if (!item) return '';
+      return window.formatDate(item.reblog_created_at || item.created_at || '');
+    }
+
+    window.lookupUsername = function (accountId) {
+      if (!accountId) return null;
+
+      // Return from cache if available
+      if (window.usernameCache[accountId]) {
+        return { username: window.usernameCache[accountId] };
+      }
+
+      return {
+        sql: `SELECT username FROM mastodon_account WHERE id = '${accountId}'`,
+        then: function (result) {
+          if (result && result.length > 0) {
+            // Store username in cache for future use
+            window.usernameCache[accountId] = result[0].username;
+            return { username: result[0].username };
+          }
+          return { username: null };
+        }
+      };
+    }
 
   </script>
 </head>

@@ -17,7 +17,6 @@
     url="{ window.query }"
     body="{ window.customSql('select * from mastodon_my_account') }"
     method="POST"
-    onLoaded="console.log('account loaded:', account.value)"
   />
 
 

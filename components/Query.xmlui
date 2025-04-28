@@ -55,6 +55,11 @@
       <h2>Queries</h2>
 
       <QueryExample
+        title="createTootsHome"
+        example="createTootsHome"
+      />
+
+      <QueryExample
         title="countTootsHome"
         example="countTootsHome"
       />

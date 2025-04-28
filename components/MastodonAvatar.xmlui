@@ -33,7 +33,7 @@
             <Text variant="strong">{$param.followers_count || 0}</Text>
             <Text variant="caption">Followers</Text>
           </VStack>
-          <VStack foo="bar" gap="0">
+          <VStack gap="0">
             <Text variant="strong">{$param.following_count || 0}</Text>
             <Text variant="caption">Following</Text>
           </VStack>
