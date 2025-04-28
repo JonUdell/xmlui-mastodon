@@ -219,9 +219,18 @@
                 status,
                 reblog,
                 json_extract(status, '$.content') as content,
-                cast(json_extract(status, '$.replies_count') as integer) as replies_count,
-                cast(json_extract(status, '$.reblogs_count') as integer) as reblogs_count,
-                cast(json_extract(status, '$.favourites_count') as integer) as favourites_count,
+                case
+                  when reblog is not null then cast(json_extract(reblog, '$.replies_count') as integer)
+                  else cast(json_extract(status, '$.replies_count') as integer)
+                end as replies_count,
+                case
+                  when reblog is not null then cast(json_extract(reblog, '$.reblogs_count') as integer)
+                  else cast(json_extract(status, '$.reblogs_count') as integer)
+                end as reblogs_count,
+                case
+                  when reblog is not null then cast(json_extract(reblog, '$.favourites_count') as integer)
+                  else cast(json_extract(status, '$.favourites_count') as integer)
+                end as favourites_count,
                 json_extract(account, '$.avatar') as avatar_url,
                 json_extract(account, '$.header') as header_url,
                 json_extract(account, '$.note') as note,
@@ -414,9 +423,18 @@
         end as reblog_content,
         reblog_server,
         reblog_username,
-        cast(json_extract(status, '$.reblogs_count') as integer) as reblogs_count,
-        cast(json_extract(status, '$.replies_count') as integer) as replies_count,
-        cast(json_extract(status, '$.favourites_count') as integer) as favourites_count,
+        case
+          when reblog is not null then cast(json_extract(reblog, '$.reblogs_count') as integer)
+          else cast(json_extract(status, '$.reblogs_count') as integer)
+        end as reblogs_count,
+        case
+          when reblog is not null then cast(json_extract(reblog, '$.replies_count') as integer)
+          else cast(json_extract(status, '$.replies_count') as integer)
+        end as replies_count,
+        case
+          when reblog is not null then cast(json_extract(reblog, '$.favourites_count') as integer)
+          else cast(json_extract(status, '$.favourites_count') as integer)
+        end as favourites_count,
         server,
         sp_connection_name,
         sp_ctx,
@@ -481,23 +499,39 @@
       update toots_home
       set 
         reblogs_count = (
-          select cast(json_extract(status, '$.reblogs_count') as integer)
+          select 
+            case 
+              when reblog is not null then cast(json_extract(reblog, '$.reblogs_count') as integer)
+              else cast(json_extract(status, '$.reblogs_count') as integer)
+            end
           from mastodon_toot_home 
           where mastodon_toot_home.id = toots_home.id
+          limit 1
         ),
         replies_count = (
-          select cast(json_extract(status, '$.replies_count') as integer)
+          select 
+            case 
+              when reblog is not null then cast(json_extract(reblog, '$.replies_count') as integer)
+              else cast(json_extract(status, '$.replies_count') as integer)
+            end
           from mastodon_toot_home 
           where mastodon_toot_home.id = toots_home.id
+          limit 1
         ),
         favourites_count = (
-          select cast(json_extract(status, '$.favourites_count') as integer)
+          select 
+            case 
+              when reblog is not null then cast(json_extract(reblog, '$.favourites_count') as integer)
+              else cast(json_extract(status, '$.favourites_count') as integer)
+            end
           from mastodon_toot_home 
           where mastodon_toot_home.id = toots_home.id
+          limit 1
         )
       where exists (
         select 1 from mastodon_toot_home 
         where mastodon_toot_home.id = toots_home.id
+        limit 100
       )
     `
 
