@@ -494,45 +494,48 @@
       limit 100 -- Increased from 40 to capture more toots
     `
 
-    // SQL to update reaction counts for existing posts
     window.updateTootsHomeReactions = `
-      update toots_home
-      set
-        reblogs_count = (
-          select
-            case
-              when reblog is not null then cast(json_extract(reblog, '$.reblogs_count') as integer)
-              else cast(json_extract(status, '$.reblogs_count') as integer)
-            end
-          from mastodon_toot_home
-          where mastodon_toot_home.id = toots_home.id
-          limit 1
-        ),
-        replies_count = (
-          select
-            case
-              when reblog is not null then cast(json_extract(reblog, '$.replies_count') as integer)
-              else cast(json_extract(status, '$.replies_count') as integer)
-            end
-          from mastodon_toot_home
-          where mastodon_toot_home.id = toots_home.id
-          limit 1
-        ),
-        favourites_count = (
-          select
-            case
-              when reblog is not null then cast(json_extract(reblog, '$.favourites_count') as integer)
-              else cast(json_extract(status, '$.favourites_count') as integer)
-            end
-          from mastodon_toot_home
-          where mastodon_toot_home.id = toots_home.id
-          limit 1
-        )
-      where exists (
-        select 1 from mastodon_toot_home
-        where mastodon_toot_home.id = toots_home.id
-        limit 100
+      WITH recent_ids AS (
+        SELECT id
+        FROM toots_home
+        ORDER BY id DESC
+        LIMIT 50
+      ),
+      mastodon_data AS (
+        SELECT
+          mth.id,
+          -- Extract reblogs_count, fallback to status
+          CASE
+            WHEN json_type(json_extract(mth.reblog, '$.reblogs_count')) IS NOT NULL
+            THEN CAST(json_extract(mth.reblog, '$.reblogs_count') AS INTEGER)
+            ELSE CAST(json_extract(mth.status, '$.reblogs_count') AS INTEGER)
+          END AS reblogs_count,
+
+          -- Extract replies_count, fallback to status
+          CASE
+            WHEN json_type(json_extract(mth.reblog, '$.replies_count')) IS NOT NULL
+            THEN CAST(json_extract(mth.reblog, '$.replies_count') AS INTEGER)
+            ELSE CAST(json_extract(mth.status, '$.replies_count') AS INTEGER)
+          END AS replies_count,
+
+          -- Extract favourites_count, fallback to status
+          CASE
+            WHEN json_type(json_extract(mth.reblog, '$.favourites_count')) IS NOT NULL
+            THEN CAST(json_extract(mth.reblog, '$.favourites_count') AS INTEGER)
+            ELSE CAST(json_extract(mth.status, '$.favourites_count') AS INTEGER)
+          END AS favourites_count
+
+        FROM mastodon_toot_home mth
+        INNER JOIN recent_ids r
+          ON mth.id = r.id
       )
+      UPDATE toots_home
+      SET
+        reblogs_count = mastodon_data.reblogs_count,
+        replies_count = mastodon_data.replies_count,
+        favourites_count = mastodon_data.favourites_count
+      FROM mastodon_data
+      WHERE toots_home.id = mastodon_data.id;
     `
 
     window.countTootsHome = `

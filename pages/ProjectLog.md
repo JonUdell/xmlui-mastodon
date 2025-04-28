@@ -3,6 +3,7 @@
 - [Purpose](#purpose)
 - [Setup](#setup)
 - [Rules for AI helpers](#rules-for-ai-helpers)
+- [Snapshot 23: Resolving Steampipe Cache Issues with Mastodon Plugin (SQLite Embedded)](#snapshot-23-resolving-steampipe-cache-issues-with-mastodon-plugin-sqlite-embedded)
 - [Snapshot 22: robust-header-image-logic-and-reusable-helpers](#snapshot-22-robust-header-image-logic-and-reusable-helpers)
 - [Snapshot 21: use-permanent-toots-table-for-display-and-fix-initial-reaction-counts](#snapshot-21-use-permanent-toots-table-for-display-and-fix-initial-reaction-counts)
 - [Snapshot 20: add mutual indicators to Followers and Following](#snapshot-20-add-mutual-indicators-to-followers-and-following)
@@ -102,6 +103,62 @@ The [xmlui tool](https://github.com/jonudell/xmlui-mcp) enables them to read the
 8. never touch the dom. we only work within xmlui abstractions inside the App realm
 
 9. keep complex functions and expressions out of xmlui, they should live in index.html
+
+# Snapshot 23: Resolving Steampipe Cache Issues with Mastodon Plugin (SQLite Embedded)
+
+![snapshot23](../resources/snapshot23.png)
+
+
+## Problem
+
+- When running queries against the `mastodon_toot_home` table via Steampipe's **SQLite embedded** mode, we encountered errors like:
+  - `entry is bigger than max shard size`
+- Even when limiting queries to a small number of rows (e.g., 5 or 50), the errors persisted.
+- Reducing selected fields to only necessary JSON counters (`reblogs_count`, `replies_count`, `favourites_count`) did **not** fix the issue.
+
+## Diagnosis
+
+- In **Steampipe SQLite embedded mode**, plugin queries materialize **full rows** internally before field filtering happens.
+- Steampipe attempts to **cache full API responses** in memory (including large JSON blobs), regardless of the SQL projection.
+- The `cache` behavior is **not controlled** by plugin configuration like `steampipe_configure_mastodon()`.
+- Setting cache behavior via an `options "database" {}` block works for Steampipe **Postgres** mode but **not** for **SQLite embedded**.
+- In **SQLite embedded**, the **only effective way** to disable caching is to set the environment variable `STEAMPIPE_CACHE=false` **before** database initialization.
+
+## Actions Taken
+
+1. Attempted to add `cache=false` to the plugin configuration string.
+   - Result: **Did not work**.
+2. Attempted to configure cache behavior inside `options "database" {}`.
+   - Result: **Did not work**.
+3. Set `STEAMPIPE_CACHE=false` as an environment variable.
+   - Result: **Worked successfully**.
+4. Modified the `sqlite-server.go` app to set the environment variable **programmatically** at startup:
+
+```go
+func main() {
+    // Disable Steampipe cache for embedded SQLite mode
+    os.Setenv("STEAMPIPE_CACHE", "false")
+
+    // Rest of server setup...
+}
+```
+
+5. Verified that with cache disabled, the query/update flows work correctly without memory overflow errors.
+
+## Key Lessons
+
+| Topic | Learning |
+|:------|:---------|
+| Steampipe cache behavior | Postgres mode and SQLite embedded mode have different cache control mechanisms |
+| Plugin materialization | Full row data is materialized before SQL field selection in SQLite embedded mode |
+| Best practice for bundled apps | Set `STEAMPIPE_CACHE=false` in app code to avoid requiring users to configure environment manually |
+
+## Outcome
+
+- Reliable single-query update flow with small memory footprint.
+- Cache behavior fully controlled by the application.
+- Cleaner, simpler user experience: no environment variable setup required manually.
+
 
 # Snapshot 22: Robust header image logic and reusable helpers
 
