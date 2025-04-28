@@ -54,6 +54,8 @@
 
       <h2>Queries</h2>
 
+      <Text>Home</Text>
+
       <QueryExample
         title="createTootsHome"
         example="createTootsHome"
@@ -74,14 +76,11 @@
         example="countTootsHome"
       />
 
+      <Text>Following</Text>
+
       <QueryExample
         title="createFollowing"
         example="createFollowing"
-      />
-
-      <QueryExample
-        title="countFollowing"
-        example="countFollowing"
       />
 
       <QueryExample
@@ -90,14 +89,18 @@
       />
 
       <QueryExample
+        title="countFollowing"
+        example="countFollowing"
+      />
+
+
+      <Text>Follower</Text>
+
+      <QueryExample
         title="createFollower"
         example="createFollower"
       />
 
-      <QueryExample
-        title="countFollower"
-        example="countFollower"
-      />
 
       <QueryExample
         title="updateFollower"
@@ -105,10 +108,26 @@
       />
 
       <QueryExample
-        title="createTootsHome"
-        example="createTootsHome"
+        title="countFollower"
+        example="countFollower"
       />
 
+      <Text>Notifications</Text>
+
+      <QueryExample
+        title="createNotifications"
+        example="createNotifications"
+      />
+
+      <QueryExample
+        title="updateNotifications"
+        example="updateNotifications"
+      />
+
+      <QueryExample
+        title="countNotifications"
+        example="countNotifications"
+      />
 
      <Markdown><![CDATA[
       <details>

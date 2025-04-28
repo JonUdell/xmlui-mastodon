@@ -586,6 +586,128 @@
       }
     }
 
+    // Notifications
+
+
+    // SQL to create the notifications permanent table
+    window.createNotifications = `
+      create table notifications (
+        id text primary key,
+        category text,
+        created_at text,
+        account text,
+        display_name text,
+        account_url text,
+        instance_qualified_account_url text,
+        account_id text,
+        status text,
+        status_url text,
+        instance_qualified_status_url text,
+        status_content text,
+        sp_connection_name text,
+        sp_ctx text,
+        _ctx text,
+
+        -- Additional fields for UI display
+        avatar_url text,
+        header_url text,
+        note text,
+        followers_count integer,
+        following_count integer,
+        statuses_count integer,
+        in_reply_to_id text,
+        in_reply_to_account_id text,
+        preview_url text
+      )
+    `
+
+    // SQL to update the notifications table
+    window.updateNotifications = `
+      with limited_notifications as (
+        select *
+        from mastodon_notification
+        order by created_at desc
+        limit 50
+      )
+      insert or ignore into notifications (
+        id,
+        category,
+        created_at,
+        account,
+        display_name,
+        account_url,
+        instance_qualified_account_url,
+        account_id,
+        status,
+        status_url,
+        instance_qualified_status_url,
+        status_content,
+        sp_connection_name,
+        sp_ctx,
+        _ctx,
+
+        avatar_url,
+        header_url,
+        note,
+        followers_count,
+        following_count,
+        statuses_count,
+        in_reply_to_id,
+        in_reply_to_account_id,
+        preview_url
+      )
+      select
+        id,
+        category,
+        created_at,
+        account,
+        display_name,
+        account_url,
+        instance_qualified_account_url,
+        account_id,
+        status,
+        status_url,
+        instance_qualified_status_url,
+        status_content,
+        sp_connection_name,
+        sp_ctx,
+        _ctx,
+
+        json_extract(account, '$.avatar') as avatar_url,
+        json_extract(account, '$.header') as header_url,
+        json_extract(account, '$.note') as note,
+        cast(json_extract(account, '$.followers_count') as integer) as followers_count,
+        cast(json_extract(account, '$.following_count') as integer) as following_count,
+        cast(json_extract(account, '$.statuses_count') as integer) as statuses_count,
+        json_extract(status, '$.in_reply_to_id') as in_reply_to_id,
+        json_extract(status, '$.in_reply_to_account_id') as in_reply_to_account_id,
+        json_extract(status, '$.media_attachments[0].preview_url') as preview_url
+      from limited_notifications
+    `
+
+    // SQL to count notifications in the local table
+    window.countNotifications = `
+      select count(*) as count from notifications
+    `
+
+    // Utility function to get notification type display text
+    window.getNotificationType = function(category) {
+      if (!category) return '';
+
+      const types = {
+        'follow': 'followed you',
+        'mention': 'mentioned you',
+        'reblog': 'boosted your post',
+        'favourite': 'favorited your post',
+        'poll': 'poll has ended',
+        'follow_request': 'requested to follow you',
+        'status': 'posted a status',
+        'update': 'updated a status'
+      };
+
+      return types[category] || category;
+    }
+
 // helpers
 
 window.updateQueryWithNonce = function (query, appStateUpdateFn) {
