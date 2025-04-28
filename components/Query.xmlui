@@ -60,13 +60,18 @@
       />
 
       <QueryExample
-        title="countTootsHome"
-        example="countTootsHome"
+        title="updateTootsHome"
+        example="updateTootsHome"
       />
 
       <QueryExample
-        title="updateTootsHome"
-        example="updateTootsHome"
+        title="updateTootsHomeReactions"
+        example="updateTootsHomeReactions"
+      />
+
+      <QueryExample
+        title="countTootsHome"
+        example="countTootsHome"
       />
 
       <QueryExample

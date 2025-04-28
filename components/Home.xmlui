@@ -1,33 +1,54 @@
 <Component name="Home"
   var.imageZoom="{20}"
 >
-  <AppState id="initialLoadState" bucket="initialLoad" initialValue="{ { loaded: false } }" />
+  <AppState id="dataFlowState" bucket="dataFlow" initialValue="{ { 
+    ephemeralLoaded: false, 
+    permanentUpdated: false, 
+    permanentLoaded: false 
+  } }" />
 
   <AppState id="toolsState" bucket="toolsState" initialValue="{ { zoom: 20 } }" />
 
+  <!-- Fetch from ephemeral table first -->
+  <DataSource
+    id="ephemeralToots"
+    url="{ window.query }"
+    body="{ window.tootsHome(50) }"
+    method="POST"
+    onLoaded="() => {
+      // Only initiate the update flow if we haven't already done so
+      if (!dataFlowState.value.ephemeralLoaded) {
+        dataFlowState.update({ ephemeralLoaded: true });
+        updateTootsHome.execute();
+      }
+    }"
+  />
+
+  <!-- Update permanent storage -->
   <APICall
     id="updateTootsHome"
     method="post"
     url="{window.query}"
     body="{{ sql: window.updateTootsHome }}"
     errorNotificationMessage="${error.statusCode}, {JSON.stringify($error.details)}"
+    onSuccess="() => {
+      // Only trigger permanent data load if we haven't already done so
+      if (!dataFlowState.value.permanentLoaded) {
+        dataFlowState.update({ permanentUpdated: true });
+        permanentToots.refetch();
+      }
+    }"
   />
 
-
+  <!-- This DataSource reads from the permanent table for display -->
   <DataSource
-    id="tootsHome"
+    id="permanentToots"
     url="{ window.query }"
-    body="{ window.tootsHome(50) }"
+    body="{ window.permanentTootsHome(50) }"
     method="POST"
-    onLoaded="
-    // Always update the permanent table when new toots are loaded
-    updateTootsHome.execute();
-    
-    // Update the initial load state if needed
-    if (!initialLoadState.value.loaded) {
-      initialLoadState.update({ loaded: true });
-    }
-  "
+    onLoaded="() => {
+      dataFlowState.update({ permanentLoaded: true });
+    }"
   />
 
   <!--
@@ -68,8 +89,17 @@
           <Tools />
         </ModalDialog>
 
-        <Items data="{tootsHome}">
-          <VStack>
+        <!-- Loading indicator -->
+        <Fragment when="{!dataFlowState.value.permanentLoaded}">
+          <VStack padding="$space-4" alignItems="center">
+            <Text>Loading timeline data...</Text>
+          </VStack>
+        </Fragment>
+
+        <!-- Timeline display -->
+        <Fragment when="{dataFlowState.value.permanentLoaded}">
+          <Items data="{permanentToots}">
+            <VStack>
             <!-- Regular Post Display -->
             <Fragment when="{!$item.reblog}">
               <!-- Reply indicator if this is a reply -->
@@ -199,11 +229,12 @@
                 <Text variant="caption">{$item.favourites_count || 0}</Text>
               </HStack>
             </HStack>
-          </VStack>
+            </VStack>
 
 
-          <ContentSeparator />
-        </Items>
+            <ContentSeparator />
+          </Items>
+        </Fragment>
 
       </VStack>
 

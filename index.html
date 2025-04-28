@@ -20,9 +20,6 @@
 
     window.query = 'http://localhost:8080/query'
 
-
-
-
     // followers
 
     window.createFollower = function(){
@@ -314,6 +311,7 @@
         reblog_username text,
         reblogs_count integer,
         replies_count integer,
+        favourites_count integer,
         server text,
         sp_connection_name text,
         sp_ctx text,
@@ -366,6 +364,7 @@
         reblog_username,
         reblogs_count,
         replies_count,
+        favourites_count,
         server,
         sp_connection_name,
         sp_ctx,
@@ -417,6 +416,7 @@
         reblog_username,
         cast(json_extract(status, '$.reblogs_count') as integer) as reblogs_count,
         cast(json_extract(status, '$.replies_count') as integer) as replies_count,
+        cast(json_extract(status, '$.favourites_count') as integer) as favourites_count,
         server,
         sp_connection_name,
         sp_ctx,
@@ -476,9 +476,78 @@
       limit 100 -- Increased from 40 to capture more toots
     `
 
+    // SQL to update reaction counts for existing posts
+    window.updateTootsHomeReactions = `
+      update toots_home
+      set 
+        reblogs_count = (
+          select cast(json_extract(status, '$.reblogs_count') as integer)
+          from mastodon_toot_home 
+          where mastodon_toot_home.id = toots_home.id
+        ),
+        replies_count = (
+          select cast(json_extract(status, '$.replies_count') as integer)
+          from mastodon_toot_home 
+          where mastodon_toot_home.id = toots_home.id
+        ),
+        favourites_count = (
+          select cast(json_extract(status, '$.favourites_count') as integer)
+          from mastodon_toot_home 
+          where mastodon_toot_home.id = toots_home.id
+        )
+      where exists (
+        select 1 from mastodon_toot_home 
+        where mastodon_toot_home.id = toots_home.id
+      )
+    `
+
     window.countTootsHome = `
       select count(*) from toots_home
     `
+
+    window.permanentTootsHome = function (count) {
+      return {
+        sql: `
+            select
+                id,
+                username,
+                display_name,
+                created_at,
+                url,
+                instance_qualified_url,
+                instance_qualified_account_url,
+                status,
+                reblog,
+                content,
+                replies_count,
+                reblogs_count,
+                favourites_count,
+                avatar_url,
+                header_url,
+                note,
+                followers_count,
+                following_count,
+                statuses_count,
+                reblog_avatar_url,
+                reblog_header_url,
+                reblog_note,
+                reblog_followers_count,
+                reblog_following_count,
+                reblog_statuses_count,
+                reblog_display_name,
+                reblog_username,
+                reblog_content,
+                reblog_created_at,
+                reblog_account_url,
+                in_reply_to_account_id,
+                preview_url,
+                reblog_preview_url
+            from toots_home
+            order by created_at desc
+            limit ${count}
+            `
+      }
+    }
 
 // helpers
 
