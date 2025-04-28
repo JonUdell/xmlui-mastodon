@@ -20,9 +20,12 @@
     body="{ window.tootsHome(50) }"
     method="POST"
     onLoaded="
+    // Always update the permanent table when new toots are loaded
+    updateTootsHome.execute();
+    
+    // Update the initial load state if needed
     if (!initialLoadState.value.loaded) {
       initialLoadState.update({ loaded: true });
-      updateTootsHome.execute()
     }
   "
   />
@@ -51,7 +54,7 @@
     <HStack>
 
       <VStack>
-        <Icon name="cog" size="md" onClick="settingsDialog.open()" style="cursor:pointer" />
+        <Icon name="cog" size="md" onClick="settingsDialog.open()" />
       </VStack>
 
       <SpaceFiller/>
@@ -117,9 +120,7 @@
               -->
 
                 <Fragment when="{$item.preview_url}">
-                  <VStack alignItems="start">
                     <Image src="{$item.preview_url}" width="{toolsState.value.zoom}%" />
-                  </VStack>
                 </Fragment>
 
               </VStack>
@@ -167,7 +168,7 @@
               </VStack>
 
               <Fragment when="{$item.reblog_preview_url}">
-                <VStack maxWidth="800px" alignItems="start">
+                <VStack maxWidth="800px">
                   <Image src="{$item.reblog_preview_url}" width="{toolsState.value.zoom}%" />
                 </VStack>
               </Fragment>

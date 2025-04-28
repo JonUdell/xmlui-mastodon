@@ -29,15 +29,15 @@
 
         <!-- Stats -->
         <HStack marginTop="0.5rem">
-          <VStack gap="0" alignItems="center">
+          <VStack gap="0">
             <Text variant="strong">{$param.followers_count || 0}</Text>
             <Text variant="caption">Followers</Text>
           </VStack>
-          <VStack gap="0" alignItems="center">
+          <VStack foo="bar" gap="0">
             <Text variant="strong">{$param.following_count || 0}</Text>
             <Text variant="caption">Following</Text>
           </VStack>
-          <VStack gap="0" alignItems="center">
+          <VStack gap="0">
             <Text variant="strong">{$param.statuses_count || 0}</Text>
             <Text variant="caption">Posts</Text>
           </VStack>
