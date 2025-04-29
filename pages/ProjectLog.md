@@ -132,6 +132,17 @@ In this development phase, we extended the Mastodon app with a Notifications pag
    - Added a "Notifications" link to the navigation panel
    - Added a new page route in Main.xmlui
 
+This is a great example of our policy to maximize information density, our notification page is way more informative at a glance than in stock clients. We are currently sharing the zoom initial value between Home and Notifications, the zoom is individually settable in either place but efforts to decouple the state and have independent defaults bogged down in complexity, we're tabling that for now and will accept 20% as the initial fault for both, though would prefer 10% for Notifications.
+
+Here's a summary of what we tried and the complications we encountered:
+
+First Attempt: Component Props. Tried to pass different zoom values to the Tools component (zoom="10" for Notifications, zoom="20" for Home)
+
+Second Attempt: Separate Components. Created ToolsHome.xmlui and ToolsNotifications.xmlui with their own states. This added complexity by duplicating components for what was essentially just a different default value.
+
+Third Attempt: State Initialization Logic. Tried to make the Tools component conditionally initialize its state based on whether it already existed.
+
+@istvan / @gergo what is the right answer here?
 
 # Snapshot 23: Resolving Steampipe Cache Issues with Mastodon Plugin (SQLite Embedded)
 
