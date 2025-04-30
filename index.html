@@ -10,18 +10,29 @@
 
   <style>
     /* Mastodon URL styling */
-    a .invisible {
-      display: none;
+    a[href] {  /* Any link with href */
+      position: relative;
+      display: inline-block;
+      max-width: 300px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      vertical-align: bottom;
     }
 
-    a .ellipsis {
+    /* Target links that contain both invisible and ellipsis spans */
+    a[href]:has(.invisible, .ellipsis) .invisible {
+      display: none !important;
+    }
+
+    a[href]:has(.invisible, .ellipsis) .ellipsis {
       color: inherit;
       font-weight: 500;
       border-bottom: 1px dotted #ccc;
     }
 
-    a:hover::after {
-      content: attr(href);
+    a[href]:has(.invisible, .ellipsis):hover::after {
+      content: attr(data-full-url);
       position: absolute;
       bottom: -24px;
       left: 0;
@@ -30,19 +41,16 @@
       border-radius: 4px;
       font-size: 0.85em;
       white-space: nowrap;
-      max-width: 300px;
+      max-width: 400px;
       overflow: hidden;
       text-overflow: ellipsis;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-      z-index: 1;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      z-index: 100;
     }
+    </style>
 
-    /* Make sure the link has a relative position for the tooltip */
-    a {
-      position: relative;
-    }
-  </style>
-  <!-- <script src="scripts/followers.js"></script> -->
+
+
   <script>
 
     window.init = function () {
@@ -936,6 +944,33 @@
 </head>
 
 <body>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      // Initial processing
+      processMastodonLinks();
+
+      // Set up a MutationObserver to handle dynamically added links
+      const observer = new MutationObserver(function (mutations) {
+        processMastodonLinks();
+      });
+
+      // Start observing the document with the configured parameters
+      observer.observe(document.body, { childList: true, subtree: true });
+    });
+
+    function processMastodonLinks() {
+      // Target links that have both invisible and ellipsis spans
+      document.querySelectorAll('a[href]:has(.invisible, .ellipsis)').forEach(link => {
+        if (!link.hasAttribute('data-full-url')) {
+          const fullUrl = Array.from(link.querySelectorAll('span'))
+            .map(span => span.textContent)
+            .join('');
+          link.setAttribute('data-full-url', fullUrl);
+        }
+      });
+    }
+  </script>
+
 </body>
 
 </html>
