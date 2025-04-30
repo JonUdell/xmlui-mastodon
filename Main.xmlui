@@ -1,5 +1,5 @@
 <App
-  layout="horizontal"
+  layout="horizontal-sticky"
   logo="resources/xmlui-logo.svg"
   logo-dark="resources/logo-dark.svg"
   defaultTheme="earthtone"
@@ -19,7 +19,19 @@
     method="POST"
   />
 
+  <AppHeader>
+    <property name="profileMenuTemplate">
+      <Icon name="cog" size="md" onClick="settingsDialog.open()" />
+    </property>
+  </AppHeader>
 
+  <ModalDialog
+    id="settingsDialog"
+    title="Settings"
+    width="50%"
+  >
+    <Tools />
+  </ModalDialog>
 
   <NavPanel>
     <NavLink label="Home" to="/" icon="home" />

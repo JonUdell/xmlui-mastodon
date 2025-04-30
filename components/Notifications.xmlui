@@ -12,21 +12,7 @@
 
   <VStack>
     <HStack>
-      <VStack>
-        <Icon name="cog" size="md" onClick="settingsDialog.open()" />
-      </VStack>
-
-      <SpaceFiller/>
-
       <VStack width="90%" maxWidth="90vw" marginRight="$space-4">
-        <ModalDialog
-          id="settingsDialog"
-          title="Settings"
-          width="50%"
-        >
-          <Tools />
-        </ModalDialog>
-        
         <Items data="{notifications}">
           <VStack padding="$space-2">
             <HStack gap="0.5rem" alignItems="center">

@@ -1,10 +1,10 @@
 <Component name="Home"
   var.imageZoom="{20}"
 >
-  <AppState id="dataFlowState" bucket="dataFlow" initialValue="{ { 
-    ephemeralLoaded: false, 
-    permanentUpdated: false, 
-    permanentLoaded: false 
+  <AppState id="dataFlowState" bucket="dataFlow" initialValue="{ {
+    ephemeralLoaded: false,
+    permanentUpdated: false,
+    permanentLoaded: false
   } }" />
 
   <AppState id="toolsState" bucket="toolsState" initialValue="{ { zoom: 20 } }" />
@@ -71,24 +71,8 @@
   -->
 
   <VStack>
-
     <HStack>
-
-      <VStack>
-        <Icon name="cog" size="md" onClick="settingsDialog.open()" />
-      </VStack>
-
-      <SpaceFiller/>
-
       <VStack width="90%" maxWidth="90vw" marginRight="$space-4">
-        <ModalDialog
-          id="settingsDialog"
-          title="Settings"
-          width="50%"
-        >
-          <Tools />
-        </ModalDialog>
-
         <!-- Loading indicator -->
         <Fragment when="{!dataFlowState.value.permanentLoaded}">
           <VStack padding="$space-4" alignItems="center">
