@@ -9,14 +9,24 @@
   <script src="config.js"></script>
 
   <style>
-    /* Mastodon URL styling */
-    a[href] {  /* Any link with href */
-      position: relative;
+    /* Step 1: Basic truncation */
+    .ellipsis {
       display: inline-block;
-      max-width: 300px;
+      max-width: 200px;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
+    }
+
+    .invisible {
+      display: none;
+    }
+
+    /* Mastodon URL styling */
+    a[href]:has(.invisible, .ellipsis) {
+      position: relative;
+      display: inline-block;
+      max-width: 300px;
       vertical-align: bottom;
     }
 
@@ -26,6 +36,11 @@
     }
 
     a[href]:has(.invisible, .ellipsis) .ellipsis {
+      display: inline-block;
+      max-width: 300px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
       color: inherit;
       font-weight: 500;
       border-bottom: 1px dotted #ccc;
@@ -46,13 +61,18 @@
       text-overflow: ellipsis;
       box-shadow: 0 2px 4px rgba(0,0,0,0.1);
       z-index: 100;
+      display: block !important;
+      pointer-events: none;
     }
-    </style>
 
-
+    /* Ensure container has proper stacking context */
+    .markdownContent {
+      position: relative;
+      z-index: 1;
+    }
+  </style>
 
   <script>
-
     window.init = function () {
       sql = `select steampipe_configure_mastodon('access_token="${window.config.mastodonToken}"
     server="${window.config.server}"
@@ -939,35 +959,35 @@
       return window.hasHeader(header_url) ? '-2rem' : '0'
     }
 
-
   </script>
 </head>
 
 <body>
   <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      // Initial processing
-      processMastodonLinks();
-
-      // Set up a MutationObserver to handle dynamically added links
-      const observer = new MutationObserver(function (mutations) {
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initial processing
         processMastodonLinks();
-      });
 
-      // Start observing the document with the configured parameters
-      observer.observe(document.body, { childList: true, subtree: true });
+        // Set up a MutationObserver to handle dynamically added links
+        const observer = new MutationObserver(function(mutations) {
+            processMastodonLinks();
+        });
+
+        // Start observing the document with the configured parameters
+        observer.observe(document.body, { childList: true, subtree: true });
     });
 
     function processMastodonLinks() {
-      // Target links that have both invisible and ellipsis spans
-      document.querySelectorAll('a[href]:has(.invisible, .ellipsis)').forEach(link => {
-        if (!link.hasAttribute('data-full-url')) {
-          const fullUrl = Array.from(link.querySelectorAll('span'))
-            .map(span => span.textContent)
-            .join('');
-          link.setAttribute('data-full-url', fullUrl);
-        }
-      });
+        // Target links that have both invisible and ellipsis spans
+        document.querySelectorAll('a[href] .invisible, a[href] .ellipsis').forEach(span => {
+            const link = span.closest('a');
+            if (link && !link.hasAttribute('data-full-url')) {
+                const fullUrl = Array.from(link.querySelectorAll('span'))
+                    .map(span => span.textContent)
+                    .join('').trim();
+                link.setAttribute('data-full-url', fullUrl);
+            }
+        });
     }
   </script>
 
