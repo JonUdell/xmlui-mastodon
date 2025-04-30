@@ -7,6 +7,41 @@
   <script src="xmlui/0.9.20.js"></script>
   <script src="xmlui/charts-0.1.12.js"></script>
   <script src="config.js"></script>
+
+  <style>
+    /* Mastodon URL styling */
+    a .invisible {
+      display: none;
+    }
+
+    a .ellipsis {
+      color: inherit;
+      font-weight: 500;
+      border-bottom: 1px dotted #ccc;
+    }
+
+    a:hover::after {
+      content: attr(href);
+      position: absolute;
+      bottom: -24px;
+      left: 0;
+      background: #f0f0f0;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 0.85em;
+      white-space: nowrap;
+      max-width: 300px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      z-index: 1;
+    }
+
+    /* Make sure the link has a relative position for the tooltip */
+    a {
+      position: relative;
+    }
+  </style>
   <!-- <script src="scripts/followers.js"></script> -->
   <script>
 
@@ -22,7 +57,7 @@
 
     // followers
 
-    window.createFollower = function(){
+    window.createFollower = function () {
       return {
         sql: `
           create table follower as select * from mastodon_my_follower
@@ -114,7 +149,7 @@
 
     // following
 
-    window.createFollowing = function(){
+    window.createFollowing = function () {
       return {
         sql: `
           create table following as select * from mastodon_my_following
@@ -293,7 +328,7 @@
             order by created_at desc
             limit ${count}
             `
-          }
+      }
     }
 
     window.createTootsHome = `
@@ -724,7 +759,7 @@
     }
 
     // Utility function to get notification type display text
-    window.getNotificationType = function(category) {
+    window.getNotificationType = function (category) {
       if (!category) return '';
 
       const types = {
@@ -741,32 +776,32 @@
       return types[category] || category;
     }
 
-// helpers
+    // helpers
 
-window.updateQueryWithNonce = function (query, appStateUpdateFn) {
-    /*
+    window.updateQueryWithNonce = function (query, appStateUpdateFn) {
+      /*
 
-     window.updateQueryWithNonce
+       window.updateQueryWithNonce
 
-     This function is used to ensure that every query execution is unique, even if the SQL text is the same as a previous run.
-     It does this by prepending a nonce (a timestamp comment) to the query string. This forces XMLUI's DataSource to treat each
-     request as new, which is necessary for proper reactivity and UI state management.
+       This function is used to ensure that every query execution is unique, even if the SQL text is the same as a previous run.
+       It does this by prepending a nonce (a timestamp comment) to the query string. This forces XMLUI's DataSource to treat each
+       request as new, which is necessary for proper reactivity and UI state management.
 
-     The function receives two arguments:
-       - query: The raw SQL query string.
-       - appStateUpdateFn: A function to update the AppState (typically from a Button click in Query.xmlui).
+       The function receives two arguments:
+         - query: The raw SQL query string.
+         - appStateUpdateFn: A function to update the AppState (typically from a Button click in Query.xmlui).
 
-     When a Button in Query.xmlui is clicked, it calls this function, passing in the query and an AppState update function.
-     The function strips any existing nonce, prepends a new one, and then updates the AppState with the new query and loading state.
-     This ensures that the DataSource bound to the AppState will always see a new query and trigger a fetch, even if the SQL is unchanged.
+       When a Button in Query.xmlui is clicked, it calls this function, passing in the query and an AppState update function.
+       The function strips any existing nonce, prepends a new one, and then updates the AppState with the new query and loading state.
+       This ensures that the DataSource bound to the AppState will always see a new query and trigger a fetch, even if the SQL is unchanged.
 
-     This pattern is essential for coordinating query execution and UI state across multiple components/buttons that may trigger queries.
+       This pattern is essential for coordinating query execution and UI state across multiple components/buttons that may trigger queries.
 
-     Example usage in Query.xmlui:
-       <Button onClick="window.updateQueryWithNonce(query, appState.update)" ... />
+       Example usage in Query.xmlui:
+         <Button onClick="window.updateQueryWithNonce(query, appState.update)" ... />
 
-     This guarantees that every click results in a unique query and a proper UI loading cycle.
-    */
+       This guarantees that every click results in a unique query and a proper UI loading cycle.
+      */
 
       console.log('Executing query:', query);
       // Get the raw query without any existing nonce comment
@@ -837,32 +872,32 @@ window.updateQueryWithNonce = function (query, appStateUpdateFn) {
       return isNaN(num) ? 0 : num;
     }
 
-    window.getDisplayName = function(item) {
+    window.getDisplayName = function (item) {
       if (!item) return '';
       return item.display_name ? item.display_name : item.username || '';
     }
 
-    window.getReblogDisplayName = function(item) {
+    window.getReblogDisplayName = function (item) {
       if (!item) return '';
       return item.reblog_display_name ? item.reblog_display_name : item.reblog_username || '';
     }
 
-    window.getUsername = function(item) {
+    window.getUsername = function (item) {
       if (!item) return '';
       return item.username || '';
     }
 
-    window.getReblogUsername = function(item) {
+    window.getReblogUsername = function (item) {
       if (!item) return '';
       return item.reblog_username || '';
     }
 
-    window.getCreatedDate = function(item) {
+    window.getCreatedDate = function (item) {
       if (!item) return '';
       return window.formatDate(item.created_at || '');
     }
 
-    window.getReblogCreatedDate = function(item) {
+    window.getReblogCreatedDate = function (item) {
       if (!item) return '';
       return window.formatDate(item.reblog_created_at || item.created_at || '');
     }
@@ -888,11 +923,11 @@ window.updateQueryWithNonce = function (query, appStateUpdateFn) {
       };
     }
 
-    window.hasHeader = function(header_url) {
+    window.hasHeader = function (header_url) {
       return header_url && !header_url.includes('/missing.png')
     }
 
-    window.avatarTopMargin = function(header_url) {
+    window.avatarTopMargin = function (header_url) {
       return window.hasHeader(header_url) ? '-2rem' : '0'
     }
 
