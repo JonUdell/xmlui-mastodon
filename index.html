@@ -9,68 +9,53 @@
   <script src="config.js"></script>
 
   <style>
-    /* Step 1: Basic truncation */
+    /* Debug styles */
     .ellipsis {
-      display: inline-block;
-      max-width: 200px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
+      display: inline-block !important;
+      max-width: 200px !important;
+      overflow: hidden !important;
+      text-overflow: ellipsis !important;
+      white-space: nowrap !important;
     }
 
     .invisible {
-      display: none;
-    }
-
-    /* Mastodon URL styling */
-    a[href]:has(.invisible, .ellipsis) {
-      position: relative;
-      display: inline-block;
-      max-width: 300px;
-      vertical-align: bottom;
-    }
-
-    /* Target links that contain both invisible and ellipsis spans */
-    a[href]:has(.invisible, .ellipsis) .invisible {
       display: none !important;
     }
 
-    a[href]:has(.invisible, .ellipsis) .ellipsis {
-      display: inline-block;
-      max-width: 300px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      color: inherit;
-      font-weight: 500;
-      border-bottom: 1px dotted #ccc;
-    }
-
-    a[href]:has(.invisible, .ellipsis):hover::after {
-      content: attr(data-full-url);
-      position: absolute;
-      bottom: -24px;
-      left: 0;
-      background: #f0f0f0;
-      padding: 4px 8px;
-      border-radius: 4px;
-      font-size: 0.85em;
-      white-space: nowrap;
-      max-width: 400px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-      z-index: 100;
-      display: block !important;
-      pointer-events: none;
-    }
-
-    /* Ensure container has proper stacking context */
-    .markdownContent {
-      position: relative;
-      z-index: 1;
-    }
   </style>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initial processing
+        processMastodonLinks();
+
+        // Set up a MutationObserver to handle dynamically added links
+        const observer = new MutationObserver((mutations) => {
+            console.log('Mutation observed, processing links...'); // Debug
+            processMastodonLinks();
+        });
+
+        // Start observing the document with the configured parameters
+        observer.observe(document.body, { childList: true, subtree: true });
+    });
+
+    function processMastodonLinks() {
+        console.log('Processing Mastodon links...'); // Debug
+        document.querySelectorAll('a').forEach(link => {
+            const invisibleSpans = link.querySelectorAll('.invisible');
+            const ellipsisSpans = link.querySelectorAll('.ellipsis');
+
+            if (invisibleSpans.length > 0 || ellipsisSpans.length > 0) {
+                const fullUrl = Array.from(link.querySelectorAll('span'))
+                    .map(span => span.textContent)
+                    .join('').trim();
+                link.setAttribute('data-full-url', fullUrl);
+                console.log('Link processed:', link.outerHTML); // Debug
+                console.log('Full URL:', fullUrl); // Debug
+            }
+        });
+    }
+  </script>
 
   <script>
     window.init = function () {
@@ -969,7 +954,8 @@
         processMastodonLinks();
 
         // Set up a MutationObserver to handle dynamically added links
-        const observer = new MutationObserver(function(mutations) {
+        const observer = new MutationObserver((mutations) => {
+            console.log('Mutation observed, processing links...'); // Debug
             processMastodonLinks();
         });
 
@@ -978,14 +964,14 @@
     });
 
     function processMastodonLinks() {
-        // Target links that have both invisible and ellipsis spans
-        document.querySelectorAll('a[href] .invisible, a[href] .ellipsis').forEach(span => {
-            const link = span.closest('a');
-            if (link && !link.hasAttribute('data-full-url')) {
+        document.querySelectorAll('a').forEach(link => {
+            const invisibleSpans = link.querySelectorAll('.invisible');
+            const ellipsisSpans = link.querySelectorAll('.ellipsis');
+
+            if (invisibleSpans.length > 0 || ellipsisSpans.length > 0) {
                 const fullUrl = Array.from(link.querySelectorAll('span'))
                     .map(span => span.textContent)
                     .join('').trim();
-                link.setAttribute('data-full-url', fullUrl);
             }
         });
     }
