@@ -3,6 +3,8 @@
 - [Purpose](#purpose)
 - [Setup](#setup)
 - [Rules for AI helpers](#rules-for-ai-helpers)
+
+- [Snapshot 25: Extract Cog (Settings) icon from Home and Notifications, centralize in sticky AppHeader](#snapshot-25-extract-cog-settings-icon-from-home-and-notifications-centralize-in-sticky-appheader)
 - [Snapshot 24: Adding a Notifications Page to the Mastodon App](#snapshot-24-adding-a-notifications-page-to-the-mastodon-app)
 - [Snapshot 23: Resolving Steampipe Cache Issues with Mastodon Plugin (SQLite Embedded)](#snapshot-23-resolving-steampipe-cache-issues-with-mastodon-plugin-sqlite-embedded)
 - [Snapshot 22: robust-header-image-logic-and-reusable-helpers](#snapshot-22-robust-header-image-logic-and-reusable-helpers)
@@ -104,6 +106,26 @@ The [xmlui tool](https://github.com/jonudell/xmlui-mcp) enables them to read the
 8. never touch the dom. we only work within xmlui abstractions inside the App realm
 
 9. keep complex functions and expressions out of xmlui, they should live in index.html
+
+# Snapshot 25: Extract Cog (Settings) icon from Home and Notifications, centralize in sticky AppHeader
+
+![snapshot25](../resources/snapshot25.png)
+
+- We first switched the App layout to "horizontal-sticky" which makes the header area stay fixed while scrolling
+
+- Then we moved the settings functionality (cog icon + modal) from individual pages to the AppHeader component in Main.xmlui
+
+- We removed the duplicate settings UI from both Home and Notifications components
+
+- The settings are now consistently accessible from a fixed position at the top of the app
+
+- The UI is cleaner since the settings are where users expect them - in the app header
+
+- The modal will always open relative to the fixed header position, solving the scrolling issue
+
+- The state (toolsState) is still shared between components, so settings like zoom level remain synchronized
+
+This is a good example of using XMLUI's built-in layout and component system rather than trying to implement custom positioning solutions.
 
 # Snapshot 24: Adding a Notifications Page to the Mastodon App
 
