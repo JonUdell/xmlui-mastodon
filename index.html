@@ -9,9 +9,29 @@
   <script src="config.js"></script>
 
   <style>
-    a[href]:has(span.ellipsis) {
-      display: inline-block;
-    }
+/* Default state - show full URL */
+a[href] span.invisible {
+  display: inline; /* Make all spans visible by default */
+}
+
+/* When truncated mode is active */
+.truncate-links a[href] span.invisible {
+  display: none; /* Hide the invisible spans */
+}
+
+/* Ensure links don't break in either mode */
+a[href] {
+  display: inline-block;
+  white-space: nowrap; /* Prevents breaking within the link */
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis; /* Native ellipsis for when truncated */
+}
+
+/* Optional: Add a hover effect to show full URL on hover even in truncated mode */
+.truncate-links a[href]:hover span.invisible {
+  display: inline;
+}
   </style>
 
 
