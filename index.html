@@ -22,15 +22,15 @@
       text-overflow: ellipsis;
       vertical-align: bottom;
     }
+
     .truncate-links a[href] span.ellipsis {
       display: inline;
     }
+
     .truncate-links a[href] span.invisible {
       display: none;
     }
   </style>
-
-
 
   <script>
 
@@ -610,10 +610,8 @@
       }
     }
 
-    // Notifications
+    // notifications
 
-
-    // SQL to create the notifications permanent table
     window.createNotifications = `
       create table notifications (
         id text primary key,
@@ -645,7 +643,6 @@
       )
     `
 
-    // SQL to update the notifications table
     window.updateNotifications = `
       with limited_notifications as (
         select *
@@ -709,12 +706,10 @@
       from limited_notifications
     `
 
-    // SQL to count notifications in the local table
     window.countNotifications = `
       select count(*) as count from notifications
     `
 
-    // Function to read from the permanent notifications table
     window.permanentNotifications = function (count) {
       return {
         sql: `
@@ -747,7 +742,6 @@
       }
     }
 
-    // Utility function to get notification type display text
     window.getNotificationType = function (category) {
       if (!category) return '';
 
@@ -763,6 +757,16 @@
       };
 
       return types[category] || category;
+    }
+
+    // search
+
+    window.searchTootsHome = function (query) {
+      // Escape single quotes for SQL safety (very basic)
+      const safe = (query || '').replace(/'/g, "''");
+      return {
+        sql: `select id, created_at, display_name, content, reblog_content\nfrom toots_home\nwhere (content like '%${safe}%' or reblog_content like '%${safe}%')\norder by created_at desc\nlimit 100`
+      };
     }
 
     // helpers
@@ -878,11 +882,12 @@
       return window.hasHeader(header_url) ? '-2rem' : '0'
     }
 
-    // Link truncation toggling
-    window.enableLinkTruncation = function() {
+    // link truncation
+    window.enableLinkTruncation = function () {
       document.body.classList.add('truncate-links');
     }
-    window.disableLinkTruncation = function() {
+
+    window.disableLinkTruncation = function () {
       document.body.classList.remove('truncate-links');
     }
 
@@ -901,7 +906,7 @@
     }
     window.addEventListener('DOMContentLoaded', initTruncateLinksSetting);
 
-    window.setTruncateLinks = function(enabled) {
+    window.setTruncateLinks = function (enabled) {
       console.log('truncate', enabled)
       localStorage.setItem('truncateLinks', enabled ? 'true' : 'false');
       if (enabled) {
@@ -918,14 +923,6 @@
     window.listAllTables = `
       select name from sqlite_master where type='table' order by name
     `
-
-    window.searchTootsHome = function(query) {
-  // Escape single quotes for SQL safety (very basic)
-  const safe = (query || '').replace(/'/g, "''");
-  return {
-    sql: `select id, created_at, display_name, content, reblog_content\nfrom toots_home\nwhere (content like '%${safe}%' or reblog_content like '%${safe}%')\norder by created_at desc\nlimit 100`
-  };
-}
 
   </script>
 </head>

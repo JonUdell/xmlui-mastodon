@@ -28,8 +28,8 @@
   </AppHeader>
 
   <ModalDialog
-    id="settingsDialog"
-    title="Settings"
+      id="settingsDialog"
+      title="Settings"
     width="50%"
   >
     <Tools />
@@ -37,15 +37,15 @@
 
   <NavPanel>
 
-    <NavLink label="Home"           to="/"                  icon="home"         onClick="{setNav('/')}"               />
-    <NavLink label="Notifications"  to="/notifications"     icon="info"         onClick="{setNav('/notifications')}"  />
-    <NavLink label="Search"         to="/search"            icon="search"       onClick="{setNav('/search')}"          />
-    <NavLink label="Followers"      to="/followers"         icon="users"        onClick="{setNav('/followers')}"      />
-    <NavLink label="Following"      to="/following"         icon="users"        onClick="{setNav('/following')}"      />
-    <NavLink label="Query"          to="/query"             icon="database"     onClick="{setNav('/query')}"          />
-    <NavLink label="ProjectLog"     to="/projectLog"        icon="doc-outline"  onClick="{setNav('/projectLog')}"     />
-    <NavLink label="Palettes"       to="/palettes"          icon="palette"      onClick="{setNav('/palettes')}"       />
-    <NavLink label="Icons"          to="/icons"             icon=""             onClick="{setNav('/icons')}"          />
+    <NavLink label=" Home"           to="/"                  icon="home"         onClick="{setNav('/')}"               />
+    <NavLink label=" Notifications"  to="/notifications"     icon="info"         onClick="{setNav('/notifications')}"  />
+    <NavLink label=" Search"         to="/search"            icon="search"       onClick="{setNav('/search')}"         />
+    <NavLink label=" Followers"      to="/followers"         icon="users"        onClick="{setNav('/followers')}"      />
+    <NavLink label=" Following"      to="/following"         icon="users"        onClick="{setNav('/following')}"      />
+    <NavLink label=" Query"          to="/query"             icon="database"     onClick="{setNav('/query')}"          />
+    <NavLink label=" ProjectLog"     to="/projectLog"        icon="doc-outline"  onClick="{setNav('/projectLog')}"     />
+    <NavLink label=" Palettes"       to="/palettes"          icon="palette"      onClick="{setNav('/palettes')}"       />
+    <NavLink label=" Icons"          to="/icons"             icon=""             onClick="{setNav('/icons')}"          />
 
   </NavPanel>
 
