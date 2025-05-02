@@ -1,6 +1,5 @@
 <Component name="Search" var.query="" var.activeQuery="" var.results="[]">
 
-    <H1>Search Toots</H1>
     <HStack>
       <TextBox
         placeholder="Enter search term..."
@@ -30,8 +29,10 @@
       />
       <Items data="{searchResults}">
         <VStack>
-          <Text variant="strong">{$item.display_name}</Text>
-          <Text variant="caption">{$item.created_at}</Text>
+          <HStack paddingLeft="2rem" paddingRight="2rem" width="20%" backgroundColor="$color-primary-100" horizontalAlignment="center" verticalAlignment="end">
+            <Text variant="strong">{$item.display_name}</Text>
+            <Text fontSize="smaller">{$item.created_at}</Text>
+          </HStack>
           <Markdown content="{$item.content}" />
         </VStack>
       </Items>
