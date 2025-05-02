@@ -3,7 +3,7 @@
 - [Purpose](#purpose)
 - [Setup](#setup)
 - [Rules for AI helpers](#rules-for-ai-helpers)
-- [Snapshot 27: Add setting for link truncation, make settings page-sensitive]()
+- [Snapshot 27: Add setting for link truncation, make settings page-sensitive](#snapshot-27-add-setting-for-link-truncation-make-settings-page-sensitive)
 - [Snapshot 26: Decouple loading SQL queries from running them](#snapshot-26-decouple-loading-sql-queries-from-running-them)
 - [Snapshot 25: Extract Cog (Settings) icon from Home and Notifications, centralize in sticky AppHeader](#snapshot-25-extract-cog-settings-icon-from-home-and-notifications-centralize-in-sticky-appheader)
 - [Snapshot 24: Adding a Notifications Page to the Mastodon App](#snapshot-24-adding-a-notifications-page-to-the-mastodon-app)
@@ -111,6 +111,14 @@ The [xmlui tool](https://github.com/jonudell/xmlui-mcp) enables them to read the
 # Snapshot 27: Add setting for link truncation, make settings page-sensitive
 
 ![snapshot27](../resources/snapshot27.png)
+
+- Added a toggle in Tools to enable/disable link truncation for long links, using a Switch component.
+
+- The truncation setting is persisted in localStorage and defaults to ON if unset.
+
+- The setting is now page-sensitive, for example the image zoom slider in Tools is hidden when Tools is opened from the ProjectLog page.
+
+- Explored XMLUI docs and confirmed there is no built-in global for current page; navigation state must be tracked manually, filed an issue for that
 
 # Snapshot 26: Decouple loading SQL queries from running them
 
