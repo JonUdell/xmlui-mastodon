@@ -1,4 +1,4 @@
-<Component name="Search" var.query="" var.activeQuery="" var.results="[]">
+<Component name="Search" var.query="" var.activeQuery="">
 
     <HStack>
       <TextBox
@@ -18,22 +18,30 @@
         url="{ window.query }"
         body="{ window.searchTootsHome(activeQuery) }"
         method="POST"
-        onLoaded="(data) => {
-          results = (data || []).map(item => ({
-            id: item.id,
-            created_at: item.created_at,
-            display_name: item.display_name,
-            content: item.reblog_content || item.content
-          }));
-        }"
+        transformResult="{(data) => (data || []).map(item => ({
+          id: item.id,
+          created_at: item.created_at,
+          display_name: item.display_name,
+          username: item.username,
+          url: item.instance_qualified_reblog_url || item.instance_qualified_url,
+          content: item.reblog_content || item.content
+        }))}"
       />
       <Items data="{searchResults}">
         <VStack>
-          <HStack paddingLeft="2rem" paddingRight="2rem" width="20%" backgroundColor="$color-primary-100" horizontalAlignment="center" verticalAlignment="end">
+          <HStack paddingLeft="1rem" backgroundColor="$color-primary-100" horizontalAlignment="left" verticalAlignment="end">
             <Text variant="strong">{$item.display_name}</Text>
             <Text fontSize="smaller">{$item.created_at}</Text>
           </HStack>
           <Markdown content="{$item.content}" />
+          <Text fontSize="smaller" color="$color-primary-600">
+            URL:  <a href="{$item.url}" target="_blank">{$item.url}</a>
+          </Text>
+          <!--
+          <Text preserveLinebreaks="true">
+            {JSON.stringify($item, null, 2)}
+          </Text>
+          -->
         </VStack>
       </Items>
     </Fragment>
