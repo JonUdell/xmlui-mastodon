@@ -39,6 +39,7 @@
 
     <NavLink label="Home"           to="/"                  icon="home"         onClick="{setNav('/')}"               />
     <NavLink label="Notifications"  to="/notifications"     icon="info"         onClick="{setNav('/notifications')}"  />
+    <NavLink label="Search"         to="/search"            icon="search"       onClick="{setNav('/search')}"          />
     <NavLink label="Followers"      to="/followers"         icon="users"        onClick="{setNav('/followers')}"      />
     <NavLink label="Following"      to="/following"         icon="users"        onClick="{setNav('/following')}"      />
     <NavLink label="Query"          to="/query"             icon="database"     onClick="{setNav('/query')}"          />
@@ -56,6 +57,10 @@
 
     <Page url="/notifications">
       <Notifications />
+    </Page>
+
+    <Page url="/search">
+      <Search />
     </Page>
 
     <Page url="/followers">
