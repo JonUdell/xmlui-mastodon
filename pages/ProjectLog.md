@@ -3,6 +3,7 @@
 - [Purpose](#purpose)
 - [Setup](#setup)
 - [Rules for AI helpers](#rules-for-ai-helpers)
+- [Snapshot 27: Add setting for link truncation, make settings page-sensitive]()
 - [Snapshot 26: Decouple loading SQL queries from running them](#snapshot-26-decouple-loading-sql-queries-from-running-them)
 - [Snapshot 25: Extract Cog (Settings) icon from Home and Notifications, centralize in sticky AppHeader](#snapshot-25-extract-cog-settings-icon-from-home-and-notifications-centralize-in-sticky-appheader)
 - [Snapshot 24: Adding a Notifications Page to the Mastodon App](#snapshot-24-adding-a-notifications-page-to-the-mastodon-app)
@@ -106,6 +107,10 @@ The [xmlui tool](https://github.com/jonudell/xmlui-mcp) enables them to read the
 8. never touch the dom. we only work within xmlui abstractions inside the App realm
 
 9. keep complex functions and expressions out of xmlui, they should live in index.html
+
+# Snapshot 27: Add setting for link truncation, make settings page-sensitive
+
+![snapshot27](../resources/snapshot27.png)
 
 # Snapshot 26: Decouple loading SQL queries from running them
 
