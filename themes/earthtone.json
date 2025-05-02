@@ -15,26 +15,6 @@
 
     "borderRadius-Avatar": "50%",
 
-    "marginBottom-Text-markdown": "1rem",
-
-    "marginBottom-H1": "1rem",
-
-    "marginTop-H2": "1rem",
-    "marginBottom-H2": "1rem",
-
-    "marginTop-H3": "1rem",
-    "marginBottom-H3": "1rem",
-
-
-    "marginTop-Text-codefence": "1.5rem",
-    "marginBottom-Text-codefence": "1.5rem",
-
-    "marginTop-Admonition": "1rem",
-    "marginTop-Blockquote": "1rem",
-
-    "width-HtmlImage": "80%",
-
-
     "light": {
     },
     "dark": {
