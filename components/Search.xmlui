@@ -22,7 +22,7 @@
       method="POST"
       transformResult="{(data) => (data || []).map(item => ({
           id: item.id,
-          created_at: item.created_at,
+          created_at: window.formatHumanReadableDate(item.created_at),
           display_name: item.display_name,
           username: item.username,
           url: item.instance_qualified_reblog_url || item.instance_qualified_url,
@@ -30,7 +30,7 @@
           reblog_content: item.reblog_content,
           reblog_display_name: item.reblog_display_name,
           reblog_username: item.reblog_username,
-          reblog_created_at: item.reblog_created_at
+          reblog_created_at: window.formatHumanReadableDate(item.reblog_created_at)
         }))}"
     />
 
@@ -48,12 +48,8 @@
           <Text fontSize="smaller">{$item.reblog_created_at}</Text>
         </HStack>
 
-        <HStack paddingLeft="1rem">
-          <Text variant="caption">@{$item.username} → @{$item.reblog_username}</Text>
-        </HStack>
-
         <Markdown content="{$item.reblog_content}" />
-        
+
         <Text fontSize="smaller" color="$color-primary-600">URL: <a href="{$item.url}" target="_blank">{$item.url}</a></Text>
 
       </Fragment>
@@ -67,12 +63,8 @@
           <Text fontSize="smaller">{$item.created_at}</Text>
         </HStack>
 
-        <HStack paddingLeft="1rem">
-          <Text variant="caption">@{$item.username}</Text>
-        </HStack>
-
         <Markdown content="{$item.content}" />
-        
+
         <Text fontSize="smaller" color="$color-primary-600">URL: <a href="{$item.url}" target="_blank">{$item.url}</a></Text>
       </Fragment>
 
