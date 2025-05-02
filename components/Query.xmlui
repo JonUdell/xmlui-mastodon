@@ -7,13 +7,16 @@
     {
       example: 'select 1',
       loading: false,
-      results: []
+      results: [],
+      runSql: '',
+      nonce: 0
     }
   }"
 />
 
 <!--
 <Text>appState: {JSON.stringify(appState.value, null, 2) }</Text>
+<Text>Loading state: {appState.value.loading ? 'Loading' : 'Not Loading'}</Text>
 -->
 
 <HStack>
@@ -30,17 +33,25 @@
 
       <Button
         label="{appState.value.loading ? 'Loading...' : 'Run Query'}"
-        onClick="{ window.updateQueryWithNonce(sqlQueryInput.value, appState.update) }"
+        onClick="{
+          appState.update({
+            runSql: sqlQueryInput.value,
+            loading: true,
+            results: [],
+            nonce: appState.value.nonce + 1
+          })
+        }"
         enabled="{!appState.value.loading}"
       />
 
-      <Fragment when="{appState.value.example }">
+      <Fragment when="{appState.value.nonce > 0}">
         <DataSource
           id="queryResults"
           url="{ window.query }"
-          body="{ window.customSql(appState.value.example) }"
+          body="{ { sql: `-- ${appState.value.nonce}\n\n${appState.value.runSql}` } }"
           method="POST"
           onLoaded="{ appState.update( { loading: false, results: queryResults.value } ) }"
+          onError="{ appState.update( { loading: false, results: [{ error: queryResults.error }] } ) }"
         />
       </Fragment>
 

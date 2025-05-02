@@ -8,9 +8,7 @@
         icon="chevronleft"
         onClick="{
           appState.update({
-            example: window[$props.example],
-            loading: true,
-            results: []
+            example: window[$props.example]
           });
         }"
         enabled="{!appState.value.loading}"
