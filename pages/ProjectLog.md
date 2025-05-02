@@ -3,7 +3,7 @@
 - [Purpose](#purpose)
 - [Setup](#setup)
 - [Rules for AI helpers](#rules-for-ai-helpers)
-
+- [Snapshot 26: Decouple loading SQL queries from running them](#snapshot-26-decouple-loading-sql-queries-from-running-them)
 - [Snapshot 25: Extract Cog (Settings) icon from Home and Notifications, centralize in sticky AppHeader](#snapshot-25-extract-cog-settings-icon-from-home-and-notifications-centralize-in-sticky-appheader)
 - [Snapshot 24: Adding a Notifications Page to the Mastodon App](#snapshot-24-adding-a-notifications-page-to-the-mastodon-app)
 - [Snapshot 23: Resolving Steampipe Cache Issues with Mastodon Plugin (SQLite Embedded)](#snapshot-23-resolving-steampipe-cache-issues-with-mastodon-plugin-sqlite-embedded)
@@ -106,6 +106,42 @@ The [xmlui tool](https://github.com/jonudell/xmlui-mcp) enables them to read the
 8. never touch the dom. we only work within xmlui abstractions inside the App realm
 
 9. keep complex functions and expressions out of xmlui, they should live in index.html
+
+# Snapshot 26: Decouple loading SQL queries from running them
+
+![snapshot26](../resources/snapshot26.png)
+
+The previous implementation had an undesired reactivity connection between sample query buttons and query execution. When a user clicked a sample query button:
+
+1. It would update `appState.example` with the sample SQL
+2. It would also set `loading: true` and clear results
+3. This would trigger the DataSource to immediately execute the query
+
+This created a poor user experience because:
+- You couldn't review or modify a sample query before executing it
+- Every example click would result in a server request
+- Clicking another example while a query was running could lead to race conditions
+
+We implemented a clean separation between loading example queries and executing them by:
+
+1. **Separating State Concerns**:
+   - `appState.example`: Stores what's displayed in the TextArea
+   - `appState.runSql`: Stores what's actually executed by the DataSource
+   - `appState.nonce`: Counter that increments with each execution request
+
+2. **Decoupling Sample Query Buttons**:
+   - Modified `QueryExample.xmlui` to only update `appState.example` without triggering loading or execution
+
+3. **Making Run Query the Only Execution Trigger**:
+   - Modified the "Run Query" button to:
+     - Update `appState.runSql` with the current TextArea value
+     - Increment `appState.nonce`
+     - Set `loading: true` and clear previous results
+
+4. **Improving DataSource Control**:
+   - Only render the DataSource when `nonce > 0` (prevents query on initial load)
+   - Include the nonce in the SQL comment to ensure unique requests
+   - Added proper error handling to reset loading state in all cases
 
 # Snapshot 25: Extract Cog (Settings) icon from Home and Notifications, centralize in sticky AppHeader
 
