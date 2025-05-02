@@ -1,74 +1,54 @@
 <Component name="Home"
   var.imageZoom="{20}"
 >
-  <AppState id="dataFlowState" bucket="dataFlow" initialValue="{ {
-    ephemeralLoaded: false,
-    permanentUpdated: false,
-    permanentLoaded: false
-  } }" />
+<AppState id="dataFlowState" bucket="dataFlow" initialValue="{ {
+  ephemeralLoaded: false,
+  permanentUpdated: false,
+  permanentLoaded: false
+} }" />
 
-  <AppState id="toolsState" bucket="toolsState" initialValue="{ { zoom: 20 } }" />
+<AppState id="toolsState" bucket="toolsState" initialValue="{ { zoom: 20 } }" />
 
-  <!-- Fetch from ephemeral table first -->
-  <DataSource
-    id="ephemeralToots"
-    url="{ window.query }"
-    body="{ window.tootsHome(50) }"
-    method="POST"
-    onLoaded="() => {
-      // Only initiate the update flow if we haven't already done so
-      if (!dataFlowState.value.ephemeralLoaded) {
-        dataFlowState.update({ ephemeralLoaded: true });
-        updateTootsHome.execute();
-      }
-    }"
-  />
+<DataSource
+  id="ephemeralToots"
+  url="{ window.query }"
+  body="{ window.tootsHome(50) }"
+  method="POST"
+  onLoaded="() => {
+    // Only initiate the update flow if we haven't already done so
+    if (!dataFlowState.value.ephemeralLoaded) {
+      dataFlowState.update({ ephemeralLoaded: true });
+      updateTootsHome.execute();
+    }
+  }"
+/>
 
-  <!-- Update permanent storage -->
-  <APICall
-    id="updateTootsHome"
-    method="post"
-    url="{window.query}"
-    body="{{ sql: window.updateTootsHome }}"
-    errorNotificationMessage="${error.statusCode}, {JSON.stringify($error.details)}"
-    onSuccess="() => {
-      // Only trigger permanent data load if we haven't already done so
-      if (!dataFlowState.value.permanentLoaded) {
-        dataFlowState.update({ permanentUpdated: true });
-        permanentToots.refetch();
-      }
-    }"
-  />
+<APICall
+  id="updateTootsHome"
+  method="post"
+  url="{window.query}"
+  body="{{ sql: window.updateTootsHome }}"
+  errorNotificationMessage="${error.statusCode}, {JSON.stringify($error.details)}"
+  onSuccess="() => {
+    // Only trigger permanent data load if we haven't already done so
+    if (!dataFlowState.value.permanentLoaded) {
+      dataFlowState.update({ permanentUpdated: true });
+      permanentToots.refetch();
+    }
+  }"
+/>
 
-  <!-- This DataSource reads from the permanent table for display -->
-  <DataSource
-    id="permanentToots"
-    url="{ window.query }"
-    body="{ window.permanentTootsHome(50) }"
-    method="POST"
-    onLoaded="() => {
-      dataFlowState.update({ permanentLoaded: true });
-    }"
-  />
+<!-- This DataSource reads from the permanent table for display -->
+<DataSource
+  id="permanentToots"
+  url="{ window.query }"
+  body="{ window.permanentTootsHome(50) }"
+  method="POST"
+  onLoaded="() => {
+    dataFlowState.update({ permanentLoaded: true });
+  }"
+/>
 
-  <!--
-  <DataSource
-    id="testAccount"
-    url="{ window.query }"
-    method="POST"
-    body="{ window.lookupAccount('112844462759994990') }"
-    onLoaded="(data) => {
-      if (data && data.length > 0 && data[0].username) {
-        window.accountCache['112844462759994990'] = data[0];
-      }
-    }"
-    completedNotificationMessage="lookupAccount test"
-  >
-    <Text>Account info: {testAccount.value && testAccount.value.length > 0 && testAccount.value[0].username ? JSON.stringify(testAccount.value[0]) : 'Loading...'}</Text>
-  </DataSource>
-
-  <Text>accountCache: { JSON.stringify(window.accountCache) } </Text>
-  -->
 
   <VStack>
     <HStack>
@@ -171,7 +151,7 @@
               </HStack>
 
               <!-- Original content -->
-              <VStack marginLeft="0.5rem" backgroundColor="$color-surface-100" padding="$space-4"
+              <VStack marginLeft="0.5rem" padding="$space-4"
                 borderRadius="0.25rem">
                 <Markdown content="{$item.reblog_content}" />
 
@@ -225,5 +205,6 @@
     </HStack>
 
   </VStack>
+
 
 </Component>
