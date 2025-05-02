@@ -140,6 +140,13 @@
         example="countNotifications"
       />
 
+      <Text>Meta</Text>
+
+      <QueryExample
+        title="List all tables"
+        example="listAllTables"
+      />
+
      <Markdown><![CDATA[
       <details>
         <img src="resources/query-example-flow.png"/>
