@@ -12,7 +12,9 @@
       onClick="{ activeQuery = query }"
     />
   </HStack>
+
   <Fragment when="{activeQuery}">
+
     <DataSource
       id="searchResults"
       url="{ window.query }"
@@ -26,46 +28,56 @@
           url: item.instance_qualified_reblog_url || item.instance_qualified_url,
           content: item.reblog_content || item.content,
           reblog_content: item.reblog_content,
-          avatar_url: item.avatar_url,
-          reblog_avatar_url: item.reblog_avatar_url,
           reblog_display_name: item.reblog_display_name,
           reblog_username: item.reblog_username,
           reblog_created_at: item.reblog_created_at
         }))}"
     />
+
     <Items data="{searchResults}">
-      <VStack>
-        <!-- Reblog pattern -->
-        <Fragment when="{$item.reblog_content}">
-          <HStack verticalAlignment="center" gap="0.5rem">
-            <Text variant="caption">{$item.display_name}</Text>
-            <Icon name="arrowright" size="md" />
-            <Text variant="strong">{$item.reblog_display_name}</Text>
-            <Text variant="caption">@{$item.reblog_username}</Text>
-          </HStack>
-          <SpaceFiller />
-          <Text variant="caption">{$item.reblog_created_at}</Text>
-          <VStack marginLeft="0.5rem" padding="$space-4" borderRadius="0.25rem">
-            <Markdown content="{$item.reblog_content}" />
-          </VStack>
-        </Fragment>
-        <!-- Regular pattern -->
-        <Fragment when="{$item.content}">
-          <HStack paddingLeft="1rem" backgroundColor="$color-primary-100" horizontalAlignment="left"
-            verticalAlignment="end">
-            <Text variant="strong">{$item.display_name}</Text>
-            <Text fontSize="smaller">{$item.created_at}</Text>
-          </HStack>
-          <Markdown content="{$item.content}" />
-        </Fragment>
-        <Text fontSize="smaller" color="$color-primary-600"> URL: <a href="{$item.url}"
-            target="_blank">{$item.url}</a>
-        </Text>
-        <Text preserveLinebreaks="true">
-          {JSON.stringify($item, null, 2)}
-        </Text>
-      </VStack>
+
+      <!-- Reblog pattern -->
+      <Fragment when="{$item.reblog_content}">
+
+        <HStack paddingLeft="1rem" backgroundColor="$color-primary-100" horizontalAlignment="left"
+          verticalAlignment="end" width="100%">
+          <Text variant="strong">{$item.display_name}</Text>
+          <Text fontSize="smaller">{$item.created_at}</Text>
+          <Icon name="arrowright" size="md" />
+          <Text variant="strong">{$item.reblog_display_name}</Text>
+          <Text fontSize="smaller">{$item.reblog_created_at}</Text>
+        </HStack>
+
+        <HStack paddingLeft="1rem">
+          <Text variant="caption">@{$item.username} → @{$item.reblog_username}</Text>
+        </HStack>
+
+        <Markdown content="{$item.reblog_content}" />
+
+      </Fragment>
+
+      <!-- Regular pattern -->
+      <Fragment when="{$item.content}">
+
+        <HStack paddingLeft="1rem" backgroundColor="$color-primary-100" horizontalAlignment="left"
+          verticalAlignment="end" width="100%">
+          <Text variant="strong">{$item.display_name}</Text>
+          <Text fontSize="smaller">{$item.created_at}</Text>
+        </HStack>
+
+        <HStack paddingLeft="1rem">
+          <Text variant="caption">@{$item.username}</Text>
+        </HStack>
+
+        <Markdown content="{$item.content}" />
+      </Fragment>
+
+      <Text variant="caption">URL: {$item.url}</Text>
+
+      <ContentSeparator />
+
     </Items>
+
   </Fragment>
 
 </Component>
