@@ -768,48 +768,6 @@
 
     // helpers
 
-    window.updateQueryWithNonce = function (query, appStateUpdateFn) {
-      /*
-
-       window.updateQueryWithNonce
-
-       This function is used to ensure that every query execution is unique, even if the SQL text is the same as a previous run.
-       It does this by prepending a nonce (a timestamp comment) to the query string. This forces XMLUI's DataSource to treat each
-       request as new, which is necessary for proper reactivity and UI state management.
-
-       The function receives two arguments:
-         - query: The raw SQL query string.
-         - appStateUpdateFn: A function to update the AppState (typically from a Button click in Query.xmlui).
-
-       When a Button in Query.xmlui is clicked, it calls this function, passing in the query and an AppState update function.
-       The function strips any existing nonce, prepends a new one, and then updates the AppState with the new query and loading state.
-       This ensures that the DataSource bound to the AppState will always see a new query and trigger a fetch, even if the SQL is unchanged.
-
-       This pattern is essential for coordinating query execution and UI state across multiple components/buttons that may trigger queries.
-
-       Example usage in Query.xmlui:
-         <Button onClick="window.updateQueryWithNonce(query, appState.update)" ... />
-
-       This guarantees that every click results in a unique query and a proper UI loading cycle.
-      */
-
-      console.log('Executing query:', query);
-      // Get the raw query without any existing nonce comment
-      const rawQuery = query.replace(/^-- [0-9]+\n\n/, '');
-      // Add nonce comment at the beginning
-      const queryWithNonce = `-- ${Date.now()}\n\n${rawQuery}`;
-      console.log('Modified query with nonce:', queryWithNonce);
-
-      // Update the app state
-      appStateUpdateFn({
-        example: queryWithNonce,
-        loading: true,
-        results: []
-      });
-
-      return queryWithNonce;
-    }
-
     window.customSql = function (query) {
       //console.log('Running query:', query);
       return {
