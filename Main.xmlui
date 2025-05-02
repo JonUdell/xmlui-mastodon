@@ -5,6 +5,8 @@
   defaultTheme="earthtone"
 >
 
+  <AppState id="navState" bucket="navState" initialValue="{ {page: '/'} }" />
+
   <DataSource
     id="data"
     url="{ window.query }"
@@ -34,14 +36,16 @@
   </ModalDialog>
 
   <NavPanel>
-    <NavLink label="Home" to="/" icon="home" />
-    <NavLink label="Notifications" to="/notifications" icon="info" />
-    <NavLink label="Followers" to="/followers" icon="users" />
-    <NavLink label="Following" to="/following" icon="users" />
-    <NavLink label="Query" to="/queryPlayground" icon="database" />
-    <NavLink label="ProjectLog" to="/projectLog" icon="doc-outline" />
-    <NavLink label="Palettes" to="/palettes" icon="palette" />
-    <NavLink label="Icons" to="/icons" icon="" />
+
+    <NavLink label="Home"           to="/"                  icon="home"         onClick="{setNav('/')}"               />
+    <NavLink label="Notifications"  to="/notifications"     icon="info"         onClick="{setNav('/notifications')}"  />
+    <NavLink label="Followers"      to="/followers"         icon="users"        onClick="{setNav('/followers')}"      />
+    <NavLink label="Following"      to="/following"         icon="users"        onClick="{setNav('/following')}"      />
+    <NavLink label="Query"          to="/query"             icon="database"     onClick="{setNav('/query')}"          />
+    <NavLink label="ProjectLog"     to="/projectLog"        icon="doc-outline"  onClick="{setNav('/projectLog')}"     />
+    <NavLink label="Palettes"       to="/palettes"          icon="palette"      onClick="{setNav('/palettes')}"       />
+    <NavLink label="Icons"          to="/icons"             icon=""             onClick="{setNav('/icons')}"          />
+
   </NavPanel>
 
   <Pages >
@@ -66,7 +70,7 @@
       <Markdown data="/pages/projectLog.md" />
     </Page>
 
-    <Page url="/queryPlayground">
+    <Page url="/query">
       <Query />
     </Page>
 

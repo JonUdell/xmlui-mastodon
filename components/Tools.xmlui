@@ -1,18 +1,32 @@
 <Component name="Tools">
+
   <AppState id="toolsState" bucket="toolsState" />
-  <Slider
-    width="100%"
-    label="Image Zoom"
-    minValue="{0}"
-    maxValue="{100}"
-    step="{10}"
-    initialValue="{toolsState.value.zoom}"
-    showValues="true"
-    onDidChange="(value) => { toolsState.update({ zoom: value }) }"
-  />
-  <Switch
-    label="Truncate long links"
-    initialValue="{localStorage.getItem('truncateLinks')}"
-    onDidChange="(value) => { window.setTruncateLinks(value); toolsState.update({ truncateLinks: value }); }"
-  />
+
+  <AppState id="navState" bucket="navState" />
+
+  <Fragment when="{['/', '/notifications'].includes(navState.value.page)}">
+
+    <Slider
+      width="100%"
+      label="Image zoom"
+      minValue="{0}"
+      maxValue="{100}"
+      step="{10}"
+      initialValue="{toolsState.value.zoom}"
+      showValues="true"
+      onDidChange="(value) => { toolsState.update({ zoom: value }) }"
+    />
+
+  </Fragment>
+
+  <Fragment when="{['/', '/notifications', '/projectLog'].includes(navState.value.page)}">
+
+    <Switch
+      label="Truncate long links"
+      initialValue="{localStorage.getItem('truncateLinks')}"
+      onDidChange="(value) => { window.setTruncateLinks(value); toolsState.update({ truncateLinks: value }); }"
+    />
+
+  </Fragment>
+
 </Component>

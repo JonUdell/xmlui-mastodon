@@ -1,5 +1,5 @@
 <Component name="Home">
->
+
 <AppState id="dataFlowState" bucket="dataFlow" initialValue="{ {
   ephemeralLoaded: false,
   permanentUpdated: false,
