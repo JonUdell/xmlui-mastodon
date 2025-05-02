@@ -1,5 +1,4 @@
-<Component name="Home"
-  var.imageZoom="{20}"
+<Component name="Home">
 >
 <AppState id="dataFlowState" bucket="dataFlow" initialValue="{ {
   ephemeralLoaded: false,

@@ -1,6 +1,5 @@
-<Component name="Notifications"
-  var.imageZoom="{20}"
->
+<Component name="Notifications">
+
   <AppState id="toolsState" bucket="toolsState" initialValue="{ { zoom: 20 } }" />
 
   <DataSource
