@@ -53,6 +53,8 @@
         </HStack>
 
         <Markdown content="{$item.reblog_content}" />
+        
+        <Text fontSize="smaller" color="$color-primary-600">URL: <a href="{$item.url}" target="_blank">{$item.url}</a></Text>
 
       </Fragment>
 
@@ -70,9 +72,9 @@
         </HStack>
 
         <Markdown content="{$item.content}" />
+        
+        <Text fontSize="smaller" color="$color-primary-600">URL: <a href="{$item.url}" target="_blank">{$item.url}</a></Text>
       </Fragment>
-
-      <Text variant="caption">URL: {$item.url}</Text>
 
       <ContentSeparator />
 
