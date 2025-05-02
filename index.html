@@ -9,24 +9,26 @@
   <script src="config.js"></script>
 
   <style>
-a[href] {
-  display: inline-block; /* This is key - works for both inline and block contexts */
-  max-width: 300px; /* Adjust as needed */
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis; /* This adds the visual ellipsis */
-  vertical-align: bottom; /* Helps with alignment */
-}
+    [class*="_img_"] {
+      margin-left: 1.5rem;
+    }
 
-/* Show only the ellipsis part of the internal structure */
-a[href] span.ellipsis {
-  display: inline;
-}
+    a[href] {
+      display: inline-block;
+      max-width: 300px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      vertical-align: bottom;
+    }
 
-/* Hide the invisible spans */
-a[href] span.invisible {
-  display: none;
-}
+    a[href] span.ellipsis {
+      display: inline;
+    }
+
+    a[href] span.invisible {
+      display: none;
+    }
   </style>
 
 
