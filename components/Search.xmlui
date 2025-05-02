@@ -1,4 +1,4 @@
-<Component name="Search" var.query="" var.activeQuery="">
+<Component name="Search" var.query="" var.activeQuery="" var.results="[]">
 
     <H1>Search Toots</H1>
     <HStack>
@@ -19,10 +19,22 @@
         url="{ window.query }"
         body="{ window.searchTootsHome(activeQuery) }"
         method="POST"
+        onLoaded="(data) => {
+          results = (data || []).map(item => ({
+            id: item.id,
+            created_at: item.created_at,
+            display_name: item.display_name,
+            content: item.reblog_content || item.content
+          }));
+        }"
       />
-      <Text variant="code" preserveLinebreaks="true" >
-        { JSON.stringify(searchResults.value, null, 2) }
-      </Text>
+      <Items data="{searchResults}">
+        <VStack>
+          <Text variant="strong">{$item.display_name}</Text>
+          <Text variant="caption">{$item.created_at}</Text>
+          <Markdown content="{$item.content}" />
+        </VStack>
+      </Items>
     </Fragment>
 
 </Component>
