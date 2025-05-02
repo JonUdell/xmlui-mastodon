@@ -13,7 +13,8 @@
       margin-left: 1.5rem;
     }
 
-    a[href] {
+    /* Truncation rules moved into a class for toggling */
+    .truncate-links a[href] {
       display: inline-block;
       max-width: 300px;
       white-space: nowrap;
@@ -21,12 +22,10 @@
       text-overflow: ellipsis;
       vertical-align: bottom;
     }
-
-    a[href] span.ellipsis {
+    .truncate-links a[href] span.ellipsis {
       display: inline;
     }
-
-    a[href] span.invisible {
+    .truncate-links a[href] span.invisible {
       display: none;
     }
   </style>
@@ -879,6 +878,42 @@
       return window.hasHeader(header_url) ? '-2rem' : '0'
     }
 
+    // Link truncation toggling
+    window.enableLinkTruncation = function() {
+      document.body.classList.add('truncate-links');
+    }
+    window.disableLinkTruncation = function() {
+      document.body.classList.remove('truncate-links');
+    }
+
+    function initTruncateLinksSetting() {
+      let truncate = localStorage.getItem('truncateLinks');
+      if (truncate === null) {
+        truncate = 'true';
+        localStorage.setItem('truncateLinks', truncate);
+      }
+      // Apply truncation state
+      window.setTruncateLinks(truncate === 'true');
+      // Try to update toolsState if available
+      if (window.toolsState && typeof window.toolsState.update === 'function') {
+        window.toolsState.update({ truncateLinks: truncate === 'true' });
+      }
+    }
+    window.addEventListener('DOMContentLoaded', initTruncateLinksSetting);
+
+    window.setTruncateLinks = function(enabled) {
+      console.log('truncate', enabled)
+      localStorage.setItem('truncateLinks', enabled ? 'true' : 'false');
+      if (enabled) {
+        window.enableLinkTruncation();
+      } else {
+        window.disableLinkTruncation();
+      }
+      // Keep toolsState in sync if available
+      if (window.toolsState && typeof window.toolsState.update === 'function') {
+        window.toolsState.update({ truncateLinks: enabled });
+      }
+    }
 
   </script>
 </head>

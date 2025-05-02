@@ -10,4 +10,9 @@
     showValues="true"
     onDidChange="(value) => { toolsState.update({ zoom: value }) }"
   />
+  <Switch
+    label="Truncate long links"
+    initialValue="{localStorage.getItem('truncateLinks')}"
+    onDidChange="(value) => { window.setTruncateLinks(value); toolsState.update({ truncateLinks: value }); }"
+  />
 </Component>
