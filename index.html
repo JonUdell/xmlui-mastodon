@@ -765,20 +765,28 @@
   // Escape single quotes for SQL safety (very basic)
   const safe = (query || '').replace(/'/g, "''");
   return {
-    sql: `select 
-      id, 
-      created_at, 
-      display_name, 
-      username, 
-      instance_qualified_url, 
-      instance_qualified_reblog_url, 
-      content, 
+    sql: `select
+      id,
+      created_at,
+      display_name,
+      username,
+      instance_qualified_url,
+      instance_qualified_reblog_url,
+      content,
       reblog_content,
       reblog_display_name,
       reblog_username,
       reblog_created_at
     from toots_home
-    where (content like '%${safe}%' or reblog_content like '%${safe}%' or url like '%${safe}%' or username like '%${safe}%' or display_name like '%${safe}%')
+    where (
+      content like '%${safe}%'
+      or reblog_content like '%${safe}%'
+      or url like '%${safe}%'
+      or username like '%${safe}%'
+      or display_name like '%${safe}%'
+      or reblog_display_name like '%${safe}%'
+      or reblog_username like '%${safe}%'
+    )
     order by created_at desc
     limit 100`
   };

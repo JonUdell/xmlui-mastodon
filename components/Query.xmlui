@@ -147,12 +147,6 @@
         example="listAllTables"
       />
 
-      <Text>Search</Text>
-
-      <QueryExample
-        title="Search toots_home content"
-        example="searchTootsHome"
-      />
 
      <Markdown><![CDATA[
       <details>
