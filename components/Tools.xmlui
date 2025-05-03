@@ -19,7 +19,7 @@
 
   </Fragment>
 
-  <Fragment when="{['/', '/notifications', '/projectLog'].includes(navState.value.page)}">
+  <Fragment when="{['/', '/notifications', '/search', '/projectLog'].includes(navState.value.page)}">
 
     <Switch
       label="Truncate long links"

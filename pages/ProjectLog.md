@@ -3,6 +3,7 @@
 - [Purpose](#purpose)
 - [Setup](#setup)
 - [Rules for AI helpers](#rules-for-ai-helpers)
+- [Snapshot 28: Add search page](#snapshot-28-add-search-page)
 - [Snapshot 27: Add setting for link truncation, make settings page-sensitive](#snapshot-27-add-setting-for-link-truncation-make-settings-page-sensitive)
 - [Snapshot 26: Decouple loading SQL queries from running them](#snapshot-26-decouple-loading-sql-queries-from-running-them)
 - [Snapshot 25: Extract Cog (Settings) icon from Home and Notifications, centralize in sticky AppHeader](#snapshot-25-extract-cog-settings-icon-from-home-and-notifications-centralize-in-sticky-appheader)
@@ -38,6 +39,7 @@ We are going to improve [steampipe-mod-mastodon-insights](https://github.com/tur
 This should result in a beautiful Mastodon reader which, because database backed, will also (unlike the stock Mastodon client or others like Elk and Mona) have a long memory and enable powerful search and data visualization.
 
 It will be usable either hosted in Turbot Pipes or locally with SQLite embedding the plugin.
+
 
 # Setup
 
@@ -107,6 +109,18 @@ The [xmlui tool](https://github.com/jonudell/xmlui-mcp) enables them to read the
 8. never touch the dom. we only work within xmlui abstractions inside the App realm
 
 9. keep complex functions and expressions out of xmlui, they should live in index.html
+
+# Snapshot 28: Add search page
+
+![snapshot28](../resources/snapshot28.png)
+
+It was straightforward to search `toots_home` and render results. Nice improvement over stock Mastodon search! If I have seen a toot I'll be able to find it.
+
+We use `instance_qualified_url` and `instance_qualified_reblog_url` as reliable indicators to differentiate between post types in the search results
+
+TODO: Preprocess the HTML from Mastodon so links open in new tabs, this was harder than expected, might lead to an enhancement of our Markdown component.
+
+# ----------
 
 # Snapshot 27: Add setting for link truncation, make settings page-sensitive
 
