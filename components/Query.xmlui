@@ -62,93 +62,50 @@
     </VStack>
 
     <VStack width="50%">
-
       <h2>Queries</h2>
+      
+      <FlowLayout gap="$space-6" columnGap="$space-8">
+        <!-- Home Timeline Queries -->
+        <VStack backgroundColor="$color-background-subtle" padding="$space-4" borderRadius="$radius-lg" width="auto">
+          <Text variant="strong">Home Timeline</Text>
+          <QueryExample title="Create Home Table" example="createTootsHome" />
+          <QueryExample title="Update Home Posts" example="updateTootsHome" />
+          <QueryExample title="Update Reactions" example="updateTootsHomeReactions" />
+          <QueryExample title="Count Home Posts" example="countTootsHome" />
+        </VStack>
 
-      <Text>Home</Text>
+        <!-- Following Queries -->
+        <VStack backgroundColor="$color-background-subtle" padding="$space-4" borderRadius="$radius-lg" width="auto">
+          <Text variant="strong">Following</Text>
+          <QueryExample title="Create Following Table" example="createFollowing" />
+          <QueryExample title="Update Following" example="updateFollowing" />
+          <QueryExample title="Count Following" example="countFollowing" />
+        </VStack>
 
-      <QueryExample
-        title="createTootsHome"
-        example="createTootsHome"
-      />
+        <!-- Follower Queries -->
+        <VStack backgroundColor="$color-background-subtle" padding="$space-4" borderRadius="$radius-lg" width="auto">
+          <Text variant="strong">Followers</Text>
+          <QueryExample title="Create Follower Table" example="createFollower" />
+          <QueryExample title="Update Followers" example="updateFollower" />
+          <QueryExample title="Count Followers" example="countFollower" />
+        </VStack>
 
-      <QueryExample
-        title="updateTootsHome"
-        example="updateTootsHome"
-      />
+        <!-- Notification Queries -->
+        <VStack backgroundColor="$color-background-subtle" padding="$space-4" borderRadius="$radius-lg" width="auto">
+          <Text variant="strong">Notifications</Text>
+          <QueryExample title="Create Notifications Table" example="createNotifications" />
+          <QueryExample title="Update Notifications" example="updateNotifications" />
+          <QueryExample title="Count Notifications" example="countNotifications" />
+        </VStack>
 
-      <QueryExample
-        title="updateTootsHomeReactions"
-        example="updateTootsHomeReactions"
-      />
+        <!-- Meta Queries -->
+        <VStack backgroundColor="$color-background-subtle" padding="$space-4" borderRadius="$radius-lg" width="auto">
+          <Text variant="strong">Meta</Text>
+          <QueryExample title="List All Tables" example="listAllTables" />
+        </VStack>
+      </FlowLayout>
 
-      <QueryExample
-        title="countTootsHome"
-        example="countTootsHome"
-      />
-
-      <Text>Following</Text>
-
-      <QueryExample
-        title="createFollowing"
-        example="createFollowing"
-      />
-
-      <QueryExample
-        title="updateFollowing"
-        example="updateFollowing"
-      />
-
-      <QueryExample
-        title="countFollowing"
-        example="countFollowing"
-      />
-
-
-      <Text>Follower</Text>
-
-      <QueryExample
-        title="createFollower"
-        example="createFollower"
-      />
-
-
-      <QueryExample
-        title="updateFollower"
-        example="updateFollower"
-      />
-
-      <QueryExample
-        title="countFollower"
-        example="countFollower"
-      />
-
-      <Text>Notifications</Text>
-
-      <QueryExample
-        title="createNotifications"
-        example="createNotifications"
-      />
-
-      <QueryExample
-        title="updateNotifications"
-        example="updateNotifications"
-      />
-
-      <QueryExample
-        title="countNotifications"
-        example="countNotifications"
-      />
-
-      <Text>Meta</Text>
-
-      <QueryExample
-        title="List all tables"
-        example="listAllTables"
-      />
-
-
-     <Markdown><![CDATA[
+      <Markdown><![CDATA[
       <details>
         <img src="resources/query-example-flow.png"/>
       <summary>Visualize reactivity flow</summary>
