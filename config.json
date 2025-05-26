@@ -14,6 +14,7 @@
     "marginTop-Admonition": "1rem",
     "marginTop-Blockquote": "1rem",
 
-    "marginTop-HtmlLi": "1rem"
+    "marginTop-HtmlLi": "1rem",
+    "backgroundColor": "white"
   }
 }

@@ -15,6 +15,9 @@
 
     "borderRadius-Avatar": "50%",
 
+    "backgroundColor": "white",
+    "boxShadow-header-App": "none",
+
     "light": {
     },
     "dark": {

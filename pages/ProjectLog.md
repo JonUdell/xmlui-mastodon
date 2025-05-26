@@ -192,8 +192,6 @@ This is a good example of using XMLUI's built-in layout and component system rat
 
 # Snapshot 24: Adding a Notifications Page to the Mastodon App
 
-![snapshot24](../resources/snapshot24.png)
-
 ## Overview
 
 In this development phase, we extended the Mastodon app with a Notifications page, following the same pattern used for the Home timeline. The implementation involved creating SQL functions to fetch, store, and retrieve notification data from the Mastodon API via Steampipe, and adding UI components to display this information.
@@ -336,8 +334,6 @@ I am increasingly confident that my rule 9 for AIs is a strong recommendation fo
 
 
 # Snapshot 21: Use permanent toots table for display and fix initial reaction counts
-
-![snapshot21](../resources/snapshot21.png)
 
 We implemented a two-tier data storage approach for the Mastodon timeline.
 
@@ -615,8 +611,6 @@ Next steps will include:
 
 # Snapshot 17: responsive layout, flexible spacing, image scaling
 
-![snapshot17](../resources/snapshot17.png)
-
 - Implemented responsive layout structure with flexible spacing
 - Main content area constrained to 90% viewport width with natural margins
 - Settings icon anchored left with SpaceFiller creating dynamic spacing
@@ -722,8 +716,6 @@ Jon:
 > ok i will remind you every time.
 
 # Snapshot 12: add images to posts and reblogs
-
-![snapshot12](../resources/snapshot12.png)
 
 Added images to posts and reblogs. Initially at 20%, in keeping with the information density goal.
 
@@ -1027,8 +1019,6 @@ In this iteration we punted on username lookup in favor of visual refinement.
 
 # Snapshot 6: redesign reblog display, add profile modal
 
-![snapshot6](../resources/snapshot6.png)
-
 In this iteration, we focused on further improving information density and introducing interactive elements:
 
 - **Consolidated Reblog Display**: We completely redesigned the reblog display to follow a single-row pattern:
@@ -1060,8 +1050,6 @@ Next steps will include enhancing the reply indicators to show usernames instead
 
 # Snapshot 5: reduce avatar size for information density
 
-![snapshot5](../resources/snapshot5.png)
-
 In this iteration, we focused on improving information density to better align with our "Bloomberg terminal for Mastodon" design philosophy:
 
 - Reduced the size of primary avatars from `md` (Medium) to `sm` (Small) to decrease vertical space consumption
@@ -1085,7 +1073,6 @@ Future density improvements could include:
 
 # Snapshot 4: add avatars, switch to Avatar component
 
-![snapshot4](../resources/snapshot4.png)
 
 In this iteration we added avatars.
 
@@ -1145,8 +1132,6 @@ The timeline now better matches modern Mastodon clients like Elk, with proper av
 
 # Snapshot 3: improve reblog display, hierarchy, formatting
 
-![snapshot3](../resources/snapshot3.png)
-
 In this iteration, we focused on improving the display of reblogs to better match how modern Mastodon clients like Elk present them.
 
 - Restructured the component to clearly distinguish between regular posts and reblogs
@@ -1163,8 +1148,6 @@ In this iteration, we focused on improving the display of reblogs to better matc
 While this is a good milestone, we noted that the visual differentiation between regular posts and reblogs is still too subtle. In future iterations, we'll focus on making this distinction more immediately apparent without sacrificing information density or readability.
 
 # Snapshot 2: improve timeline display, optimize queries
-
-![snapshot2](../resources/snapshot2.png)
 
 
 In this iteration, we aimed to improve the display of the timeline.
@@ -1266,7 +1249,6 @@ A specific example where we broke rule 7 was attempting to use a nested structur
 
 # Snapshot 1: basic Mastodon home timeline viewer
 
-![snapshot1](../resources/snapshot1.png)
 
 We've created a basic Mastodon home timeline viewer that displays toots with proper formatting. Our initial implementation:
 

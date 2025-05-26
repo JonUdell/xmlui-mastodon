@@ -40,7 +40,7 @@
       <Fragment when="{$item.reblog_content}">
 
         <HStack paddingLeft="1rem" backgroundColor="$color-primary-100" horizontalAlignment="left"
-          verticalAlignment="end" width="100%">
+          verticalAlignment="baseline" width="100%">
           <Text variant="strong">{$item.display_name}</Text>
           <Text fontSize="smaller">{$item.created_at}</Text>
           <Icon name="arrowright" size="md" />
@@ -58,7 +58,7 @@
       <Fragment when="{$item.content}">
 
         <HStack paddingLeft="1rem" backgroundColor="$color-primary-100" horizontalAlignment="left"
-          verticalAlignment="end" width="100%">
+          verticalAlignment="baseline" width="100%">
           <Text variant="strong">{$item.display_name}</Text>
           <Text fontSize="smaller">{$item.created_at}</Text>
         </HStack>
