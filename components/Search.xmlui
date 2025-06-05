@@ -43,7 +43,7 @@
           verticalAlignment="baseline" width="100%">
           <Text variant="strong">{$item.display_name}</Text>
           <Text fontSize="smaller">{$item.created_at}</Text>
-          <Icon name="arrowright" size="md" />
+          →
           <Text variant="strong">{$item.reblog_display_name}</Text>
           <Text fontSize="smaller">{$item.reblog_created_at}</Text>
         </HStack>
