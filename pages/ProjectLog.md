@@ -3,6 +3,7 @@
 - [Purpose](#purpose)
 - [Setup](#setup)
 - [Rules for AI helpers](#rules-for-ai-helpers)
+- [Snapshot 29: Streamline storage](#snapshot-29-streamline-storage)
 - [Snapshot 28: Add search page](#snapshot-28-add-search-page)
 - [Snapshot 27: Add setting for link truncation, make settings page-sensitive](#snapshot-27-add-setting-for-link-truncation-make-settings-page-sensitive)
 - [Snapshot 26: Decouple loading SQL queries from running them](#snapshot-26-decouple-loading-sql-queries-from-running-them)
@@ -109,6 +110,10 @@ The [xmlui tool](https://github.com/jonudell/xmlui-mcp) enables them to read the
 8. never touch the dom. we only work within xmlui abstractions inside the App realm
 
 9. keep complex functions and expressions out of xmlui, they should live in index.html
+
+# Snapshot 29: Streamline storage
+
+We were storing complete API responses and then displaying from that cache, this bloated the db, now instead we display from "ephemeral" toots (i.e. direct from API) and save only minimal text for search.
 
 # Snapshot 28: Add search page
 
