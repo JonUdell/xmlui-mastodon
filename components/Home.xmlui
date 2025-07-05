@@ -15,10 +15,10 @@
   method="POST"
   onLoaded="() => {
     dataFlowState.update({ ephemeralLoaded: true });
+    updateTootsHome.execute();
   }"
 />
 
-<!--
 <APICall
   id="updateTootsHome"
   method="post"
@@ -26,14 +26,11 @@
   body="{{ sql: window.updateTootsHome }}"
   errorNotificationMessage="${error.statusCode}, {JSON.stringify($error.details)}"
   onSuccess="() => {
-    // Only trigger permanent data load if we haven't already done so
-    if (!dataFlowState.value.permanentLoaded) {
-      dataFlowState.update({ permanentUpdated: true });
-      permanentToots.refetch();
-    }
+    console.log('updateTootsHome success')
   }"
 />
 
+<!--
 <DataSource
   id="permanentToots"
   url="{ window.query }"
