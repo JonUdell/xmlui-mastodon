@@ -14,64 +14,38 @@
   </HStack>
 
   <Fragment when="{activeQuery}">
-
     <DataSource
       id="searchResults"
       url="{ window.query }"
-      body="{ window.searchTootsHome(activeQuery) }"
+      body="{{
+        sql: `
+          SELECT *
+          FROM toots_home
+          WHERE
+            author_name LIKE '%' || ? || '%'
+            OR content LIKE '%' || ? || '%'
+            OR reblog_author_name LIKE '%' || ? || '%'
+            OR reblog_content LIKE '%' || ? || '%'
+          ORDER BY created_at DESC
+          LIMIT 50
+        `,
+        params: [activeQuery, activeQuery, activeQuery, activeQuery]
+      }}"
       method="POST"
-      transformResult="{(data) => (data || []).map(item => ({
-          id: item.id,
-          created_at: window.formatHumanReadableDate(item.created_at),
-          display_name: item.display_name,
-          username: item.username,
-          url: item.instance_qualified_reblog_url || item.instance_qualified_url,
-          content: item.reblog_content || item.content,
-          reblog_content: item.reblog_content,
-          reblog_display_name: item.reblog_display_name,
-          reblog_username: item.reblog_username,
-          reblog_created_at: window.formatHumanReadableDate(item.reblog_created_at)
-        }))}"
     />
 
     <Items data="{searchResults}">
-
-      <!-- Reblog pattern -->
-      <Fragment when="{$item.reblog_content}">
-
-        <HStack paddingLeft="1rem" backgroundColor="$color-primary-100" horizontalAlignment="left"
-          verticalAlignment="baseline" width="100%">
-          <Text variant="strong">{$item.display_name}</Text>
-          <Text fontSize="smaller">{$item.created_at}</Text>
-          →
-          <Text variant="strong">{$item.reblog_display_name}</Text>
-          <Text fontSize="smaller">{$item.reblog_created_at}</Text>
-        </HStack>
-
-        <Markdown content="{$item.reblog_content}" />
-
-        <Text fontSize="smaller" color="$color-primary-600">URL: <a href="{$item.url}" target="_blank">{$item.url}</a></Text>
-
-      </Fragment>
-
-      <!-- Regular pattern -->
-      <Fragment when="{$item.content}">
-
-        <HStack paddingLeft="1rem" backgroundColor="$color-primary-100" horizontalAlignment="left"
-          verticalAlignment="baseline" width="100%">
-          <Text variant="strong">{$item.display_name}</Text>
-          <Text fontSize="smaller">{$item.created_at}</Text>
-        </HStack>
-
+      <VStack>
+        <Text variant="strong">{$item.author_name}</Text>
+        <Text variant="caption">{window.formatHumanReadableDate($item.created_at)}</Text>
         <Markdown content="{$item.content}" />
-
-        <Text fontSize="smaller" color="$color-primary-600">URL: <a href="{$item.url}" target="_blank">{$item.url}</a></Text>
-      </Fragment>
-
-      <ContentSeparator />
-
+        <Fragment when="{$item.reblog_author_name}">
+          <Text variant="strong">Reblogged from: {$item.reblog_author_name}</Text>
+          <Text variant="caption">{window.formatHumanReadableDate($item.reblog_created_at)}</Text>
+          <Markdown content="{$item.reblog_content}" />
+        </Fragment>
+      </VStack>
     </Items>
-
   </Fragment>
 
 </Component>

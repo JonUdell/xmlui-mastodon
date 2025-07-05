@@ -354,6 +354,7 @@
       LIMIT 100;
     `
 
+    /*
     window.updateTootsHomeReactions = `
       WITH recent_ids AS (
         SELECT id
@@ -397,54 +398,10 @@
       FROM mastodon_data
       WHERE toots_home.id = mastodon_data.id;
     `
-
+*/
     window.countTootsHome = `
       select count(*) from toots_home
     `
-
-    window.permanentTootsHome = function (count) {
-      return {
-        sql: `
-            select
-                id,
-                username,
-                display_name,
-                created_at,
-                url,
-                instance_qualified_url,
-                instance_qualified_account_url,
-                status,
-                reblog,
-                content,
-                replies_count,
-                reblogs_count,
-                favourites_count,
-                avatar_url,
-                header_url,
-                note,
-                followers_count,
-                following_count,
-                statuses_count,
-                reblog_avatar_url,
-                reblog_header_url,
-                reblog_note,
-                reblog_followers_count,
-                reblog_following_count,
-                reblog_statuses_count,
-                reblog_display_name,
-                reblog_username,
-                reblog_content,
-                reblog_created_at,
-                reblog_account_url,
-                in_reply_to_account_id,
-                preview_url,
-                reblog_preview_url
-            from toots_home
-            order by created_at desc
-            limit ${count}
-            `
-      }
-    }
 
     // notifications
 
@@ -597,36 +554,22 @@
 
     // search
 
-    window.searchTootsHome = function (query) {
-  // Escape single quotes for SQL safety (very basic)
-  const safe = (query || '').replace(/'/g, "''");
-  return {
-    sql: `select
-      id,
-      created_at,
-      display_name,
-      username,
-      instance_qualified_url,
-      instance_qualified_reblog_url,
-      content,
-      reblog_content,
-      reblog_display_name,
-      reblog_username,
-      reblog_created_at
-    from toots_home
-    where (
-      content like '%${safe}%'
-      or reblog_content like '%${safe}%'
-      or url like '%${safe}%'
-      or username like '%${safe}%'
-      or display_name like '%${safe}%'
-      or reblog_display_name like '%${safe}%'
-      or reblog_username like '%${safe}%'
-    )
-    order by created_at desc
-    limit 100`
-  };
-}
+    window.searchTootsHome = function(query) {
+      return {
+        sql: `
+          SELECT *
+          FROM toots_home
+          WHERE
+            author_name LIKE '%' || ? || '%'
+            OR content LIKE '%' || ? || '%'
+            OR reblog_author_name LIKE '%' || ? || '%'
+            OR reblog_content LIKE '%' || ? || '%'
+          ORDER BY created_at DESC
+          LIMIT 50
+        `,
+        params: [query, query, query, query]
+      };
+    };
 
     // helpers
 

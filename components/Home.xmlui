@@ -18,6 +18,7 @@
   }"
 />
 
+<!--
 <APICall
   id="updateTootsHome"
   method="post"
@@ -33,7 +34,6 @@
   }"
 />
 
-<!-- This DataSource reads from the permanent table for display -->
 <DataSource
   id="permanentToots"
   url="{ window.query }"
@@ -43,6 +43,7 @@
     dataFlowState.update({ permanentLoaded: true });
   }"
 />
+-->
 
 
   <VStack>
