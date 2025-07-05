@@ -37,7 +37,12 @@
     <Items data="{searchResults}">
       <VStack>
         <Text variant="strong">{$item.author_name}</Text>
-        <Text variant="caption">{window.formatHumanReadableDate($item.created_at)}</Text>
+        <HStack>
+          <Text variant="caption">{window.formatHumanReadableDate($item.created_at)}</Text>
+          <Fragment when="{$item.url}">
+            <Link to="{$item.url}" target="_blank">View Post</Link>
+          </Fragment>
+        </HStack>
         <Markdown content="{$item.content}" />
         <Fragment when="{$item.reblog_author_name}">
           <Text variant="strong">Reblogged from: {$item.reblog_author_name}</Text>

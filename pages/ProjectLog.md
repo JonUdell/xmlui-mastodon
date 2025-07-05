@@ -3,6 +3,7 @@
 - [Purpose](#purpose)
 - [Setup](#setup)
 - [Rules for AI helpers](#rules-for-ai-helpers)
+- [Snapshot 30: Add links to search results](#snapshot-30-add-links-to-search-results)
 - [Snapshot 29: Streamline storage](#snapshot-29-streamline-storage)
 - [Snapshot 28: Add search page](#snapshot-28-add-search-page)
 - [Snapshot 27: Add setting for link truncation, make settings page-sensitive](#snapshot-27-add-setting-for-link-truncation-make-settings-page-sensitive)
@@ -110,6 +111,10 @@ The [xmlui tool](https://github.com/jonudell/xmlui-mcp) enables them to read the
 8. never touch the dom. we only work within xmlui abstractions inside the App realm
 
 9. keep complex functions and expressions out of xmlui, they should live in index.html
+
+# Snapshot 30: Add links to search results
+
+Update toots_home with an url, use it as View post in search results
 
 # Snapshot 29: Streamline storage
 

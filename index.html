@@ -330,7 +330,8 @@
         created_at TEXT,
         reblog_created_at TEXT,
         content TEXT,
-        reblog_content TEXT
+        reblog_content TEXT,
+        url TEXT
       )
     `
     window.updateTootsHome = function() {
@@ -339,12 +340,13 @@
       }
 
       const values = window.ephemeralData.map(toot => {
-        const content = window.stripHtmlTags(toot.content || '');
-        const reblogContent = window.stripHtmlTags(toot.reblog_content || '');
-        const authorName = (toot.display_name || '').replace(/'/g, "''");
-        const reblogAuthorName = (toot.reblog_display_name || '').replace(/'/g, "''");
-
-        return `('${toot.id}', '${authorName}', '${reblogAuthorName}', '${toot.created_at}', '${toot.reblog_created_at || ''}', '${content.replace(/'/g, "''")}', '${reblogContent.replace(/'/g, "''")}')`;
+      const content = window.stripHtmlTags(toot.content || '');
+      const reblogContent = window.stripHtmlTags(toot.reblog_content || '');
+      const authorName = (toot.display_name || '').replace(/'/g, "''");
+      const reblogAuthorName = (toot.reblog_display_name || '').replace(/'/g, "''");
+      const url = (toot.instance_qualified_url || '').replace(/'/g, "''");
+      
+        return `('${toot.id}', '${authorName}', '${reblogAuthorName}', '${toot.created_at}', '${toot.reblog_created_at || ''}', '${content.replace(/'/g, "''")}', '${reblogContent.replace(/'/g, "''")}', '${url}')`;
       }).join(',');
 
       return {
@@ -356,7 +358,8 @@
             created_at,
             reblog_created_at,
             content,
-            reblog_content
+            reblog_content,
+            url
           )
           VALUES ${values}
         `
