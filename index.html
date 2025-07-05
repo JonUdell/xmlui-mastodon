@@ -322,57 +322,15 @@
 
     window.createTootsHome = `
       create table toots_home (
-        _ctx text,
-        account text,
-        account_id text,
-        account_url text,
-        content text,
-        created_at text,
-        display_name text,
-        followers integer,
-        following integer,
-        id text primary key,
-        in_reply_to_account_id text,
-        instance_qualified_account_url text,
-        instance_qualified_reblog_url text,
-        instance_qualified_url text,
-        list_id text,
-        query text,
-        reblog text,
-        reblog_content text,
-        reblog_server text,
-        reblog_username text,
-        reblogs_count integer,
-        replies_count integer,
-        favourites_count integer,
-        server text,
-        sp_connection_name text,
-        sp_ctx text,
-        status text,
-        url text,
-        username text,
-
-        -- Additional fields for UI display
-        avatar_url text,
-        header_url text,
-        note text,
-        followers_count integer,
-        following_count integer,
-        statuses_count integer,
-        reblog_avatar_url text,
-        reblog_header_url text,
-        reblog_note text,
-        reblog_followers_count integer,
-        reblog_following_count integer,
-        reblog_statuses_count integer,
-        reblog_display_name text,
-        reblog_created_at text,
-        reblog_account_url text,
-        preview_url text,
-        reblog_preview_url text
+        id TEXT PRIMARY KEY,
+        author_name TEXT,
+        reblog_author_name TEXT,
+        created_at TEXT,
+        reblog_created_at TEXT,
+        content TEXT,
+        reblog_content TEXT
       )
     `
-
     window.updateTootsHome = `
       insert or ignore into toots_home (
         _ctx,
