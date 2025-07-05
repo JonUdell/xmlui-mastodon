@@ -332,148 +332,26 @@
       )
     `
     window.updateTootsHome = `
-      insert or ignore into toots_home (
-        _ctx,
-        account,
-        account_id,
-        account_url,
-        content,
-        created_at,
-        display_name,
-        followers,
-        following,
+      INSERT OR IGNORE INTO toots_home (
         id,
-        in_reply_to_account_id,
-        instance_qualified_account_url,
-        instance_qualified_reblog_url,
-        instance_qualified_url,
-        list_id,
-        query,
-        reblog,
-        reblog_content,
-        reblog_server,
-        reblog_username,
-        reblogs_count,
-        replies_count,
-        favourites_count,
-        server,
-        sp_connection_name,
-        sp_ctx,
-        status,
-        url,
-        username,
-
-        avatar_url,
-        header_url,
-        note,
-        followers_count,
-        following_count,
-        statuses_count,
-        reblog_avatar_url,
-        reblog_header_url,
-        reblog_note,
-        reblog_followers_count,
-        reblog_following_count,
-        reblog_statuses_count,
-        reblog_display_name,
+        author_name,
+        reblog_author_name,
+        created_at,
         reblog_created_at,
-        reblog_account_url,
-        preview_url,
-        reblog_preview_url
+        content,
+        reblog_content
       )
-      select
-        _ctx,
-        account,
-        account_id,
-        account_url,
-        json_extract(status, '$.content') as content,
-        created_at,
-        display_name,
-        followers,
-        following,
+      SELECT
         id,
-        json_extract(status, '$.in_reply_to_account_id') as in_reply_to_account_id,
-        instance_qualified_account_url,
-        instance_qualified_reblog_url,
-        instance_qualified_url,
-        list_id,
-        query,
-        reblog,
-        case
-          when reblog is not null then json_extract(reblog, '$.content')
-          else null
-        end as reblog_content,
-        reblog_server,
-        reblog_username,
-        case
-          when reblog is not null then cast(json_extract(reblog, '$.reblogs_count') as integer)
-          else cast(json_extract(status, '$.reblogs_count') as integer)
-        end as reblogs_count,
-        case
-          when reblog is not null then cast(json_extract(reblog, '$.replies_count') as integer)
-          else cast(json_extract(status, '$.replies_count') as integer)
-        end as replies_count,
-        case
-          when reblog is not null then cast(json_extract(reblog, '$.favourites_count') as integer)
-          else cast(json_extract(status, '$.favourites_count') as integer)
-        end as favourites_count,
-        server,
-        sp_connection_name,
-        sp_ctx,
-        status,
-        url,
-        username,
-
-        json_extract(account, '$.avatar') as avatar_url,
-        json_extract(account, '$.header') as header_url,
-        json_extract(account, '$.note') as note,
-        json_extract(account, '$.followers_count') as followers_count,
-        json_extract(account, '$.following_count') as following_count,
-        json_extract(account, '$.statuses_count') as statuses_count,
-        case
-          when reblog is not null then json_extract(reblog, '$.account.avatar')
-          else null
-        end as reblog_avatar_url,
-        case
-          when reblog is not null then json_extract(reblog, '$.account.header')
-          else null
-        end as reblog_header_url,
-        case
-          when reblog is not null then json_extract(reblog, '$.account.note')
-          else null
-        end as reblog_note,
-        case
-          when reblog is not null then json_extract(reblog, '$.account.followers_count')
-          else null
-        end as reblog_followers_count,
-        case
-          when reblog is not null then json_extract(reblog, '$.account.following_count')
-          else null
-        end as reblog_following_count,
-        case
-          when reblog is not null then json_extract(reblog, '$.account.statuses_count')
-          else null
-        end as reblog_statuses_count,
-        case
-          when reblog is not null then json_extract(reblog, '$.account.display_name')
-          else null
-        end as reblog_display_name,
-        case
-          when reblog is not null then json_extract(reblog, '$.created_at')
-          else null
-        end as reblog_created_at,
-        case
-          when reblog is not null then json_extract(reblog, '$.account.url')
-          else null
-        end as reblog_account_url,
-        json_extract(status, '$.media_attachments[0].preview_url') as preview_url,
-        case
-          when reblog is not null then json_extract(reblog, '$.media_attachments[0].preview_url')
-          else null
-        end as reblog_preview_url
-      from mastodon_toot_home
-      order by created_at desc
-      limit 100 -- Increased from 40 to capture more toots
+        json_extract(account, '$.display_name') AS author_name,
+        CASE WHEN reblog IS NOT NULL THEN json_extract(reblog, '$.account.display_name') ELSE NULL END AS reblog_author_name,
+        created_at,
+        CASE WHEN reblog IS NOT NULL THEN json_extract(reblog, '$.created_at') ELSE NULL END AS reblog_created_at,
+        json_extract(status, '$.content') AS content,
+        CASE WHEN reblog IS NOT NULL THEN json_extract(reblog, '$.content') ELSE NULL END AS reblog_content
+      FROM mastodon_toot_home
+      ORDER BY created_at DESC
+      LIMIT 100;
     `
 
     window.updateTootsHomeReactions = `
