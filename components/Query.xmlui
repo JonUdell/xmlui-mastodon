@@ -63,14 +63,13 @@
 
     <VStack width="50%">
       <h2>Queries</h2>
-      
+
       <FlowLayout gap="$space-6" columnGap="$space-8">
         <!-- Home Timeline Queries -->
         <VStack backgroundColor="$color-background-subtle" padding="$space-4" borderRadius="$radius-lg" width="auto">
           <Text variant="strong">Home Timeline</Text>
           <QueryExample title="Create Home Table" example="createTootsHome" />
           <QueryExample title="Update Home Posts" example="updateTootsHome" />
-          <QueryExample title="Update Reactions" example="updateTootsHomeReactions" />
           <QueryExample title="Count Home Posts" example="countTootsHome" />
         </VStack>
 
