@@ -14,11 +14,7 @@
   body="{ window.tootsHome(50) }"
   method="POST"
   onLoaded="() => {
-    // Only initiate the update flow if we haven't already done so
-    if (!dataFlowState.value.ephemeralLoaded) {
-      dataFlowState.update({ ephemeralLoaded: true });
-      updateTootsHome.execute();
-    }
+    dataFlowState.update({ ephemeralLoaded: true });
   }"
 />
 
@@ -53,15 +49,15 @@
     <HStack>
       <VStack width="90%" maxWidth="90vw" marginRight="$space-4">
         <!-- Loading indicator -->
-        <Fragment when="{!dataFlowState.value.permanentLoaded}">
+        <Fragment when="{!dataFlowState.value.ephemeralLoaded}">
           <VStack padding="$space-4" alignItems="center">
             <Text>Loading timeline data...</Text>
           </VStack>
         </Fragment>
 
         <!-- Timeline display -->
-        <Fragment when="{dataFlowState.value.permanentLoaded}">
-          <Items data="{permanentToots}">
+        <Fragment when="{dataFlowState.value.ephemeralLoaded}">
+          <Items data="{ephemeralToots}">
             <VStack>
             <!-- Regular Post Display -->
             <Fragment when="{!$item.reblog}">
