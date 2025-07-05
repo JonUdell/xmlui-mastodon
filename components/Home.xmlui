@@ -13,7 +13,8 @@
   url="{ window.query }"
   body="{ window.tootsHome(50) }"
   method="POST"
-  onLoaded="() => {
+  onLoaded="(data) => {
+    window.ephemeralData = data;
     dataFlowState.update({ ephemeralLoaded: true });
     updateTootsHome.execute();
   }"
@@ -23,24 +24,12 @@
   id="updateTootsHome"
   method="post"
   url="{window.query}"
-  body="{{ sql: window.updateTootsHome }}"
+  body="{ window.updateTootsHome() }"
   errorNotificationMessage="${error.statusCode}, {JSON.stringify($error.details)}"
   onSuccess="() => {
     console.log('updateTootsHome success')
   }"
 />
-
-<!--
-<DataSource
-  id="permanentToots"
-  url="{ window.query }"
-  body="{ window.permanentTootsHome(50) }"
-  method="POST"
-  onLoaded="() => {
-    dataFlowState.update({ permanentLoaded: true });
-  }"
-/>
--->
 
 
   <VStack>

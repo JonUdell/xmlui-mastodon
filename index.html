@@ -42,6 +42,8 @@
       return { sql: sql }
     }
 
+    window.ephemeralData = ''
+    
     window.query = 'http://localhost:8080/query'
 
     // followers
@@ -331,28 +333,35 @@
         reblog_content TEXT
       )
     `
-    window.updateTootsHome = `
-      INSERT OR IGNORE INTO toots_home (
-        id,
-        author_name,
-        reblog_author_name,
-        created_at,
-        reblog_created_at,
-        content,
-        reblog_content
-      )
-      SELECT
-        id,
-        json_extract(account, '$.display_name') AS author_name,
-        CASE WHEN reblog IS NOT NULL THEN json_extract(reblog, '$.account.display_name') ELSE NULL END AS reblog_author_name,
-        created_at,
-        CASE WHEN reblog IS NOT NULL THEN json_extract(reblog, '$.created_at') ELSE NULL END AS reblog_created_at,
-        json_extract(status, '$.content') AS content,
-        CASE WHEN reblog IS NOT NULL THEN json_extract(reblog, '$.content') ELSE NULL END AS reblog_content
-      FROM mastodon_toot_home
-      ORDER BY created_at DESC
-      LIMIT 100;
-    `
+    window.updateTootsHome = function() {
+      if (!window.ephemeralData || window.ephemeralData.length === 0) {
+        return { sql: 'SELECT 1' }; // No-op if no data
+      }
+
+      const values = window.ephemeralData.map(toot => {
+        const content = window.stripHtmlTags(toot.content || '');
+        const reblogContent = window.stripHtmlTags(toot.reblog_content || '');
+        const authorName = (toot.display_name || '').replace(/'/g, "''");
+        const reblogAuthorName = (toot.reblog_display_name || '').replace(/'/g, "''");
+
+        return `('${toot.id}', '${authorName}', '${reblogAuthorName}', '${toot.created_at}', '${toot.reblog_created_at || ''}', '${content.replace(/'/g, "''")}', '${reblogContent.replace(/'/g, "''")}')`;
+      }).join(',');
+
+      return {
+        sql: `
+          INSERT OR IGNORE INTO toots_home (
+            id,
+            author_name,
+            reblog_author_name,
+            created_at,
+            reblog_created_at,
+            content,
+            reblog_content
+          )
+          VALUES ${values}
+        `
+      };
+    }
 
     /*
     window.updateTootsHomeReactions = `
@@ -571,6 +580,56 @@
       };
     };
 
+    // stats
+    window.tableStats =
+       `
+          SELECT
+            'notifications' AS table_name,
+            (SELECT COUNT(*) FROM notifications) AS row_count,
+            (SELECT SUM(pgsize) FROM dbstat WHERE name = 'notifications') AS size_bytes,
+            ROUND((SELECT SUM(pgsize) FROM dbstat WHERE name = 'notifications') / 1024.0, 2) AS size_kb,
+            ROUND(
+              1.0 * (SELECT SUM(pgsize) FROM dbstat WHERE name = 'notifications') /
+              NULLIF((SELECT COUNT(*) FROM notifications), 0), 2
+            ) AS bytes_per_row
+
+          UNION ALL
+
+          SELECT
+            'follower',
+            (SELECT COUNT(*) FROM follower),
+            (SELECT SUM(pgsize) FROM dbstat WHERE name = 'follower'),
+            ROUND((SELECT SUM(pgsize) FROM dbstat WHERE name = 'follower') / 1024.0, 2),
+            ROUND(
+              1.0 * (SELECT SUM(pgsize) FROM dbstat WHERE name = 'follower') /
+              NULLIF((SELECT COUNT(*) FROM follower), 0), 2
+            )
+
+          UNION ALL
+
+          SELECT
+            'following',
+            (SELECT COUNT(*) FROM following),
+            (SELECT SUM(pgsize) FROM dbstat WHERE name = 'following'),
+            ROUND((SELECT SUM(pgsize) FROM dbstat WHERE name = 'following') / 1024.0, 2),
+            ROUND(
+              1.0 * (SELECT SUM(pgsize) FROM dbstat WHERE name = 'following') /
+              NULLIF((SELECT COUNT(*) FROM following), 0), 2
+            )
+
+          UNION ALL
+
+          SELECT
+            'toots_home',
+            (SELECT COUNT(*) FROM toots_home),
+            (SELECT SUM(pgsize) FROM dbstat WHERE name = 'toots_home'),
+            ROUND((SELECT SUM(pgsize) FROM dbstat WHERE name = 'toots_home') / 1024.0, 2),
+            ROUND(
+              1.0 * (SELECT SUM(pgsize) FROM dbstat WHERE name = 'toots_home') /
+              NULLIF((SELECT COUNT(*) FROM toots_home), 0), 2
+            );
+      `
+
     // helpers
 
     window.customSql = function (query) {
@@ -740,6 +799,11 @@
     window.listAllTables = `
       select name from sqlite_master where type='table' order by name
     `
+
+    window.stripHtmlTags = function(html) {
+      if (!html) return '';
+      return html.replace(/<[^>]*>/g, '').trim();
+    }
 
   </script>
 </head>

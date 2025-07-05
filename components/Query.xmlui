@@ -100,7 +100,8 @@
         <!-- Meta Queries -->
         <VStack backgroundColor="$color-background-subtle" padding="$space-4" borderRadius="$radius-lg" width="auto">
           <Text variant="strong">Meta</Text>
-          <QueryExample title="List All Tables" example="listAllTables" />
+          <QueryExample title="List tables" example="listAllTables" />
+          <QueryExample title="Table stats" example="tableStats" />
         </VStack>
       </FlowLayout>
 
