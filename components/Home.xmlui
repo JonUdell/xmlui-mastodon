@@ -96,7 +96,7 @@
               -->
 
                 <Fragment when="{$item.preview_url}">
-                    <Image src="{$item.preview_url}" width="{toolsState.value.zoom}%" />
+                  <Image onClick="{window.open($item.preview_url.replace('/small/','/original/'), '_blank')}" src="{$item.preview_url}" width="{toolsState.value.zoom}%" />
                 </Fragment>
 
               </VStack>
@@ -135,7 +135,9 @@
               <!-- Original content -->
               <VStack marginLeft="0.5rem" padding="$space-4"
                 borderRadius="0.25rem">
+
                 <Markdown content="{$item.reblog_content}" />
+                <Link icon="binding" to="{JSON.parse($item.reblog).url}" />
 
                 <Fragment
                   when="{$item.reblog.media_attachments ? $item.reblog.media_attachments.length > 0 : false}">
@@ -145,7 +147,7 @@
 
               <Fragment when="{$item.reblog_preview_url}">
                 <VStack maxWidth="800px">
-                  <Image src="{$item.reblog_preview_url}" width="{toolsState.value.zoom}%" />
+                  <Image onClick="{window.open($item.reblog_preview_url.replace('/small/','/original/'), '_blank')}" src="{$item.reblog_preview_url}" width="{toolsState.value.zoom}%" />
                 </VStack>
               </Fragment>
 
