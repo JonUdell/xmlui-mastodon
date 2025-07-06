@@ -31,6 +31,10 @@
   }"
 />
 
+<ModalDialog id="imageViewDialog" title="" fullScreen="true">
+  <Image src="{$param}" width="100%" fit="contain" />
+</ModalDialog>
+
 
   <VStack>
     <HStack>
@@ -87,18 +91,13 @@
                   <Markdown content="{$item.content}" />
                 </Fragment>
 
-                <!--
-              <Fragment
-                when="{$item.status ? ($item.status.media_attachments ? $item.status.media_attachments.length > 0 :
-              false) : false}">
-                <Text variant="caption">🖼️ {$item.status.media_attachments.length} media</Text>
-              </Fragment>
-              -->
-
                 <Fragment when="{$item.preview_url}">
-                  <Image onClick="{window.open($item.preview_url.replace('/small/','/original/'), '_blank')}" src="{$item.preview_url}" width="{toolsState.value.zoom}%" />
+                  <Image
+                    onClick="imageViewDialog.open($item.preview_url.replace('/small/','/original/'))"
+                    src="{$item.preview_url}"
+                    width="{toolsState.value.zoom}%"
+                  />
                 </Fragment>
-
               </VStack>
             </Fragment>
 
@@ -133,24 +132,21 @@
               </HStack>
 
               <!-- Original content -->
-              <VStack marginLeft="0.5rem" padding="$space-4"
-                borderRadius="0.25rem">
-
+              <VStack>
+              
                 <Markdown content="{$item.reblog_content}" />
-                <Link icon="binding" to="{JSON.parse($item.reblog).url}" />
 
-                <Fragment
-                  when="{$item.reblog.media_attachments ? $item.reblog.media_attachments.length > 0 : false}">
-                  <Text variant="caption">🖼️ {$item.reblog.media_attachments.length} media</Text>
+                <Fragment when="{$item.reblog_preview_url}">
+                  <Image
+                    onClick="imageViewDialog.open($item.reblog_preview_url.replace('/small/','/original/'))"
+                    src="{$item.reblog_preview_url}"
+                    width="{toolsState.value.zoom}%"
+                  />
                 </Fragment>
+
+                <Link target="_blank" icon="binding" to="{JSON.parse($item.reblog).url}" />
+
               </VStack>
-
-              <Fragment when="{$item.reblog_preview_url}">
-                <VStack maxWidth="800px">
-                  <Image onClick="{window.open($item.reblog_preview_url.replace('/small/','/original/'), '_blank')}" src="{$item.reblog_preview_url}" width="{toolsState.value.zoom}%" />
-                </VStack>
-              </Fragment>
-
             </Fragment>
 
             <!-- Reactions - same for both types -->
