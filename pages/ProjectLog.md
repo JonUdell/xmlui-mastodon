@@ -3,6 +3,7 @@
 - [Purpose](#purpose)
 - [Setup](#setup)
 - [Rules for AI helpers](#rules-for-ai-helpers)
+- [Snapshot 31: Improve linking and images](#snapshot-31-improve-linking-and-images)
 - [Snapshot 30: Add links to search results](#snapshot-30-add-links-to-search-results)
 - [Snapshot 29: Streamline storage](#snapshot-29-streamline-storage)
 - [Snapshot 28: Add search page](#snapshot-28-add-search-page)
@@ -111,6 +112,20 @@ The [xmlui tool](https://github.com/jonudell/xmlui-mcp) enables them to read the
 8. never touch the dom. we only work within xmlui abstractions inside the App realm
 
 9. keep complex functions and expressions out of xmlui, they should live in index.html
+
+# Snapshot 31: Improve linking and images
+
+Add a link from reblogs the original post.
+
+Wrap a ModalDialog around images, using the fullscreen option, wired to Image's onClick handler. Change the image url to fetch original size.
+
+```
+<Image
+   onClick="imageViewDialog.open($item.preview_url.replace('/small/','/original/'))"
+   src="{$item.preview_url}"
+   width="{toolsState.value.zoom}%"
+/>
+```
 
 # Snapshot 30: Add links to search results
 
