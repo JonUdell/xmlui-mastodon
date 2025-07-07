@@ -1,8 +1,5 @@
 <App
   layout="horizontal-sticky"
-  logo="resources/xmlui-logo.svg"
-  logo-dark="resources/logo-dark.svg"
-  defaultTheme="earthtone"
 >
 
   <AppState id="navState" bucket="navState" initialValue="{ {page: '/'} }" />
