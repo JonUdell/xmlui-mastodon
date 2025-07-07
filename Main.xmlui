@@ -21,7 +21,8 @@
        <Text>xmlui-mastodon</Text>
     </property>
     <property name="profileMenuTemplate">
-      <Icon name="cog" size="md" onClick="settingsDialog.open()" />
+      <Icon name="cog" size="md" onClick="settingsDialog.open()" 
+            when="{['/', '/notifications', '/search', '/projectLog'].includes($pathname)}" />
     </property>
   </AppHeader>
 
