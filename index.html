@@ -4,8 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <script src="xmlui/0.9.63.js"></script>
-  <script src="xmlui/charts-0.1.12.js"></script>
+  <script src="xmlui/0.9.65.js"></script>
   <script src="config.js"></script>
 
   <style>
@@ -43,7 +42,7 @@
     }
 
     window.ephemeralData = ''
-    
+
     window.query = 'http://localhost:8080/query'
 
     // followers
@@ -345,7 +344,7 @@
       const authorName = (toot.display_name || '').replace(/'/g, "''");
       const reblogAuthorName = (toot.reblog_display_name || '').replace(/'/g, "''");
       const url = (toot.instance_qualified_url || '').replace(/'/g, "''");
-      
+
         return `('${toot.id}', '${authorName}', '${reblogAuthorName}', '${toot.created_at}', '${toot.reblog_created_at || ''}', '${content.replace(/'/g, "''")}', '${reblogContent.replace(/'/g, "''")}', '${url}')`;
       }).join(',');
 
