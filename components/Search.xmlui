@@ -1,19 +1,12 @@
-<Component name="Search" var.query="" var.activeQuery="">
+<Component name="Search" var.query="">
 
-  <HStack>
-    <TextBox
-      placeholder="Enter search term..."
-      initialValue=""
-      onDidChange="(val) => query = val"
-      width="300px"
-    />
-    <Button
-      label="Search"
-      onClick="{ activeQuery = query }"
-    />
-  </HStack>
+  <TextBox
+    placeholder="Enter search term..."
+    onDidChange="(val) => query = val"
+    width="300px"
+  />
 
-  <Fragment when="{activeQuery}">
+  <Fragment when="{query}">
     <DataSource
       id="searchResults"
       url="{ window.query }"
@@ -29,13 +22,12 @@
           ORDER BY created_at DESC
           LIMIT 50
         `,
-        params: [activeQuery, activeQuery, activeQuery, activeQuery]
+        params: [query, query, query, query]
       }}"
       method="POST"
     />
 
     <Items data="{searchResults}">
-      <VStack>
         <Text variant="strong">{$item.author_name}</Text>
         <HStack>
           <Text variant="caption">{window.formatHumanReadableDate($item.created_at)}</Text>
@@ -49,7 +41,7 @@
           <Text variant="caption">{window.formatHumanReadableDate($item.reblog_created_at)}</Text>
           <Markdown content="{$item.reblog_content}" />
         </Fragment>
-      </VStack>
+        <ContentSeparator />
     </Items>
   </Fragment>
 
