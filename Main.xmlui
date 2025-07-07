@@ -19,6 +19,9 @@
   />
 
   <AppHeader>
+    <property name="logoTemplate">
+       <Text>xmlui-mastodon</Text>
+    </property>
     <property name="profileMenuTemplate">
       <Icon name="cog" size="md" onClick="settingsDialog.open()" />
     </property>
