@@ -1,10 +1,4 @@
-<Component name="Home">
-
-<AppState id="dataFlowState" bucket="dataFlow" initialValue="{ {
-  ephemeralLoaded: false,
-  permanentUpdated: false,
-  permanentLoaded: false
-} }" />
+<Component name="Home" var.loaded="{false}">
 
 <AppState id="toolsState" bucket="toolsState" initialValue="{ { zoom: 20 } }" />
 
@@ -15,7 +9,7 @@
   method="POST"
   onLoaded="(data) => {
     window.ephemeralData = data;
-    dataFlowState.update({ ephemeralLoaded: true });
+    loaded = true;
     updateTootsHome.execute();
   }"
 />
@@ -31,160 +25,34 @@
   }"
 />
 
-<ModalDialog id="imageViewDialog" title="" fullScreen="true">
-  <Image src="{$param}" width="100%" fit="contain" />
-</ModalDialog>
+  <VStack width="90%" maxWidth="90vw" marginRight="$space-4">
 
-
-  <VStack>
-    <HStack>
-      <VStack width="90%" maxWidth="90vw" marginRight="$space-4">
-        <!-- Loading indicator -->
-        <Fragment when="{!dataFlowState.value.ephemeralLoaded}">
-          <VStack padding="$space-4" alignItems="center">
-            <Text>Loading timeline data...</Text>
-          </VStack>
-        </Fragment>
-
-        <!-- Timeline display -->
-        <Fragment when="{dataFlowState.value.ephemeralLoaded}">
-          <Items data="{ephemeralToots}">
-            <VStack>
-            <!-- Regular Post Display -->
-            <Fragment when="{!$item.reblog}">
-              <!-- Reply indicator if this is a reply -->
-              <Fragment when="{$item.in_reply_to_account_id}">
-                <DataSource
-                  id="replyAccount-{$item.id}"
-                  url="{window.query}"
-                  method="POST"
-                  body="{window.lookupAccount($item.in_reply_to_account_id)}"
-                  onLoaded="(data) => {
-                    if (data && data.length > 0 && data[0].username) {
-                      window.accountCache[$item.in_reply_to_account_id] = data[0];
-                    }
-                  }"
-                >
-                  <Text>
-                    Replying to: {replyAccount-{$item.id}.value && replyAccount-{$item.id}.value.length > 0 ? replyAccount-{$item.id}.value[0].display_name + ' (@' + replyAccount-{$item.id}.value[0].username + ')' : '...'}
-                  </Text>
-                </DataSource>
-              </Fragment>
-
-              <HStack>
-                <MastodonAvatar
-                  url="{$item.avatar_url}"
-                  size="xs"
-                  name="{window.getDisplayName($item)}"
-                  item="{$item}"
-                />
-                <HStack gap="0.5rem">
-                  <Text variant="strong">{window.getDisplayName($item)}</Text>
-                  <Text variant="caption">@{window.getUsername($item)}</Text>
-                </HStack>
-                <SpaceFiller />
-                <Text variant="caption">{window.getCreatedDate($item)}</Text>
-              </HStack>
-
-              <VStack>
-                <Fragment when="{$item.content}">
-                  <Markdown content="{$item.content}" />
-                </Fragment>
-
-                <Fragment when="{$item.preview_url}">
-                  <Image
-                    onClick="imageViewDialog.open($item.preview_url.replace('/small/','/original/'))"
-                    src="{$item.preview_url}"
-                    width="{toolsState.value.zoom}%"
-                  />
-                </Fragment>
-              </VStack>
-            </Fragment>
-
-            <!-- Reblog Display -->
-            <Fragment when="{$item.reblog}">
-              <!-- Combined reblogger and original author info in a single row -->
-              <HStack verticalAlignment="center" gap="0.5rem">
-                <MastodonAvatar
-                  url="{$item.avatar_url}"
-                  size="xs"
-                  name="{window.getDisplayName($item)}"
-                  item="{$item}"
-                />
-                <Text variant="caption">{window.getDisplayName($item)}</Text>
-                <CHStack border="1px solid $color-surface-300" borderRadius="50%" width="1.4rem"
-                  height="1.4rem">
-                  <Icon name="arrowright" size="md" />
-                </CHStack>
-                <MastodonAvatar
-                  url="{$item.reblog_avatar_url}"
-                  size="xs"
-                  name="{window.getReblogDisplayName($item)}"
-                  item="{$item}"
-                />
-                <HStack gap="0.5rem">
-                  <Text variant="strong">{window.getReblogDisplayName($item)}</Text>
-                  <Text variant="caption">@{window.getReblogUsername($item)}</Text>
-                </HStack>
-                <SpaceFiller />
-                <Text variant="caption">{window.getReblogCreatedDate($item)}</Text>
-
-              </HStack>
-
-              <!-- Original content -->
-              <VStack>
-              
-                <Markdown content="{$item.reblog_content}" />
-
-                <Fragment when="{$item.reblog_preview_url}">
-                  <Image
-                    onClick="imageViewDialog.open($item.reblog_preview_url.replace('/small/','/original/'))"
-                    src="{$item.reblog_preview_url}"
-                    width="{toolsState.value.zoom}%"
-                  />
-                </Fragment>
-
-                <Link target="_blank" icon="binding" to="{JSON.parse($item.reblog).url}" />
-
-              </VStack>
-            </Fragment>
-
-            <!-- Reactions - same for both types -->
-            <HStack verticalAlignment="center" gap="0.75rem">
-              <HStack verticalAlignment="center" gap="0.25rem">
-                <CHStack border="1px solid $color-surface-300" borderRadius="50%" width="1.4rem"
-                  height="1.4rem">
-                  <Icon name="reply" size="sm" />
-                </CHStack>
-                <Text variant="caption">{$item.replies_count || 0}</Text>
-              </HStack>
-              <HStack verticalAlignment="center" gap="0.25rem">
-                <CHStack border="1px solid $color-surface-300" borderRadius="50%" width="1.4rem"
-                  height="1.4rem">
-                  <Icon name="trending-up" size="sm" />
-                </CHStack>
-                <Text variant="caption">{$item.reblogs_count || 0}</Text>
-              </HStack>
-              <HStack verticalAlignment="center" gap="0.25rem">
-                <CHStack border="1px solid $color-surface-300" borderRadius="50%" width="1.4rem"
-                  height="1.4rem">
-                  <Icon name="like" size="sm" />
-                </CHStack>
-                <Text variant="caption">{$item.favourites_count || 0}</Text>
-              </HStack>
-            </HStack>
-            </VStack>
-
-
-            <ContentSeparator />
-          </Items>
-        </Fragment>
-
+    <!-- Loading indicator -->
+    <Fragment when="{!loaded}" >
+      <VStack>
+        <Text>Loading timeline data...</Text>
       </VStack>
+    </Fragment>
 
-    </HStack>
+    <!-- Timeline display -->
+    <Fragment when="{loaded}" >
+      <Items data="{ephemeralToots}">
+        <VStack>
+        <!-- Regular Post Display -->
+        <Fragment when="{!$item.reblog}">
+          <RegularPost item="{$item}" />
+        </Fragment>
+
+        <!-- Reblog Display -->
+        <Fragment when="{$item.reblog}">
+          <ReblogPost item="{$item}" />
+        </Fragment>
+        </VStack>
+
+        <ContentSeparator />
+      </Items>
+    </Fragment>
 
   </VStack>
-
 
 </Component>

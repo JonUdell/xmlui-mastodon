@@ -3,6 +3,7 @@
 - [Purpose](#purpose)
 - [Setup](#setup)
 - [Rules for AI helpers](#rules-for-ai-helpers)
+- [Snapshot 32: Refactor Home view](#refactor-home-view)
 - [Snapshot 31: Improve linking and images](#snapshot-31-improve-linking-and-images)
 - [Snapshot 30: Add links to search results](#snapshot-30-add-links-to-search-results)
 - [Snapshot 29: Streamline storage](#snapshot-29-streamline-storage)
@@ -113,6 +114,40 @@ The [xmlui tool](https://github.com/jonudell/xmlui-mcp) enables them to read the
 
 9. keep complex functions and expressions out of xmlui, they should live in index.html
 
+# Snapshot 32: Refactor Home view
+
+The `Home.xmlui` component had become unwieldy with over 200 lines of code containing two large inline sections for displaying regular posts and reblog posts. The code was difficult to read, maintain, and had significant duplication between the two post types.
+
+We initially created `RegularPost.xmlui` and passed required data as props.
+
+Image click-through broke because the `imageViewDialog` modal was defined in `Home.xmlui` but referenced in `RegularPost.xmlui`.
+
+Tried passing modal ID as prop with dynamic property access:
+
+```xml
+onClick="{$props.imageModalId}.open(...)"
+```
+This failed: `W002: Unexpected token: .` XMLUI doesn't support dynamic property resolution. Instead we created `ImageWithModal` which bundles the `Image` and `ModalDialog` together and can be used from `RegularPost` and `ReblogPost`.
+
+We thought of using XMLUI's `<Slot>` mechanism for flexible template composition.
+
+```xml
+<Component name="PostContainer">
+  <VStack>
+    <Slot name="headerTemplate" />  <!-- Avatar + user info -->
+    <Slot name="contentTemplate" /> <!-- Post content -->
+    <Slot name="mediaTemplate" />   <!-- Images/media -->
+    <Slot />                        <!-- Default slot for reactions -->
+  </VStack>
+</Component>
+```
+
+But that seemed like overkill, in this case simple components involving less syntax overhead were fine.
+
+We also created `Reactions` shared by `RegularPost` and `ReblogPost`.
+
+This took the resulting `Home.xmlui` down from 300 lines to a readable 60, and revealed some unnecessary Stack elements which could also be removed.
+
 # Snapshot 31: Improve linking and images
 
 Add a link from reblogs the original post.
@@ -126,7 +161,6 @@ Wrap a ModalDialog around images, using the fullscreen option, wired to Image's 
    width="{toolsState.value.zoom}%"
 />
 ```
-
 # Snapshot 30: Add links to search results
 
 Update toots_home with an url, use it as View post in search results

@@ -1,0 +1,25 @@
+<Component name="Reactions">
+  <HStack verticalAlignment="center" gap="0.75rem">
+    <HStack verticalAlignment="center" gap="0.25rem">
+      <CHStack border="1px solid $color-surface-300" borderRadius="50%" width="1.4rem"
+        height="1.4rem">
+        <Icon name="reply" size="sm" />
+      </CHStack>
+      <Text variant="caption">{$props.item.replies_count || 0}</Text>
+    </HStack>
+    <HStack verticalAlignment="center" gap="0.25rem">
+      <CHStack border="1px solid $color-surface-300" borderRadius="50%" width="1.4rem"
+        height="1.4rem">
+        <Icon name="trending-up" size="sm" />
+      </CHStack>
+      <Text variant="caption">{$props.item.reblogs_count || 0}</Text>
+    </HStack>
+    <HStack verticalAlignment="center" gap="0.25rem">
+      <CHStack border="1px solid $color-surface-300" borderRadius="50%" width="1.4rem"
+        height="1.4rem">
+        <Icon name="like" size="sm" />
+      </CHStack>
+      <Text variant="caption">{$props.item.favourites_count || 0}</Text>
+    </HStack>
+  </HStack>
+</Component>

@@ -1,0 +1,49 @@
+<Component name="RegularPost">
+  <AppState id="toolsState" bucket="toolsState" />
+
+  <!-- Reply indicator if this is a reply -->
+  <Fragment when="{$props.item.in_reply_to_account_id}">
+    <DataSource
+      id="replyAccount-{$props.item.id}"
+      url="{window.query}"
+      method="POST"
+      body="{window.lookupAccount($props.item.in_reply_to_account_id)}"
+      onLoaded="(data) => {
+        if (data && data.length > 0 && data[0].username) {
+          window.accountCache[$props.item.in_reply_to_account_id] = data[0];
+        }
+      }"
+    >
+      <Text>
+        Replying to: {replyAccount-{$props.item.id}.value && replyAccount-{$props.item.id}.value.length > 0 ? replyAccount-{$props.item.id}.value[0].display_name + ' (@' + replyAccount-{$props.item.id}.value[0].username + ')' : '...'}
+      </Text>
+    </DataSource>
+  </Fragment>
+
+  <HStack>
+    <MastodonAvatar
+      url="{$props.item.avatar_url}"
+      size="xs"
+      name="{window.getDisplayName($props.item)}"
+      item="{$props.item}"
+    />
+    <HStack gap="0.5rem">
+      <Text variant="strong">{window.getDisplayName($props.item)}</Text>
+      <Text variant="caption">@{window.getUsername($props.item)}</Text>
+    </HStack>
+    <SpaceFiller />
+    <Text variant="caption">{window.getCreatedDate($props.item)}</Text>
+  </HStack>
+
+  <VStack>
+    <Fragment when="{$props.item.content}">
+      <Markdown content="{$props.item.content}" />
+    </Fragment>
+
+    <Fragment when="{$props.item.preview_url}">
+      <ImageWithModal src="{$props.item.preview_url}" width="{toolsState.value.zoom}%" />
+    </Fragment>
+  </VStack>
+
+  <Reactions item="{$props.item}" />
+</Component>

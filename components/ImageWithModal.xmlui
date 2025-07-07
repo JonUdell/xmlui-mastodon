@@ -1,0 +1,11 @@
+<Component name="ImageWithModal">
+  <ModalDialog id="imageModal" title="" fullScreen="true">
+    <Image src="{$param}" width="100%" fit="contain" />
+  </ModalDialog>
+
+  <Image
+    onClick="imageModal.open($props.src.replace('/small/','/original/'))"
+    src="{$props.src}"
+    width="{$props.width}"
+  />
+</Component>

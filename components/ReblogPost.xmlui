@@ -1,0 +1,43 @@
+<Component name="ReblogPost">
+  <AppState id="toolsState" bucket="toolsState" />
+
+  <!-- Combined reblogger and original author info in a single row -->
+  <HStack verticalAlignment="center" gap="0.5rem">
+    <MastodonAvatar
+      url="{$props.item.avatar_url}"
+      size="xs"
+      name="{window.getDisplayName($props.item)}"
+      item="{$props.item}"
+    />
+    <Text variant="caption">{window.getDisplayName($props.item)}</Text>
+    <CHStack border="1px solid $color-surface-300" borderRadius="50%" width="1.4rem"
+      height="1.4rem">
+      <Icon name="arrowright" size="md" />
+    </CHStack>
+    <MastodonAvatar
+      url="{$props.item.reblog_avatar_url}"
+      size="xs"
+      name="{window.getReblogDisplayName($props.item)}"
+      item="{$props.item}"
+    />
+    <HStack gap="0.5rem">
+      <Text variant="strong">{window.getReblogDisplayName($props.item)}</Text>
+      <Text variant="caption">@{window.getReblogUsername($props.item)}</Text>
+    </HStack>
+    <SpaceFiller />
+    <Text variant="caption">{window.getReblogCreatedDate($props.item)}</Text>
+  </HStack>
+
+  <!-- Original content -->
+  <VStack>
+    <Markdown content="{$props.item.reblog_content}" />
+
+    <Fragment when="{$props.item.reblog_preview_url}">
+      <ImageWithModal src="{$props.item.reblog_preview_url}" width="{toolsState.value.zoom}%" />
+    </Fragment>
+
+    <Link target="_blank" icon="binding" to="{JSON.parse($props.item.reblog).url}" />
+  </VStack>
+
+  <Reactions item="{$props.item}" />
+</Component>
