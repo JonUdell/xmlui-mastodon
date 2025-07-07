@@ -2,9 +2,7 @@
 
   <AppState id="toolsState" bucket="toolsState" />
 
-  <AppState id="navState" bucket="navState" />
-
-  <Fragment when="{['/', '/notifications'].includes(navState.value.page)}">
+  <Fragment when="{['/', '/notifications'].includes($pathname)}">
 
     <Slider
       width="100%"
@@ -19,7 +17,7 @@
 
   </Fragment>
 
-  <Fragment when="{['/', '/notifications', '/search', '/projectLog'].includes(navState.value.page)}">
+  <Fragment when="{['/', '/notifications', '/search', '/projectLog'].includes($pathname)}">
 
     <Switch
       label="Truncate long links"
