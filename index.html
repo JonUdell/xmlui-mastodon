@@ -656,41 +656,6 @@
       };
     }
 
-    window.formatHumanReadableDate = function (dateString) {
-      if (!dateString) return '';
-      try {
-        const date = new Date(dateString);
-        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-        const month = months[date.getMonth()];
-        const day = date.getDate();
-        const hours = date.getHours().toString().padStart(2, '0');
-        const minutes = date.getMinutes().toString().padStart(2, '0');
-        return `${month} ${day}, ${hours}:${minutes}`;
-      } catch (e) {
-        return dateString || '';
-      }
-    }
-
-    window.formatDate = function (dateString) {
-      if (!dateString) return '';
-      try {
-        const date = new Date(dateString);
-        return date.toLocaleString();
-      } catch (e) {
-        return dateString || '';
-      }
-    }
-
-    window.formatShortDate = function (dateString) {
-      if (!dateString) return '';
-      try {
-        const date = new Date(dateString);
-        return date.toLocaleDateString();
-      } catch (e) {
-        return dateString || '';
-      }
-    }
-
     window.getCount = function (obj, property) {
       if (!obj || !property) return 0;
       const value = obj[property];
@@ -719,16 +684,6 @@
     window.getReblogUsername = function (item) {
       if (!item) return '';
       return item.reblog_username || '';
-    }
-
-    window.getCreatedDate = function (item) {
-      if (!item) return '';
-      return window.formatDate(item.created_at || '');
-    }
-
-    window.getReblogCreatedDate = function (item) {
-      if (!item) return '';
-      return window.formatDate(item.reblog_created_at || item.created_at || '');
     }
 
     window.lookupUsername = function (accountId) {

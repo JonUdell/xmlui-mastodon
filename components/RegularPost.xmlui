@@ -32,7 +32,8 @@
       <Text variant="caption">@{window.getUsername($props.item)}</Text>
     </HStack>
     <SpaceFiller />
-    <Text variant="caption">{formatHumanElapsedTime(formatHumanElapsedTime($props.item.created_at))}</Text>
+    <!-- <Text>  { JSON.stringify($props.item.created_at) } </Text> -->
+    <Text variant="caption">{formatHumanElapsedTime($props.item.created_at + 'Z')}</Text>
   </HStack>
 
   <VStack>
