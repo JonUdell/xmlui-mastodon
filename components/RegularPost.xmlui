@@ -33,7 +33,7 @@
     </HStack>
     <SpaceFiller />
     <!-- <Text>  { JSON.stringify($props.item.created_at) } </Text> -->
-    <Text variant="caption">{formatHumanElapsedTime($props.item.created_at + 'Z')}</Text>
+    <Text>{formatHumanElapsedTime($props.item.created_at + 'Z')}</Text>
   </HStack>
 
   <VStack>

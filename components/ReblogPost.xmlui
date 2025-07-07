@@ -25,8 +25,8 @@
       <Text variant="caption">@{window.getReblogUsername($props.item)}</Text>
     </HStack>
     <SpaceFiller />
-    <!-- <Text>  { JSON.stringify($props.item.reblog_created_at) } </Text> -->  
-    <Text variant="caption">{formatHumanElapsedTime($props.item.reblog_created_at)}</Text>
+    <!-- <Text>  { JSON.stringify($props.item.reblog_created_at) } </Text> -->
+    <Text>{formatHumanElapsedTime($props.item.reblog_created_at)}</Text>
   </HStack>
 
   <!-- Original content -->
