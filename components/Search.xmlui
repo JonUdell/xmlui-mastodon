@@ -1,48 +1,38 @@
 <Component name="Search" var.query="">
-
   <TextBox
     placeholder="Enter search term..."
     onDidChange="(val) => query = val"
-    width="300px"
-  />
-
-  <Fragment when="{query}">
-    <DataSource
-      id="searchResults"
-      url="{ window.query }"
-      body="{{
-        sql: `
-          SELECT *
-          FROM toots_home
-          WHERE
-            author_name LIKE '%' || ? || '%'
-            OR content LIKE '%' || ? || '%'
-            OR reblog_author_name LIKE '%' || ? || '%'
-            OR reblog_content LIKE '%' || ? || '%'
-          ORDER BY created_at DESC
-          LIMIT 50
-        `,
-        params: [query, query, query, query]
-      }}"
-      method="POST"
-    />
-
-    <Items data="{searchResults}">
-        <Text variant="strong">{$item.author_name}</Text>
-        <HStack>
-          <Text variant="caption">{window.formatHumanReadableDate($item.created_at)}</Text>
-          <Fragment when="{$item.url}">
-            <Link to="{$item.url}" target="_blank">View Post</Link>
-          </Fragment>
-        </HStack>
-        <Markdown content="{$item.content}" />
-        <Fragment when="{$item.reblog_author_name}">
-          <Text variant="strong">Reblogged from: {$item.reblog_author_name}</Text>
-          <Text variant="caption">{window.formatHumanReadableDate($item.reblog_created_at)}</Text>
-          <Markdown content="{$item.reblog_content}" />
-        </Fragment>
-        <ContentSeparator />
-    </Items>
-  </Fragment>
-
+    width="300px" />
+  <DataSource
+    when="{query}"
+    id="searchResults"
+    url="{ window.query }"
+    method="POST"
+    body="{ window.searchTootsAndNotifications(query) }" />
+  <Items data="{searchResults}">
+    <Text variant="strong">
+      {$item.result_type} {$item.author_name} {$item.created_at}
+    </Text>
+    <HStack>
+      <Text variant="caption">
+        {window.formatHumanReadableDate($item.created_at)}
+      </Text>
+      <Fragment when="{$item.url}">
+        <Link to="{$item.url}" target="_blank">
+          View Post
+        </Link>
+      </Fragment>
+    </HStack>
+    <Markdown content="{$item.content}" />
+    <Fragment when="{$item.reblog_author_name}">
+      <Text variant="strong">
+        Reblogged from: {$item.reblog_author_name}
+      </Text>
+      <Text variant="caption">
+        {window.formatHumanReadableDate($item.reblog_created_at)}
+      </Text>
+      <Markdown content="{$item.reblog_content}" />
+    </Fragment>
+    <ContentSeparator />
+  </Items>
 </Component>

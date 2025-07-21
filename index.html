@@ -582,6 +582,60 @@
       };
     };
 
+    window.searchTootsAndNotifications = function(query) {
+      return {
+        sql: `
+        SELECT
+          'toot' as result_type,
+          id,
+          author_name,
+          reblog_author_name,
+          created_at,
+          reblog_created_at,
+          content,
+          reblog_content,
+          url,
+          NULL as category,
+          NULL as display_name,
+          NULL as account_url,
+          NULL as note
+        FROM toots_home
+        WHERE
+          author_name LIKE '%' || ? || '%'
+          OR content LIKE '%' || ? || '%'
+          OR reblog_author_name LIKE '%' || ? || '%'
+          OR reblog_content LIKE '%' || ? || '%'
+
+        UNION ALL
+
+        SELECT
+          'notification' as result_type,
+          id,
+          display_name as author_name,
+          NULL as reblog_author_name,
+          created_at,
+          NULL as reblog_created_at,
+          status_content as content,
+          NULL as reblog_content,
+          status_url as url,
+          category,
+          display_name,
+          account_url,
+          note
+        FROM notifications
+        WHERE
+          display_name LIKE '%' || ? || '%'
+          OR status_content LIKE '%' || ? || '%'
+          OR note LIKE '%' || ? || '%'
+          OR category LIKE '%' || ? || '%'
+
+        ORDER BY created_at DESC
+        LIMIT 50
+        `,
+        params: [query, query, query, query, query, query, query, query]
+      };
+    }
+
     // stats
     window.tableStats =
        `
