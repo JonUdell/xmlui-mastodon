@@ -20,21 +20,27 @@
     </DataSource>
   </Fragment>
 
-  <HStack gap="0.4rem">
-    <MastodonAvatar
-      url="{$props.item.avatar_url}"
-      size="xs"
-      name="{window.getDisplayName($props.item)}"
-      item="{$props.item}"
-    />
-    <HStack gap="0.5rem">
-      <Text variant="strong">{window.getDisplayName($props.item)}</Text>
-      <Text variant="caption">@{window.getUsername($props.item)}</Text>
+  <!-- Regular post header with timestamp on its own line -->
+  <VStack gap="0.25rem">
+    <!-- Timestamp line -->
+    <Text variant="caption" fontSize="0.75rem" color="$color-text-subtle">
+      {formatHumanElapsedTime($props.item.created_at + 'Z')}
+    </Text>
+
+    <!-- Avatar and user info line -->
+    <HStack gap="0.4rem">
+      <MastodonAvatar
+        url="{$props.item.avatar_url}"
+        size="xs"
+        name="{window.getDisplayName($props.item)}"
+        item="{$props.item}"
+      />
+      <HStack gap="0.5rem">
+        <Text variant="strong">{window.getDisplayName($props.item)}</Text>
+        <Text variant="caption">@{window.getUsername($props.item)}</Text>
+      </HStack>
     </HStack>
-    <SpaceFiller />
-    <!-- <Text>  { JSON.stringify($props.item.created_at) } </Text> -->
-    <Text>{formatHumanElapsedTime($props.item.created_at + 'Z')}</Text>
-  </HStack>
+  </VStack>
 
   <VStack>
     <Fragment when="{$props.item.content}">
