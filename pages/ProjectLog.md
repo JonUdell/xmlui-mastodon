@@ -208,7 +208,6 @@ Result: BROKE - timestamp became centered instead of top-aligned
 
 ## Step 6: isolate verticalAlignment (no wrapContent)
 
-The iterative testing suggests that `VStack height="100%" verticalAlignment="start"` behavior depends on complex interactions between multiple layout properties. The alignment breaks when specific combinations of properties are present (like verticalAlignment="center" on parent HStack, gap="$gap-none", and variant="caption" text), even without explicit height constraints.
 
 ```xmlui
 <Component name="AlignmentTest">
@@ -242,9 +241,12 @@ The iterative testing suggests that `VStack height="100%" verticalAlignment="sta
 
 Result: Still broke
 
+The iterative testing suggests that `VStack height="100%" verticalAlignment="start"` behavior breaks when the parent HStack has `verticalAlignment="center"`, even without explicit height constraints.
+
+Elk uses absolute positioning, instead of fighting with XMLUI we restructured the layout:
+
 ## Timestamp on Its Own Line
 
-Instead of fighting the positioning system, we restructured the layout:
 
 ### Before (Problematic):
 ```xmlui
@@ -274,39 +276,29 @@ Instead of fighting the positioning system, we restructured the layout:
 
 ## Key Learnings
 
-### 1. Iterative Codefence Testing is Brilliantly Informative
 The step-by-step playground approach was incredibly valuable because:
 - Isolated variables: Each step changed only one thing
 - Immediate feedback: We could see exactly when things broke
 - Systematic discovery: We found the exact condition that caused the failure
 - Reproducible: Each step was a complete, testable example
 
-### 2. XMLUI Positioning Limitations
-Through our research, we discovered that XMLUI has fundamental limitations for fixed positioning:
+It seems XMLUI does not deal with fixed positioning:
 - No `position` property: Unlike CSS, XMLUI doesn't expose `position: absolute` or `position: fixed`
-- Height context dependency: `verticalAlignment="start"` with `height="100%"` requires explicit parent height
 - Scope interactions are tricky: Layout properties interact in complex, unpredictable ways
 
-### 3. Pragmatic Problem-Solving
 Instead of trying to force a complex solution, we:
-- Accepted the constraint: Worked within XMLUI's limitations
-- Redesigned the approach: Put timestamp on its own line
-- Improved the UX: Made timestamps more subtle and readable
-- Maintained consistency: Applied the same pattern to both RegularPost and ReblogPost
+- Accepted the constraint
+- Redesigned the approach to put timestamp on its own line
 
-## The Presumed Limitation
-
-We discovered that XMLUI may not support fixed positioning behavior without significant architectural changes. The system appears to be designed around flexbox-based layouts rather than absolute positioning, which creates fundamental constraints for certain UI patterns.
-
-## Outcome
-
-- Consistent layout across both post types
+Outcome:
 - No more alignment issues - timestamps are naturally at the top
 - Cleaner visual hierarchy - timestamp → user info → content
-- More readable - timestamps don't compete with user names for space
 - Simpler code - no complex height/positioning logic needed
 
-The iterative codefence approach proved to be an incredibly powerful debugging and discovery method. Our method is overly complex: run the docs server locally, temporarily sacrifice an existing howto with codefence (we used chain-a-refetch), iterate there, then throw away the change. It will be very cool to be able to do that in hosted playground!
+## Conclusion
+XMLUI might need deep change to support fixed positioning - but maybe it should not try? It seems to work with flexbox-based layouts rather than absolute positioning. That creates fundamental constraints for certain UI patterns. However we like the workaround, and embracing the constraint may be a good strategy vs trying to add absolute positioning that might create more problems than it solves.
+
+ The iterative codefence approach proved to be an incredibly powerful debugging and discovery method. The current method is gnarly: run the docs server locally, temporarily sacrifice an existing howto with codefence (we used chain-a-refetch), iterate there, then throw away the change. It will be very cool to be able to do that in hosted playground!
 
 # Snapshot 34: Improve and wire up social buttons
 
