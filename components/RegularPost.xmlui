@@ -20,7 +20,7 @@
     </DataSource>
   </Fragment>
 
-  <HStack>
+  <HStack gap="0.4rem">
     <MastodonAvatar
       url="{$props.item.avatar_url}"
       size="xs"

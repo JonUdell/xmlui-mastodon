@@ -72,6 +72,7 @@
 
 
   <Avatar
+    borderRadius="50%"
     url="{$props.url}"
     size="xs"
     onClick="{

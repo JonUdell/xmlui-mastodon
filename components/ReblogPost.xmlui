@@ -1,26 +1,41 @@
 <Component name="ReblogPost">
   <AppState id="toolsState" bucket="toolsState" />
 
-  <!-- Reblog header with semantic arrow placement -->
-  <HStack verticalAlignment="center" gap="0.5rem" wrapContent="true">
-    <MastodonAvatar
-      url="{$props.item.avatar_url}"
-      size="xs"
-      name="{window.getDisplayName($props.item)}"
-      item="{$props.item}"
-    />
-    <Text variant="caption">{window.getDisplayName($props.item)}</Text>
+  <!-- Reblog header with proper grouping for wrapping -->
+  <HStack verticalAlignment="center" gap="0.5rem" wrapContent="true" height="60px">
+    <HStack verticalAlignment="center" gap="0.3rem">
+      <MastodonAvatar
+        url="{$props.item.avatar_url}"
+        size="xs"
+        name="{window.getDisplayName($props.item)}"
+        item="{$props.item}"
+      />
+      <VStack gap="$gap-none">
+        <Text variant="caption">{window.getDisplayName($props.item)}</Text>
+        <Fragment when="{window.getUsername($props.item)}">
+          <Text variant="caption" marginTop="-.5rem">@{window.getUsername($props.item)}</Text>
+        </Fragment>
+      </VStack>
+    </HStack>
     <SocialButton icon="arrowright" />
-    <MastodonAvatar
-      url="{$props.item.reblog_avatar_url}"
-      size="xs"
-      name="{window.getReblogDisplayName($props.item)}"
-      item="{$props.item}"
-    />
-    <Text variant="strong">{window.getReblogDisplayName($props.item)}</Text>
-    <Text variant="caption">@{window.getReblogUsername($props.item)}</Text>
+    <HStack verticalAlignment="center" gap="0.4rem">
+      <MastodonAvatar
+        url="{$props.item.reblog_avatar_url}"
+        size="xs"
+        name="{window.getReblogDisplayName($props.item)}"
+        item="{$props.item}"
+      />
+      <VStack gap="$gap-none">
+        <Text variant="strong">{window.getReblogDisplayName($props.item)}</Text>
+        <Fragment when="{window.getReblogUsername($props.item)}">
+          <Text variant="caption" marginTop="-.5rem">@{window.getReblogUsername($props.item)}</Text>
+        </Fragment>
+      </VStack>
+    </HStack>
     <SpaceFiller />
-    <Text>{formatHumanElapsedTime($props.item.reblog_created_at)}</Text>
+    <VStack height="100%" verticalAlignment="start">
+      <Text>{formatHumanElapsedTime($props.item.reblog_created_at)}</Text>
+    </VStack>
   </HStack>
 
   <!-- Original content -->
