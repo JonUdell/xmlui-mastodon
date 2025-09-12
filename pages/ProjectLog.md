@@ -1,7 +1,6 @@
 # Contents
 
 - [Purpose](#purpose)
-- [Setup](#setup)
 - [Snapshot 34: Improve and wire up social buttons](#snapshot-34-improve-and-wire-up-social-buttons)
 - [Snapshot 33: Make search incremental](#snapshot-33-make-search-incremental)
 - [Snapshot 32: Refactor Home view](#snapshot-32-refactor-home-view)
@@ -42,55 +41,6 @@
 We are going to improve [steampipe-mod-mastodon-insights](https://github.com/turbot/steampipe-mod-mastodon-insights), with special focus on realizing the design approach discussed in [A Bloomberg terminal for Mastodon](https://blog.jonudell.net/2022/12/17/a-bloomberg-terminal-for-mastodon/). XMLUI gives us many more degrees of freedom to improve on the original bare-bones Powerpipe dashboard. Both projects use the same Mastodon API access, abstracted as a set of Postgres tables provided by [steampipe-plugin-mastodon](https://github.com/turbot/steampipe-plugin-mastodon).
 
 This should result in a beautiful Mastodon reader which, because database backed, will also (unlike the stock Mastodon client or others like Elk and Mona) have a long memory and enable powerful search and data visualization.
-
-
-# Setup
-
-Repo: [xmlui-mastodon](https://github.com/jonudell/xmlui-mastodon)
-
-We have used [sqlite-server](https://github.com/jonudell/sqlite-server) in both of its modes: for its CORS (/proxy) endpoint when talking to a Pipes workspace, and for its query (/query) endpoint when using SQLite with the Mastodon plugin loaded as an extension.
-
-We are working mainly with two assistants, Cursor and Claude, both augmented with these  MCP (Model Context Protocol) servers.
-
-![mcp servers](../resources/mcp-servers.png)
-
-The filesystem tool enables the AIs to search local repos for context, and write to the repo we are developing.
-
-The steampipe tool enables them to run queries against the Mastodon plugin.
-
-The [xmlui tool](https://github.com/jonudell/xmlui-mcp) enables them to read the XMLUI docs in a focused way.
-
-```
-{
-  "mcpServers": {
-    "filesystem": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "@modelcontextprotocol/server-filesystem",
-        "/Users/jonudell/remote-xmlui-hn",
-        "/Users/jonudell/remote-xmlui-cms",
-        "/Users/jonudell/xmlui-github",
-        "/Users/jonudell/xmlui",
-        "/Users/jonudell/sqlite-server",
-        "/Users/jonudell/xmlui-mastodon",
-        "/Users/jonudell/steampipe-mod-mastodon-insights"
-      ]
-    },
-    "steampipe": {
-      "command": "npx",
-      "args": ["-y", "@turbot/steampipe-mcp"]
-    },
-    "xmlui": {
-      "command": "node",
-      "args": [
-        "/Users/jonudell/xmlui-mcp/dist/index.js",
-        "/Users/jonudell/xmlui"
-      ]
-    }
-  }
-}
-```
 
 
 # Snapshot 34: Improve and wire up social buttons
