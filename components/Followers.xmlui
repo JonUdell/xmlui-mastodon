@@ -5,7 +5,7 @@
     url="{ window.query }"
     body="{ window.followers() }"
     method="POST"
-    errorNotificationMessage="${error.statusCode}, {JSON.stringify($error.details)}"
+
   />
 
   <VStack>

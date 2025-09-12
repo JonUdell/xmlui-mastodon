@@ -19,7 +19,7 @@
   method="post"
   url="{window.query}"
   body="{ window.updateTootsHome() }"
-  errorNotificationMessage="${error.statusCode}, {JSON.stringify($error.details)}"
+
   onSuccess="() => {
     console.log('updateTootsHome success')
   }"
