@@ -1,25 +1,66 @@
 <Component name="Reactions">
+  <APICall
+    id="favoritePost"
+    method="post"
+    url="{window.config.server}/api/v1/statuses/{window.getPostId($props.item)}/favourite"
+    headers="{{
+      'Authorization': 'Bearer ' + window.config.mastodonToken
+    }}"
+    errorNotificationMessage="Failed to favorite post" />
+  <APICall
+    id="unfavoritePost"
+    method="post"
+    url="{window.config.server}/api/v1/statuses/{window.getPostId($props.item)}/unfavourite"
+    headers="{{
+      'Authorization': 'Bearer ' + window.config.mastodonToken
+    }}"
+    errorNotificationMessage="Failed to unfavorite post" />
+  <APICall
+    id="reblogPost"
+    method="post"
+    url="{window.config.server}/api/v1/statuses/{window.getPostId($props.item)}/reblog"
+    headers="{{
+      'Authorization': 'Bearer ' + window.config.mastodonToken
+    }}"
+    errorNotificationMessage="Failed to boost post" />
+  <APICall
+    id="unreblogPost"
+    method="post"
+    url="{window.config.server}/api/v1/statuses/{window.getPostId($props.item)}/unreblog"
+    headers="{{
+      'Authorization': 'Bearer ' + window.config.mastodonToken
+    }}"
+    errorNotificationMessage="Failed to unboost post" />
   <HStack verticalAlignment="center" gap="0.75rem">
     <HStack verticalAlignment="center" gap="0.25rem">
-      <CHStack border="1px solid $color-surface-300" borderRadius="50%" width="1.4rem"
-        height="1.4rem">
-        <Icon name="reply" size="sm" />
-      </CHStack>
-      <Text variant="caption">{$props.item.replies_count || 0}</Text>
+      <SocialButton icon="reply" />
+      <Text variant="caption">
+        {$props.item.replies_count || 0}
+      </Text>
     </HStack>
     <HStack verticalAlignment="center" gap="0.25rem">
-      <CHStack border="1px solid $color-surface-300" borderRadius="50%" width="1.4rem"
-        height="1.4rem">
-        <Icon name="trending-up" size="sm" />
-      </CHStack>
-      <Text variant="caption">{$props.item.reblogs_count || 0}</Text>
+      <SocialButton
+        icon="trending-up"
+        themeColor="{window.getPostReblogged($props.item) ? 'attention' : 'secondary'}">
+        <event name="click">
+          window.getPostReblogged($props.item) ? unreblogPost.execute() : reblogPost.execute()
+        </event>
+      </SocialButton>
+      <Text variant="caption">
+        {$props.item.reblogs_count || 0}
+      </Text>
     </HStack>
     <HStack verticalAlignment="center" gap="0.25rem">
-      <CHStack border="1px solid $color-surface-300" borderRadius="50%" width="1.4rem"
-        height="1.4rem">
-        <Icon name="like" size="sm" />
-      </CHStack>
-      <Text variant="caption">{$props.item.favourites_count || 0}</Text>
+      <SocialButton
+        icon="like"
+        themeColor="{window.getPostFavourited($props.item) ? 'attention' : 'secondary'}">
+        <event name="click">
+          window.getPostFavourited($props.item) ? unfavoritePost.execute() : favoritePost.execute()
+        </event>
+      </SocialButton>
+      <Text variant="caption">
+        {$props.item.favourites_count || 0}
+      </Text>
     </HStack>
   </HStack>
 </Component>

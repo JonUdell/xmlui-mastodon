@@ -2,7 +2,7 @@
 
 - [Purpose](#purpose)
 - [Setup](#setup)
-- [Rules for AI helpers](#rules-for-ai-helpers)
+- [Snapshot 34: Improve and wire up social buttons](#snapshot-34-improve-and-wire-up-social-buttons)
 - [Snapshot 33: Make search incremental](#snapshot-33-make-search-incremental)
 - [Snapshot 32: Refactor Home view](#snapshot-32-refactor-home-view)
 - [Snapshot 31: Improve linking and images](#snapshot-31-improve-linking-and-images)
@@ -93,17 +93,85 @@ The [xmlui tool](https://github.com/jonudell/xmlui-mcp) enables them to read the
 ```
 
 
-# Rules for AI helpers
+# Snapshot 34: Improve and wire up social buttons
 
-1. use the filesystem mcp tool to read and write repos
-2. xmlui-mastodon is our project. remote-xmlui-cms, remote-xmlui-hn, and remote-xmlui-invoice, and xmlui-github are reference projects, use them to find xmlui patterns. xmlui is the xmlui project, use it to scan documentation and understand component implementations. component docs are in ~/xmlui/docs/pages/components, implementations in ~/xmlui/xmlui/components. packages like charts and spreadsheets are in ~/xmlui/packages
-3. use steampipe to explore tables and columns available via the mastodon plugin
-4. don't write any code without my permission
-5. don't add any xmlui styling, let the theme and layout engine do its job
-6. proceed in small increments, write the absolute minimum amount of xmlui markup necessary and no script if possible
-7. do not invent any xmlui syntax, only use constructs for which you can find examples in the docs and sample apps. cite sources
-8. never touch the dom. we only work within xmlui abstractions inside the App realm
-9. keep complex functions and expressions out of xmlui, they should live in index.html
+![snapshot34](../resources/snapshot34.png)
+
+## Overview
+
+We enhanced the social interaction buttons by implementing a cleaner, more consistent design pattern and wiring up the boost (reblog) and favorite buttons.
+
+## Key Improvements
+
+### 1. Transplanted Social Button Pattern from XMLUI Examples
+
+We discovered the `chain-a-refetch.md` example in the XMLUI documentation that demonstrated a clean social media button pattern. We transplanted this approach to our app by:
+
+- **Created a reusable SocialButton component** (`components/SocialButton.xmlui`):
+  ```xml
+  <Component name="SocialButton">
+    <Button
+      borderRadius="50%"
+      icon="{$props.icon}"
+      variant="outlined"
+      themeColor="{$props.themeColor || 'secondary'}"
+      size="xs"
+      onClick="{emitEvent('click')}" />
+  </Component>
+  ```
+
+- **Replaced manual CHStack/Icon combinations** with the cleaner SocialButton pattern
+
+- **Maintained existing functionality** while improving code maintainability
+
+### 2. Wired Up Boost (Reblog) Functionality
+
+Added complete boost functionality by:
+
+- **Added reblog API calls** to `Reactions.xmlui`:
+  - `reblogPost`: POST to `/api/v1/statuses/{id}/reblog`
+  - `unreblogPost`: POST to `/api/v1/statuses/{id}/unreblog`
+
+- **Enhanced the boost button** with proper state management:
+  - Dynamic theming based on reblog state (attention color when boosted)
+  - Click event that toggles between reblog/unreblog
+  - Uses `window.getPostReblogged()` helper function
+
+- **Required Mastodon scope**: Added `write:statuses` scope to enable reblogging
+
+### 3. Simplified Event Handling with XMLUI's Automatic Promise Management
+
+Leveraged XMLUI's built-in promise handling to simplify the code:
+
+**Before** (manual promise chaining):
+```xml
+<event name="click">
+  if (window.getPostFavourited($props.item)) {
+    unfavoritePost.execute().then(() => ephemeralToots.execute());
+  } else {
+    favoritePost.execute().then(() => ephemeralToots.execute());
+  }
+</event>
+```
+
+**After** (XMLUI handles promises automatically):
+```xml
+<event name="click">
+  window.getPostFavourited($props.item) ? unfavoritePost.execute() : favoritePost.execute()
+</event>
+```
+
+XMLUI automatically:
+- Waits for all promises to complete
+- Refreshes data sources when operations finish
+- Handles the async flow without manual `.then()` chaining
+
+### 4. Updated Circular Icons Throughout the App
+
+Converted remaining circular icon implementations to use the SocialButton pattern:
+
+- **ReblogPost component**: Replaced the arrow icon between reblogger and original author
+- **Consistent styling**: All social interaction elements now use the same button pattern
 
 # Snapshot 33: Make search incremental
 

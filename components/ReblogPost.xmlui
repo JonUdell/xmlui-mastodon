@@ -10,10 +10,7 @@
       item="{$props.item}"
     />
     <Text variant="caption">{window.getDisplayName($props.item)}</Text>
-    <CHStack border="1px solid $color-surface-300" borderRadius="50%" width="1.4rem"
-      height="1.4rem">
-      <Icon name="arrowright" size="md" />
-    </CHStack>
+    <SocialButton icon="arrowright" />
     <MastodonAvatar
       url="{$props.item.reblog_avatar_url}"
       size="xs"

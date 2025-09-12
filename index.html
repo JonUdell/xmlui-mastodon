@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <script src="xmlui/0.9.65.js"></script>
+  <script src="xmlui/0.10.10.js"></script>
   <script src="config.js"></script>
 
   <style>
@@ -256,6 +256,18 @@
                   when reblog is not null then cast(json_extract(reblog, '$.favourites_count') as integer)
                   else cast(json_extract(status, '$.favourites_count') as integer)
                 end as favourites_count,
+                case
+                  when reblog is not null then json_extract(reblog, '$.favourited')
+                  else json_extract(status, '$.favourited')
+                end as favourited,
+                case
+                  when reblog is not null then json_extract(reblog, '$.reblogged')
+                  else json_extract(status, '$.reblogged')
+                end as reblogged,
+                case
+                  when reblog is not null then json_extract(reblog, '$.bookmarked')
+                  else json_extract(status, '$.bookmarked')
+                end as bookmarked,
                 json_extract(account, '$.avatar') as avatar_url,
                 json_extract(account, '$.header') as header_url,
                 json_extract(account, '$.note') as note,
@@ -805,6 +817,34 @@
       if (window.toolsState && typeof window.toolsState.update === 'function') {
         window.toolsState.update({ truncateLinks: enabled });
       }
+    }
+
+    window.getPostId = function(item) {
+      if (item.reblog) {
+        return JSON.parse(item.reblog).id;
+      }
+      return item.id;
+    }
+
+    window.getPostFavourited = function(item) {
+      if (item.reblog) {
+        return JSON.parse(item.reblog).favourited;
+      }
+      return item.favourited;
+    }
+
+    window.getPostReblogged = function(item) {
+      if (item.reblog) {
+        return JSON.parse(item.reblog).reblogged;
+      }
+      return item.reblogged;
+    }
+
+    window.getPostBookmarked = function(item) {
+      if (item.reblog) {
+        return JSON.parse(item.reblog).bookmarked;
+      }
+      return item.bookmarked;
     }
 
     window.listAllTables = `

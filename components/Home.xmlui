@@ -5,7 +5,7 @@
 <DataSource
   id="ephemeralToots"
   url="{ window.query }"
-  body="{ window.tootsHome(50) }"
+  body="{ window.tootsHome(100) }"
   method="POST"
   onLoaded="(data) => {
     window.ephemeralData = data;
@@ -25,6 +25,7 @@
   }"
 />
 
+
   <VStack width="90%" maxWidth="90vw" marginRight="$space-4">
 
     <!-- Loading indicator -->
@@ -38,15 +39,15 @@
     <Fragment when="{loaded}" >
       <Items data="{ephemeralToots}">
         <VStack>
-        <!-- Regular Post Display -->
-        <Fragment when="{!$item.reblog}">
-          <RegularPost item="{$item}" />
-        </Fragment>
+               <!-- Regular Post Display -->
+               <Fragment when="{!$item.reblog}">
+                 <RegularPost item="{$item}" />
+               </Fragment>
 
-        <!-- Reblog Display -->
-        <Fragment when="{$item.reblog}">
-          <ReblogPost item="{$item}" />
-        </Fragment>
+               <!-- Reblog Display -->
+               <Fragment when="{$item.reblog}">
+                 <ReblogPost item="{$item}" />
+               </Fragment>
         </VStack>
 
         <ContentSeparator />
