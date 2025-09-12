@@ -1,8 +1,8 @@
 <Component name="ReblogPost">
   <AppState id="toolsState" bucket="toolsState" />
 
-  <!-- Combined reblogger and original author info in a single row -->
-  <HStack verticalAlignment="center" gap="0.5rem">
+  <!-- Reblog header with semantic arrow placement -->
+  <HStack verticalAlignment="center" gap="0.5rem" wrapContent="true">
     <MastodonAvatar
       url="{$props.item.avatar_url}"
       size="xs"
@@ -17,12 +17,9 @@
       name="{window.getReblogDisplayName($props.item)}"
       item="{$props.item}"
     />
-    <HStack gap="0.5rem">
-      <Text variant="strong">{window.getReblogDisplayName($props.item)}</Text>
-      <Text variant="caption">@{window.getReblogUsername($props.item)}</Text>
-    </HStack>
+    <Text variant="strong">{window.getReblogDisplayName($props.item)}</Text>
+    <Text variant="caption">@{window.getReblogUsername($props.item)}</Text>
     <SpaceFiller />
-    <!-- <Text>  { JSON.stringify($props.item.reblog_created_at) } </Text> -->
     <Text>{formatHumanElapsedTime($props.item.reblog_created_at)}</Text>
   </HStack>
 

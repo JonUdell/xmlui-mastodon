@@ -42,7 +42,6 @@ We are going to improve [steampipe-mod-mastodon-insights](https://github.com/tur
 
 This should result in a beautiful Mastodon reader which, because database backed, will also (unlike the stock Mastodon client or others like Elk and Mona) have a long memory and enable powerful search and data visualization.
 
-
 # Snapshot 34: Improve and wire up social buttons
 
 ![snapshot34](../resources/snapshot34.png)
@@ -58,6 +57,7 @@ We enhanced the social interaction buttons by implementing a cleaner, more consi
 We discovered the `chain-a-refetch.md` example in the XMLUI documentation that demonstrated a clean social media button pattern. We transplanted this approach to our app by:
 
 - **Created a reusable SocialButton component** (`components/SocialButton.xmlui`):
+
   ```xml
   <Component name="SocialButton">
     <Button
@@ -79,10 +79,12 @@ We discovered the `chain-a-refetch.md` example in the XMLUI documentation that d
 Added complete boost functionality by:
 
 - **Added reblog API calls** to `Reactions.xmlui`:
+
   - `reblogPost`: POST to `/api/v1/statuses/{id}/reblog`
   - `unreblogPost`: POST to `/api/v1/statuses/{id}/unreblog`
 
 - **Enhanced the boost button** with proper state management:
+
   - Dynamic theming based on reblog state (attention color when boosted)
   - Click event that toggles between reblog/unreblog
   - Uses `window.getPostReblogged()` helper function
@@ -94,6 +96,7 @@ Added complete boost functionality by:
 Leveraged XMLUI's built-in promise handling to simplify the code:
 
 **Before** (manual promise chaining):
+
 ```xml
 <event name="click">
   if (window.getPostFavourited($props.item)) {
@@ -105,6 +108,7 @@ Leveraged XMLUI's built-in promise handling to simplify the code:
 ```
 
 **After** (XMLUI handles promises automatically):
+
 ```xml
 <event name="click">
   window.getPostFavourited($props.item) ? unfavoritePost.execute() : favoritePost.execute()
@@ -112,6 +116,7 @@ Leveraged XMLUI's built-in promise handling to simplify the code:
 ```
 
 XMLUI automatically:
+
 - Waits for all promises to complete
 - Refreshes data sources when operations finish
 - Handles the async flow without manual `.then()` chaining
@@ -140,6 +145,7 @@ Tried passing modal ID as prop with dynamic property access:
 ```xml
 onClick="{$props.imageModalId}.open(...)"
 ```
+
 This failed: `W002: Unexpected token: .` XMLUI doesn't support dynamic property resolution. Instead we created `ImageWithModal` which bundles the `Image` and `ModalDialog` together and can be used from `RegularPost` and `ReblogPost`.
 
 We thought of using XMLUI's `<Slot>` mechanism for flexible template composition.
@@ -174,6 +180,7 @@ Wrap a ModalDialog around images, using the fullscreen option, wired to Image's 
    width="{toolsState.value.zoom}%"
 />
 ```
+
 # Snapshot 30: Add links to search results
 
 Update toots_home with an url, use it as View post in search results
@@ -217,6 +224,7 @@ The previous implementation had an undesired reactivity connection between sampl
 3. This would trigger the DataSource to immediately execute the query
 
 This created a poor user experience because:
+
 - You couldn't review or modify a sample query before executing it
 - Every example click would result in a server request
 - Clicking another example while a query was running could lead to race conditions
@@ -224,14 +232,17 @@ This created a poor user experience because:
 We implemented a clean separation between loading example queries and executing them by:
 
 1. **Separating State Concerns**:
+
    - `appState.example`: Stores what's displayed in the TextArea
    - `appState.runSql`: Stores what's actually executed by the DataSource
    - `appState.nonce`: Counter that increments with each execution request
 
 2. **Decoupling Sample Query Buttons**:
+
    - Modified `QueryExample.xmlui` to only update `appState.example` without triggering loading or execution
 
 3. **Making Run Query the Only Execution Trigger**:
+
    - Modified the "Run Query" button to:
      - Update `appState.runSql` with the current TextArea value
      - Increment `appState.nonce`
@@ -269,6 +280,7 @@ This is a good example of using XMLUI's built-in layout and component system rat
 In this development phase, we extended the Mastodon app with a Notifications page, following the same pattern used for the Home timeline. The implementation involved creating SQL functions to fetch, store, and retrieve notification data from the Mastodon API via Steampipe, and adding UI components to display this information.
 
 1. **Added SQL Functions to `index.html`**:
+
    - `createNotifications`: Creates the table schema for storing notifications
    - `updateNotifications`: Fetches notifications from the Mastodon API and stores them in the local table
    - `countNotifications`: Counts the number of notifications in the local table
@@ -276,10 +288,12 @@ In this development phase, we extended the Mastodon app with a Notifications pag
    - `getNotificationType`: Utility function for converting notification types to user-friendly text
 
 2. **Added Query Examples to `Query.xmlui`**:
+
    - Added test buttons for all notification-related functions
    - Enabled manual testing of each function before integration
 
 3. **Created a Simple Notifications Component**:
+
    - Built a basic `Notifications.xmlui` component that displays notifications
    - Implemented a clean, minimalist interface showing notification type, sender, and content
 
@@ -343,10 +357,10 @@ func main() {
 
 ## Key Lessons
 
-| Topic | Learning |
-|:------|:---------|
-| Steampipe cache behavior | Postgres mode and SQLite embedded mode have different cache control mechanisms |
-| Plugin materialization | Full row data is materialized before SQL field selection in SQLite embedded mode |
+| Topic                          | Learning                                                                                           |
+| :----------------------------- | :------------------------------------------------------------------------------------------------- |
+| Steampipe cache behavior       | Postgres mode and SQLite embedded mode have different cache control mechanisms                     |
+| Plugin materialization         | Full row data is materialized before SQL field selection in SQLite embedded mode                   |
 | Best practice for bundled apps | Set `STEAMPIPE_CACHE=false` in app code to avoid requiring users to configure environment manually |
 
 ## Outcome
@@ -355,11 +369,9 @@ func main() {
 - Cache behavior fully controlled by the application.
 - Cleaner, simpler user experience: no environment variable setup required manually.
 
-
 # Snapshot 22: Robust header image logic and reusable helpers
 
 ![snapshot22](../resources/snapshot22.png)
-
 
 Make header image display logic robust and DRY, and ensure avatar positioning works correctly whether or not a header image is present. Note: Elk actually doesn't do this!
 
@@ -369,14 +381,17 @@ Make header image display logic robust and DRY, and ensure avatar positioning wo
 
 - Updated XMLUI markup to use these helpers, so the logic is not repeated and is easy to maintain.
 
-
 ```js
-window.hasHeader = function(header_url) {
-  return typeof header_url === "string" && header_url && !header_url.includes('/missing.png');
-}
-window.avatarTopMargin = function(header_url) {
-  return window.hasHeader(header_url) ? '-2rem' : '0';
-}
+window.hasHeader = function (header_url) {
+  return (
+    typeof header_url === "string" &&
+    header_url &&
+    !header_url.includes("/missing.png")
+  );
+};
+window.avatarTopMargin = function (header_url) {
+  return window.hasHeader(header_url) ? "-2rem" : "0";
+};
 ```
 
 ```xml
@@ -403,7 +418,6 @@ Initially I tried jamming this code into a component-level var.hasHeader, that d
 I am increasingly confident that my rule 9 for AIs is a strong recommendation for everyone.
 
 > 9 keep complex functions and expressions out of xmlui, then can live in index.html
-
 
 # Snapshot 21: Use permanent toots table for display and fix initial reaction counts
 
@@ -438,7 +452,6 @@ Data Flow Management
 Next Steps
 
 The mechanism for updating reaction counts is still flawed, we are having trouble getting SQLite to limit its use of `mastodon_home_too`. But we're snapshotting here to capture progress.
-
 
 # Snapshot 20: add mutual indicators to Followers and Following
 
@@ -529,10 +542,9 @@ Why not default to 100%?
 
 @istvan / @gergo those statements were synthesized from the docs. When I asked for citations the answer was:
 
-
 > That conclusion is based on the following evidence.
 
->Documentation Examples:
+> Documentation Examples:
 > In the Stack documentation, every example that demonstrates centering or alignment across the full width explicitly sets width="100%" on the Stack. For example:
 > If width="100%" were the default, this explicit setting would not be necessary in every example.
 
@@ -558,7 +570,7 @@ Display the display name and username of the account being replied to, for each 
 
 **Surprise:**
 
-As it turns out, while we are glad to be accumulating everything in `toots_home`, we did *not* need it to solve this problem. When we see a replied-to id in the stream we can make a live call to `mastodon_account` to enrich it. Could be expensive but a) replies are rare, boosts (reblogs) much more common, and b) those lookups can be cached in a window var.
+As it turns out, while we are glad to be accumulating everything in `toots_home`, we did _not_ need it to solve this problem. When we see a replied-to id in the stream we can make a live call to `mastodon_account` to enrich it. Could be expensive but a) replies are rare, boosts (reblogs) much more common, and b) those lookups can be cached in a window var.
 
 **Steps Completed:**
 
@@ -575,8 +587,8 @@ As it turns out, while we are glad to be accumulating everything in `toots_home`
 - Discussed and handled linter warnings related to JS expressions in XMLUI attributes.
 
 **Notes:**
-- Among other things, this demonstrates that a DataSource can be safely used inside a Fragment for per-item dynamic data fetching.
 
+- Among other things, this demonstrates that a DataSource can be safely used inside a Fragment for per-item dynamic data fetching.
 
 # Snapshot 18: implement accumulator pattern for reply usernames/avatars
 
@@ -585,6 +597,7 @@ As it turns out, while we are glad to be accumulating everything in `toots_home`
 In this iteration, we implemented an accumulator pattern to solve the challenge of getting usernames and avatars for replied-to users. This journey started with a simple goal but led to a more powerful architectural pattern.
 
 Initially, we were displaying reply indicators with just the account ID:
+
 ```xml
 <Fragment when="{$item.in_reply_to_id != null}">
   <HStack gap="0.5rem">
@@ -677,6 +690,7 @@ The implementation uses a semaphore pattern with `initialLoadState` to ensure we
 This accumulator pattern is valuable beyond just getting reply usernames - it means we'll be able to search everything we've ever loaded.
 
 Next steps will include:
+
 - Implementing the reply username and avatar display using the accumulated data
 - Adding search functionality over the accumulated data
 - Potentially extending the pattern to other areas where we need to maintain historical data
@@ -690,6 +704,7 @@ Next steps will include:
 - Layout maintains proper proportions across different screen sizes
 
 Key components:
+
 ```
 <VStack>
   <HStack>
@@ -766,7 +781,7 @@ Cursor broke rule 7 again.
 
 Jon:
 
-> Do you remember rule 7?  Do not invent any XMLUI syntax. Only use constructs for which you can find examples in the docs and sample apps. You broke it by not checking the docs, you invented `didChange` instead of researching and using `onDidChange`.
+> Do you remember rule 7? Do not invent any XMLUI syntax. Only use constructs for which you can find examples in the docs and sample apps. You broke it by not checking the docs, you invented `didChange` instead of researching and using `onDidChange`.
 
 Cursor:
 
@@ -780,7 +795,7 @@ Cursor:
 
 > Currently, you cannot directly "store" custom rules in my persistent memory, as I do not have long-term memory between sessions or the ability to save user-defined rules for future conversations. Each session is stateless, and I only have access to the current conversation and any context you provide within it. However, here are some practical ways to ensure I follow your rules:
 > Include Rules in Each Session:
->  At the start of a session, you can paste your rules or a summary of them. I will then reference them throughout that session.
+> At the start of a session, you can paste your rules or a summary of them. I will then reference them throughout that session.
 > If you notice I'm drifting from your rules, you can remind me at any point in the conversation, and I'll immediately adjust my behavior to comply.
 
 Jon:
@@ -797,20 +812,22 @@ Next: add a slider to make images zoomable.
 
 ![snapshot11](../resources/snapshot11.png)
 
-  - Added several window utility functions in index.html:
-    - getDisplayName() - Gets display name with fallback to username
-    - getReblogDisplayName() - Gets reblog display name with fallback to username
-    - getUsername() and getReblogUsername() - Get username values with empty string fallback
-    - getCreatedDate() and getReblogCreatedDate() - Format dates with proper fallbacks
+- Added several window utility functions in index.html:
 
-  - Updated Home.xmlui to use these functions:
-    - Replaced all conditional expressions with function calls
-    - Made the code much cleaner and easier to read
+  - getDisplayName() - Gets display name with fallback to username
+  - getReblogDisplayName() - Gets reblog display name with fallback to username
+  - getUsername() and getReblogUsername() - Get username values with empty string fallback
+  - getCreatedDate() and getReblogCreatedDate() - Format dates with proper fallbacks
 
-  - Updated MastodonAvatar.xmlui to use the same functions:
-    - Refactored the dialog parameter setup into a more organized format
-    - Used the utility functions for all name and username access
-    - Added a new intermediate constant for dialog parameters to make the code clearer
+- Updated Home.xmlui to use these functions:
+
+  - Replaced all conditional expressions with function calls
+  - Made the code much cleaner and easier to read
+
+- Updated MastodonAvatar.xmlui to use the same functions:
+  - Refactored the dialog parameter setup into a more organized format
+  - Used the utility functions for all name and username access
+  - Added a new intermediate constant for dialog parameters to make the code clearer
 
 # Snapshot 10: add Followers page, column widths, sorting
 
@@ -822,30 +839,30 @@ Here's what we learned in this snapshot:
 
 - **Column widths**:
 
- - Column width units can only be star sizing (`*`, `2*`, etc.) or fixed pixel (`80px`)
+- Column width units can only be star sizing (`*`, `2*`, etc.) or fixed pixel (`80px`)
 
- - Star sizing would make columns share available space proportionally but that isn't what we want
+- Star sizing would make columns share available space proportionally but that isn't what we want
 
- - So we're using fixed pixel widths to shrink numeric columns (Followers, Following, Posts)
+- So we're using fixed pixel widths to shrink numeric columns (Followers, Following, Posts)
 
- - We also learned that colums can contain components, e.g.:
+- We also learned that colums can contain components, e.g.:
 
- ```
-       <Column header="" width="60px">
-        <MastodonAvatar
-          url="{$item.avatar_url}"
-          size="xs"
-          name="{$item.display_name || $item.username}"
-          item="{$item}"
-        />
-      </Column>
-      <Column header="Name" bindTo="display_name" canSort="true">
-        <Fragment when="{$item.instance_qualified_account_url}">
-          <Link to="{$item.instance_qualified_account_url}" target="_blank">
-            {$item.display_name || $item.username}
-          </Link>
-        </Fragment>
-      </Column>
+```
+      <Column header="" width="60px">
+       <MastodonAvatar
+         url="{$item.avatar_url}"
+         size="xs"
+         name="{$item.display_name || $item.username}"
+         item="{$item}"
+       />
+     </Column>
+     <Column header="Name" bindTo="display_name" canSort="true">
+       <Fragment when="{$item.instance_qualified_account_url}">
+         <Link to="{$item.instance_qualified_account_url}" target="_blank">
+           {$item.display_name || $item.username}
+         </Link>
+       </Fragment>
+     </Column>
 ```
 
 - **Table Sorting**:
@@ -862,56 +879,55 @@ We discovered that avatar URLs aren't directly available in the mastodon_my_foll
 
 - **Custom followers table**:
 
- - To avoid repeatedly fetching all followers to ensure freshness, we sync mastodon_my_follower daily to a table in the public schema of our Pipes database, using this scheduled query:
+- To avoid repeatedly fetching all followers to ensure freshness, we sync mastodon_my_follower daily to a table in the public schema of our Pipes database, using this scheduled query:
 
- ```
- with
-  ins as (
-    insert into
-      followers
-    select
-      account_id,
-      id,
-      acct,
-      created_at,
-      url,
-      instance_qualified_account_url,
-      username,
-      server,
-      display_name,
-      followers_count,
-      following_count,
-      statuses_count,
-      note
-    from
-      mastodon_my_follower
-    on conflict (id) do update
-    set
-      account_id = excluded.account_id,
-      acct = excluded.acct,
-      created_at = excluded.created_at,
-      url = excluded.url,
-      instance_qualified_account_url = excluded.instance_qualified_account_url,
-      username = excluded.username,
-      server = excluded.server,
-      display_name = excluded.display_name,
-      followers_count = excluded.followers_count,
-      following_count = excluded.following_count,
-      statuses_count = excluded.statuses_count,
-      note = excluded.note
-    returning
-      xmax = 0 as inserted -- true if it was a fresh insert
-  )
+```
+with
+ ins as (
+   insert into
+     followers
+   select
+     account_id,
+     id,
+     acct,
+     created_at,
+     url,
+     instance_qualified_account_url,
+     username,
+     server,
+     display_name,
+     followers_count,
+     following_count,
+     statuses_count,
+     note
+   from
+     mastodon_my_follower
+   on conflict (id) do update
+   set
+     account_id = excluded.account_id,
+     acct = excluded.acct,
+     created_at = excluded.created_at,
+     url = excluded.url,
+     instance_qualified_account_url = excluded.instance_qualified_account_url,
+     username = excluded.username,
+     server = excluded.server,
+     display_name = excluded.display_name,
+     followers_count = excluded.followers_count,
+     following_count = excluded.following_count,
+     statuses_count = excluded.statuses_count,
+     note = excluded.note
+   returning
+     xmax = 0 as inserted -- true if it was a fresh insert
+ )
 select
-  count(*)
+ count(*)
 from
-  ins
+ ins
 where
-  inserted;
+ inserted;
 ```
 
 If this gets expensive we'll consider self-hosting. This could be done in sqlite with the steampipe extension, and https://github.com/jonudell/sqlite-server/ now supports that.
-
 
 # Snapshot 9: refactor Avatar to MastodonAvatar, move ModalDialog
 
@@ -954,7 +970,6 @@ Into these:
 ```
 
 That was our next mistake. All three live in Fragments inside the same Items loop, so we need to pass $item.
-
 
 ```
 <Avatar
@@ -1011,7 +1026,9 @@ Another thing we noted, not having used ModalDialog before, is that it calls its
 In this iteration, we focused on enhancing the user profile modal dialog and improving our understanding of XMLUI's component-based styling approach:
 
 - **Enhanced User Profile Information**:
+
   - Used steampipe-mcp to explore the Mastodon API data schema and discover available profile fields:
+
     - Identified additional profile metadata including header images, bio notes, and follower/following counts
     - Wrote test queries to verify field availability and proper JSON path extraction
     - Updated our SQL query in index.html to extract these fields using PostgreSQL JSON operators:
@@ -1043,11 +1060,13 @@ In this iteration, we focused on enhancing the user profile modal dialog and imp
       - Link to view the full profile on Mastodon
 
 - **Component-Based Styling**: We identified that our `Avatar` component was using unnecessary inline styles:
+
   - Removed explicit height and border-radius properties from Avatar components
   - Discovered through documentation that Avatar has built-in styling based on the `size` prop
   - Confirmed that Avatar automatically applies appropriate border-radius (4px by default)
 
 - **Theme System Understanding**: Gained deeper insight into how XMLUI components encapsulate styling:
+
   - Components like Avatar handle their own presentation details internally
   - The `size` prop (e.g., "xs", "lg") controls multiple style properties simultaneously
   - This encapsulation follows design system principles where presentation details are abstracted
@@ -1070,14 +1089,15 @@ In this iteration we punted on username lookup in favor of visual refinement.
 
 > hm. in this screenshot we have rightarrow between post user and reblog user, the semantics of rightarrow is good but the look is bad: too small and sparse compared to the emoji. but now we diverge from the reaction row which is using the share icon which is richer and somehow more semantically appropriate in that context. do you see what i mean?
 
->> You're absolutely right. There's a visual and semantic inconsistency now:
->> The "arrowright" icon between users is too thin and sparse compared to the emoji it replaced - it lacks visual weight
->> We're using "share" for reblogs in the reaction row but "arrowright" in the user relationship line
->> Since reblogging is fundamentally about sharing content, the "share" icon makes more semantic sense in both places. Let me fix this for better consistency:
->> Now we have better consistency - the "share" icon is used in both places to represent reblogging/sharing content. This creates visual harmony and is semantically accurate since reblogging is a form of sharing.
->> The "share" icon likely has more visual weight than the thin arrow icon, which should make it stand out better between the user names. This should create a clearer visual relationship while maintaining a consistent conceptual model throughout the interface.
+> > You're absolutely right. There's a visual and semantic inconsistency now:
+> > The "arrowright" icon between users is too thin and sparse compared to the emoji it replaced - it lacks visual weight
+> > We're using "share" for reblogs in the reaction row but "arrowright" in the user relationship line
+> > Since reblogging is fundamentally about sharing content, the "share" icon makes more semantic sense in both places. Let me fix this for better consistency:
+> > Now we have better consistency - the "share" icon is used in both places to represent reblogging/sharing content. This creates visual harmony and is semantically accurate since reblogging is a form of sharing.
+> > The "share" icon likely has more visual weight than the thin arrow icon, which should make it stand out better between the user names. This should create a clearer visual relationship while maintaining a consistent conceptual model throughout the interface.
 
 - **Icons vs Emoji**
+
   - The emoji we were using for icons conflicted with emoji that appear in usernames
   - We switched to XMLUI icons
   - Created circular icon containers with consistent border styling
@@ -1094,18 +1114,21 @@ In this iteration we punted on username lookup in favor of visual refinement.
 In this iteration, we focused on further improving information density and introducing interactive elements:
 
 - **Consolidated Reblog Display**: We completely redesigned the reblog display to follow a single-row pattern:
+
   - Reblogger and original author now appear side-by-side on the same line
   - Connected by a right arrow emoji (➡️) that visually indicates the reblog relationship
   - Both avatars use the `xs` (Extra small) size to maximize information density
   - Original content is now indented with a slight left margin for visual hierarchy
 
 - **User Profile Modal Dialog**: Added a `ModalDialog` component to view user profiles:
+
   - Clicking on any avatar now opens a profile dialog
   - Displays avatar, display name, and username in a clean centered layout
   - Creates a more interactive experience without leaving the timeline
   - Provides quick access to user information without excess clutter
 
 - **Consistent Visual Language**: Updated our visual indicators for better clarity:
+
   - Replaced the recycling icon (♻️) with right arrow (➡️) in both reblog display and reaction counts
   - This creates a cohesive visual language where the same symbol indicates the same concept throughout the UI
   - Makes it immediately clear what the relationship is between users in a reblog
@@ -1138,13 +1161,13 @@ The result is a more compact timeline that still maintains clear visual hierarch
 By comparing our implementation to modern Mastodon clients like Elk, we identified that reducing unnecessary vertical spacing is key to achieving better information density. This approach allows us to display more content in the available screen space while maintaining a clean, readable interface.
 
 Future density improvements could include:
+
 - Further reducing spacing between elements
 - More compact rendering of links and media attachments
 - Optimizing the layout of interaction metrics
 - Potential grid-based views for even higher density when appropriate
 
 # Snapshot 4: add avatars, switch to Avatar component
-
 
 In this iteration we added avatars.
 
@@ -1221,7 +1244,6 @@ While this is a good milestone, we noted that the visual differentiation between
 
 # Snapshot 2: improve timeline display, optimize queries
 
-
 In this iteration, we aimed to improve the display of the timeline.
 
 - Initially attempted a 2-column layout that didn't work well for the content
@@ -1236,7 +1258,8 @@ In this iteration, we aimed to improve the display of the timeline.
 - Removed the "View" link which wasn't needed with the current display format
 - Maintained the information-dense layout while ensuring data accuracy
 
- We were also getting zeros for reaction counts. To diagnose and fix the issue, we explored the Steampipe schema for the Mastodon plugin by running targeted SQL queries. We:
+We were also getting zeros for reaction counts. To diagnose and fix the issue, we explored the Steampipe schema for the Mastodon plugin by running targeted SQL queries. We:
+
 - Examined the structure of the JSON data in the `status` field
 - Ran queries to search for toots with non-zero reaction counts to verify our approach
 - Used PostgreSQL JSON extraction operators (`->` and `->>`) to access nested values
@@ -1264,6 +1287,7 @@ This approach keeps our markup clean and ensures visual consistency while allowi
 After examining the theme variables in detail, we discovered that XMLUI uses three main color roles to create a consistent visual hierarchy:
 
 **1. Surface Colors**
+
 - **Purpose:** Used for backgrounds, containers, and UI surfaces
 - **Palette Range:** From white (surface-0) to very dark (surface-950)
 - **Usage Examples:**
@@ -1273,6 +1297,7 @@ After examining the theme variables in detail, we discovered that XMLUI uses thr
   - `borderColor: "$color-surface-200"`
 
 **2. Primary Colors**
+
 - **Purpose:** Used for emphasis, key actions, and interactive elements
 - **Default Value:** A blue shade (#206bc4)
 - **Usage Examples:**
@@ -1282,6 +1307,7 @@ After examining the theme variables in detail, we discovered that XMLUI uses thr
   - `backgroundColor-AutoComplete-badge: "$color-primary-500"`
 
 **3. Secondary Colors**
+
 - **Purpose:** Used for supporting elements, less prominent UI components
 - **Default Value:** A slate gray (#6c7a91)
 - **Usage Examples:**
@@ -1289,11 +1315,13 @@ After examining the theme variables in detail, we discovered that XMLUI uses thr
   - `textColor-secondary: "$color-surface-600"` (also using surface)
 
 **Color System Organization:**
+
 1. **Base Constants:** Defined with prefix `const-color-` (const-color-primary-500)
 2. **Semantic Variables:** Mapped from constants (color-primary: "$const-color-primary-500")
 3. **Component Variables:** Applied to specific components (backgroundColor-Button-primary: "$color-primary-500")
 
 This three-role system creates a visual hierarchy where:
+
 - **Surface** creates neutral backgrounds and containers
 - **Primary** draws attention to important elements and actions
 - **Secondary** provides visual support without competing with primary elements
@@ -1315,12 +1343,12 @@ We repeatedly broke rule 7: "do not invent any xmlui syntax. only use constructs
 - **Component Boundaries**: Understand which HTML elements are supported natively in the Markdown versus XMLUI-specific components.
 
 A specific example where we broke rule 7 was attempting to use a nested structure of `<List><ListItem><Items>...</Items></ListItem></List>`, which is completely invalid in XMLUI. The correct understanding is that:
+
 - `Items` and `List` are both iterator components but never used together
 - `ListItem` is an HTML element available in Markdown contexts, not a top-level XMLUI component
 - The proper pattern is to use either `Items` with direct children or `List` with a render function
 
 # Snapshot 1: basic Mastodon home timeline viewer
-
 
 We've created a basic Mastodon home timeline viewer that displays toots with proper formatting. Our initial implementation:
 
@@ -1331,4 +1359,3 @@ We've created a basic Mastodon home timeline viewer that displays toots with pro
 - Created proper links to view posts on Mastodon using instance-qualified URLs when available
 - Formatted dates for better readability
 - We aim to follow the <a href="https://blog.jonudell.net/2022/12/17/a-bloomberg-terminal-for-mastodon/">Bloomberg terminal for Mastodon</a> design philosophy with high information density
-
