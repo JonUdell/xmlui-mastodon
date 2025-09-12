@@ -45,6 +45,8 @@ This should result in a beautiful Mastodon reader which, because database backed
 
 # Snapshot 35: Solve timestamp alignment with iterative codefence approach
 
+![snapshot35](../resources/snapshot35.png)
+
 ## The Problem
 
 Timestamps in our Mastodon app were not aligning properly:

@@ -34,7 +34,7 @@
   <HStack verticalAlignment="center" gap="0.75rem">
     <HStack verticalAlignment="center" gap="0.25rem">
       <SocialButton icon="reply" />
-      <Text variant="caption">
+      <Text variant="secondary">
         {$props.item.replies_count || 0}
       </Text>
     </HStack>
@@ -46,7 +46,7 @@
           window.getPostReblogged($props.item) ? unreblogPost.execute() : reblogPost.execute()
         </event>
       </SocialButton>
-      <Text variant="caption">
+      <Text variant="secondary">
         {$props.item.reblogs_count || 0}
       </Text>
     </HStack>
@@ -58,7 +58,7 @@
           window.getPostFavourited($props.item) ? unfavoritePost.execute() : favoritePost.execute()
         </event>
       </SocialButton>
-      <Text variant="caption">
+      <Text variant="secondary">
         {$props.item.favourites_count || 0}
       </Text>
     </HStack>
