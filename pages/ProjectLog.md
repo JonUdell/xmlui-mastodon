@@ -175,15 +175,72 @@ Result: Still worked - timestamp remained top-aligned
 
 ### Step 5: Remove Height Constraint (The Key Discovery)
 ```xmlui
+<Component name="AlignmentTest">
   <HStack verticalAlignment="center" gap="0.5rem" wrapContent="true">
-    <!-- Same content but NO height constraint -->
+    <HStack verticalAlignment="center" gap="0.3rem">
+      <VStack width="32px" height="32px">
+        <Text>A</Text>
+      </VStack>
+      <VStack gap="$gap-none">
+        <Text variant="caption">Left User</Text>
+        <Text variant="caption" marginTop="-.5rem">@leftuser</Text>
+      </VStack>
+    </HStack>
+    <Icon name="arrowright" />
+    <HStack verticalAlignment="center" gap="0.4rem">
+      <VStack width="32px" height="32px">
+        <Text>B</Text>
+      </VStack>
+      <VStack gap="$gap-none">
+        <Text variant="caption">Right User</Text>
+        <Text variant="caption" marginTop="-.5rem">@rightuser</Text>
+      </VStack>
+    </HStack>
+    <SpaceFiller />
+    <VStack height="100%" verticalAlignment="start">
+      <Text>Should be TOP-aligned</Text>
+    </VStack>
   </HStack>
 </Component>
 ```
 
 Result: BROKE - timestamp became centered instead of top-aligned
 
-The iterative testing revealed the fundamental issue: `VStack height="100%" verticalAlignment="start"` only works when there's an explicit height context. Without a defined parent height, the `height="100%"` has nothing to reference, causing the alignment to fall back to centering behavior.
+## Step 6: isolate verticalAlignment (no wrapContent)
+
+The iterative testing suggests that `VStack height="100%" verticalAlignment="start"` behavior depends on complex interactions between multiple layout properties. The alignment breaks when specific combinations of properties are present (like verticalAlignment="center" on parent HStack, gap="$gap-none", and variant="caption" text), even without explicit height constraints.
+
+```xmlui
+<Component name="AlignmentTest">
+  <HStack verticalAlignment="center" gap="0.5rem">
+    <HStack gap="0.3rem">
+      <VStack width="32px" height="32px">
+        <Text>A</Text>
+      </VStack>
+      <VStack>
+        <Text>Left User</Text>
+        <Text>@leftuser</Text>
+      </VStack>
+    </HStack>
+    <Icon name="arrowright" />
+    <HStack gap="0.4rem">
+      <VStack width="32px" height="32px">
+        <Text>B</Text>
+      </VStack>
+      <VStack>
+        <Text>Right User</Text>
+        <Text>@rightuser</Text>
+      </VStack>
+    </HStack>
+    <SpaceFiller />
+    <VStack height="100%" verticalAlignment="start">
+      <Text>Should be TOP-aligned</Text>
+    </VStack>
+  </HStack>
+</Component>
+```
+
+Result: Still broke
 
 ## Timestamp on Its Own Line
 
