@@ -1,6 +1,7 @@
 # Contents
 
 - [Purpose](#purpose)
+- [Snapshot 36: Track db storage](#snapshot-36-track-db-storage)
 - [Snapshot 35: Solve timestamp alignment with iterative codefence approach](#snapshot-35-solve-timestamp-alignment-with-iterative-codefence-approach)
 - [Snapshot 34: Improve and wire up social buttons](#snapshot-34-improve-and-wire-up-social-buttons)
 - [Snapshot 33: Make search incremental](#snapshot-33-make-search-incremental)
@@ -42,6 +43,28 @@
 We are going to improve [steampipe-mod-mastodon-insights](https://github.com/turbot/steampipe-mod-mastodon-insights), with special focus on realizing the design approach discussed in [A Bloomberg terminal for Mastodon](https://blog.jonudell.net/2022/12/17/a-bloomberg-terminal-for-mastodon/). XMLUI gives us many more degrees of freedom to improve on the original bare-bones Powerpipe dashboard. Both projects use the same Mastodon API access, abstracted as a set of Postgres tables provided by [steampipe-plugin-mastodon](https://github.com/turbot/steampipe-plugin-mastodon).
 
 This should result in a beautiful Mastodon reader which, because database backed, will also (unlike the stock Mastodon client or others like Elk and Mona) have a long memory and enable powerful search and data visualization.
+
+# Snapshot 36: Track db storage
+
+We are saving everything that gets displayed so it can all be searched. Initially we were saving too much and bloating the db. We went to a more conservative strategy, and made a tool to evaluate it.
+
+```
+./dbstats.sh
++---------------+-----------+------------+---------+---------------+
+|  table_name   | row_count | size_bytes | size_kb | bytes_per_row |
++---------------+-----------+------------+---------+---------------+
+| notifications | 1494      | 12787712   | 12488.0 | 8559.38       |
+| follower      | 2209      | 7806976    | 7624.0  | 3534.17       |
+| following     | 1338      | 5332992    | 5208.0  | 3985.79       |
+| toots_home    | 5267      | 2273280    | 2220.0  | 431.61        |
++---------------+-----------+------------+---------+---------------+
+```
+
+Toots will dominate so they are nice and small, if we find we need more we can capture more and evaluate.
+
+Notifications are fattest, we may want to trim there, though the count is usually slow-growing.
+
+Follower and Following are medium-heft but they will change more slowly than notifications and toots.
 
 # Snapshot 35: Solve timestamp alignment with iterative codefence approach
 
