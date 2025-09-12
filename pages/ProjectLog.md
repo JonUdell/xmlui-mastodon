@@ -1,6 +1,7 @@
 # Contents
 
 - [Purpose](#purpose)
+- [Snapshot 35: Solve timestamp alignment with iterative codefence approach](#snapshot-35-solve-timestamp-alignment-with-iterative-codefence-approach)
 - [Snapshot 34: Improve and wire up social buttons](#snapshot-34-improve-and-wire-up-social-buttons)
 - [Snapshot 33: Make search incremental](#snapshot-33-make-search-incremental)
 - [Snapshot 32: Refactor Home view](#snapshot-32-refactor-home-view)
@@ -41,6 +42,214 @@
 We are going to improve [steampipe-mod-mastodon-insights](https://github.com/turbot/steampipe-mod-mastodon-insights), with special focus on realizing the design approach discussed in [A Bloomberg terminal for Mastodon](https://blog.jonudell.net/2022/12/17/a-bloomberg-terminal-for-mastodon/). XMLUI gives us many more degrees of freedom to improve on the original bare-bones Powerpipe dashboard. Both projects use the same Mastodon API access, abstracted as a set of Postgres tables provided by [steampipe-plugin-mastodon](https://github.com/turbot/steampipe-plugin-mastodon).
 
 This should result in a beautiful Mastodon reader which, because database backed, will also (unlike the stock Mastodon client or others like Elk and Mona) have a long memory and enable powerful search and data visualization.
+
+# Snapshot 35: Solve timestamp alignment with iterative codefence approach
+
+## The Problem
+
+Timestamps in our Mastodon app were not aligning properly:
+- **ReblogPost timestamps** were centered instead of top-aligned
+- **RegularPost timestamps** had similar alignment issues
+- We wanted to achieve Elk's fixed top-right timestamp behavior, discovered apparent XMLUI limitation, found a different and nice solution.
+
+## The Discovery Process: Iterative Codefence Testing
+
+The breakthrough came from using a systematic **iterative codefence approach** that was brilliantly informative:
+
+### Step 1: Basic Working Example
+```xmlui
+<Component name="AlignmentTest">
+  <HStack height="200px">
+    <VStack>
+      <Text>Left Content</Text>
+      <Text>Multiple Lines</Text>
+    </VStack>
+    <SpaceFiller />
+    <VStack height="100%" verticalAlignment="start">
+      <Text>Should be TOP-aligned</Text>
+    </VStack>
+  </HStack>
+</Component>
+```
+
+Result: Worked perfectly - timestamp was top-aligned
+
+### Step 2: Add Avatar and Text Structure
+```xmlui
+<Component name="AlignmentTest">
+  <HStack height="200px">
+    <HStack gap="0.3rem">
+      <VStack width="32px" height="32px">
+        <Text>A</Text>
+      </VStack>
+      <VStack>
+        <Text>Left User</Text>
+        <Text>@leftuser</Text>
+      </VStack>
+    </HStack>
+    <Icon name="arrowright" />
+    <HStack gap="0.4rem">
+      <VStack width="32px" height="32px">
+        <Text>B</Text>
+      </VStack>
+      <VStack>
+        <Text>Right User</Text>
+        <Text>@rightuser</Text>
+      </VStack>
+    </HStack>
+    <SpaceFiller />
+    <VStack height="100%" verticalAlignment="start">
+      <Text>Should be TOP-aligned</Text>
+    </VStack>
+  </HStack>
+</Component>
+```
+
+Result: Still worked - timestamp remained top-aligned
+
+### Step 3: Add wrapContent and Complex Layout
+```xmlui
+<Component name="AlignmentTest">
+  <HStack gap="0.5rem" wrapContent="true" height="200px">
+    <HStack gap="0.3rem">
+      <VStack width="32px" height="32px">
+        <Text>A</Text>
+      </VStack>
+      <VStack>
+        <Text>Left User</Text>
+        <Text>@leftuser</Text>
+      </VStack>
+    </HStack>
+    <Icon name="arrowright" />
+    <HStack gap="0.4rem">
+      <VStack width="32px" height="32px">
+        <Text>B</Text>
+      </VStack>
+      <VStack>
+        <Text>Right User</Text>
+        <Text>@rightuser</Text>
+      </VStack>
+    </HStack>
+    <SpaceFiller />
+    <VStack height="100%" verticalAlignment="start">
+      <Text>Should be TOP-aligned</Text>
+    </VStack>
+  </HStack>
+</Component>
+```
+
+Result: Still worked - timestamp remained top-aligned
+
+### Step 4: Exact ReblogPost Structure
+```xmlui
+<Component name="AlignmentTest">
+  <HStack gap="0.5rem" wrapContent="true" height="200px">
+    <HStack gap="0.3rem">
+      <VStack width="32px" height="32px">
+        <Text>A</Text>
+      </VStack>
+      <VStack>
+        <Text>Left User</Text>
+        <Text>@leftuser</Text>
+      </VStack>
+    </HStack>
+    <Icon name="arrowright" />
+    <HStack gap="0.4rem">
+      <VStack width="32px" height="32px">
+        <Text>B</Text>
+      </VStack>
+      <VStack>
+        <Text>Right User</Text>
+        <Text>@rightuser</Text>
+      </VStack>
+    </HStack>
+    <SpaceFiller />
+    <VStack height="100%" verticalAlignment="start">
+      <Text>Should be TOP-aligned</Text>
+    </VStack>
+  </HStack>
+</Component>
+```
+
+Result: Still worked - timestamp remained top-aligned
+
+### Step 5: Remove Height Constraint (The Key Discovery)
+```xmlui
+  <HStack verticalAlignment="center" gap="0.5rem" wrapContent="true">
+    <!-- Same content but NO height constraint -->
+  </HStack>
+</Component>
+```
+
+Result: BROKE - timestamp became centered instead of top-aligned
+
+The iterative testing revealed the fundamental issue: `VStack height="100%" verticalAlignment="start"` only works when there's an explicit height context. Without a defined parent height, the `height="100%"` has nothing to reference, causing the alignment to fall back to centering behavior.
+
+## Timestamp on Its Own Line
+
+Instead of fighting the positioning system, we restructured the layout:
+
+### Before (Problematic):
+```xmlui
+<HStack verticalAlignment="center" gap="0.5rem" wrapContent="true" height="60px">
+  <!-- Avatar and user info -->
+  <SpaceFiller />
+  <VStack height="100%" verticalAlignment="start">
+    <Text>{formatHumanElapsedTime($props.item.created_at)}</Text>
+  </VStack>
+</HStack>
+```
+
+### After (Clean Solution):
+```xmlui
+<VStack gap="0.25rem">
+  <!-- Timestamp line -->
+  <Text variant="caption" fontSize="0.75rem" color="$textColor-secondary">
+    {formatHumanElapsedTime($props.item.created_at)}
+  </Text>
+
+  <!-- Avatar and user info line -->
+  <HStack verticalAlignment="center" gap="0.5rem" wrapContent="true">
+    <!-- Avatar and user info without timestamp -->
+  </HStack>
+</VStack>
+```
+
+## Key Learnings
+
+### 1. Iterative Codefence Testing is Brilliantly Informative
+The step-by-step playground approach was incredibly valuable because:
+- Isolated variables: Each step changed only one thing
+- Immediate feedback: We could see exactly when things broke
+- Systematic discovery: We found the exact condition that caused the failure
+- Reproducible: Each step was a complete, testable example
+
+### 2. XMLUI Positioning Limitations
+Through our research, we discovered that XMLUI has fundamental limitations for fixed positioning:
+- No `position` property: Unlike CSS, XMLUI doesn't expose `position: absolute` or `position: fixed`
+- Height context dependency: `verticalAlignment="start"` with `height="100%"` requires explicit parent height
+- Scope interactions are tricky: Layout properties interact in complex, unpredictable ways
+
+### 3. Pragmatic Problem-Solving
+Instead of trying to force a complex solution, we:
+- Accepted the constraint: Worked within XMLUI's limitations
+- Redesigned the approach: Put timestamp on its own line
+- Improved the UX: Made timestamps more subtle and readable
+- Maintained consistency: Applied the same pattern to both RegularPost and ReblogPost
+
+## The Presumed Limitation
+
+We discovered that XMLUI may not support fixed positioning behavior without significant architectural changes. The system appears to be designed around flexbox-based layouts rather than absolute positioning, which creates fundamental constraints for certain UI patterns.
+
+## Outcome
+
+- Consistent layout across both post types
+- No more alignment issues - timestamps are naturally at the top
+- Cleaner visual hierarchy - timestamp → user info → content
+- More readable - timestamps don't compete with user names for space
+- Simpler code - no complex height/positioning logic needed
+
+The iterative codefence approach proved to be an incredibly powerful debugging and discovery method. Our method is overly complex: run the docs server locally, temporarily sacrifice an existing howto with codefence (we used chain-a-refetch), iterate there, then throw away the change. It will be very cool to be able to do that in hosted playground!
 
 # Snapshot 34: Improve and wire up social buttons
 
