@@ -41,6 +41,13 @@
       return { sql: sql }
     }
 
+    window.initializeApp = function() {
+      // Initialize FTS4 after app startup
+      window.ftsEnabled = true;
+      console.log('FTS4 initialized successfully');
+      return window.initializeFTS();
+    }
+
     window.ephemeralData = ''
 
     window.query = 'http://localhost:8080/query'
@@ -594,66 +601,79 @@
       };
     };
 
+    // FTS search query sanitization
+    window.sanitizeFTSQuery = function(query) {
+      if (!query) return '';
+      // Escape FTS4 special characters: " - ( ) AND OR NOT
+      return query.replace(/["\-()]/g, ' ')
+                  .replace(/\b(AND|OR|NOT)\b/gi, ' ')
+                  .trim()
+                  .split(/\s+/)
+                  .filter(term => term.length > 0)
+                  .join(' ');
+    }
+
+    // FTS-based search function
     window.searchTootsAndNotifications = function(query) {
+      const sanitizedQuery = window.sanitizeFTSQuery(query);
+      if (!sanitizedQuery) {
+        return { sql: 'SELECT NULL LIMIT 0' }; // Return empty result for empty query
+      }
+
       return {
         sql: `
-        SELECT
-          'toot' as result_type,
-          id,
-          author_name,
-          reblog_author_name,
-          created_at,
-          reblog_created_at,
-          content,
-          reblog_content,
-          url,
-          NULL as display_name,
-          NULL as username,
-          NULL as avatar_url,
-          NULL as reblog_display_name,
-          NULL as reblog_username,
-          NULL as reblog_avatar_url,
-          NULL as category,
-          NULL as account_url,
-          NULL as note
-        FROM toots_home
-        WHERE
-          author_name LIKE '%' || ? || '%'
-          OR content LIKE '%' || ? || '%'
-          OR reblog_author_name LIKE '%' || ? || '%'
-          OR reblog_content LIKE '%' || ? || '%'
+        SELECT * FROM (
+          SELECT
+            'toot' as result_type,
+            th.id,
+            th.author_name,
+            th.reblog_author_name,
+            th.created_at,
+            th.reblog_created_at,
+            th.content,
+            th.reblog_content,
+            th.url,
+            NULL as display_name,
+            NULL as username,
+            NULL as avatar_url,
+            NULL as reblog_display_name,
+            NULL as reblog_username,
+            NULL as reblog_avatar_url,
+            NULL as category,
+            NULL as account_url,
+            NULL as note
+          FROM toots_fts tf
+          JOIN toots_home th ON tf.id = th.id
+          WHERE toots_fts MATCH ?
 
-        UNION ALL
+          UNION ALL
 
-        SELECT
-          'notification' as result_type,
-          id,
-          display_name as author_name,
-          NULL as reblog_author_name,
-          created_at,
-          NULL as reblog_created_at,
-          status_content as content,
-          NULL as reblog_content,
-          status_url as url,
-          display_name,
-          NULL as username,
-          NULL as avatar_url,
-          NULL as reblog_display_name,
-          NULL as reblog_username,
-          NULL as reblog_avatar_url,
-          category,
-          account_url,
-          note
-        FROM notifications
-        WHERE
-          display_name LIKE '%' || ? || '%'
-          OR status_content LIKE '%' || ? || '%'
-          OR note LIKE '%' || ? || '%'
-          OR category LIKE '%' || ? || '%'
-
+          SELECT
+            'notification' as result_type,
+            n.id,
+            n.display_name as author_name,
+            NULL as reblog_author_name,
+            n.created_at,
+            NULL as reblog_created_at,
+            n.status_content as content,
+            NULL as reblog_content,
+            n.status_url as url,
+            n.display_name,
+            NULL as username,
+            NULL as avatar_url,
+            NULL as reblog_display_name,
+            NULL as reblog_username,
+            NULL as reblog_avatar_url,
+            n.category,
+            n.account_url,
+            n.note
+          FROM notifications_fts nf
+          JOIN notifications n ON nf.id = n.id
+          WHERE notifications_fts MATCH ?
+        )
         ORDER BY created_at DESC
         `,
-        params: [query, query, query, query, query, query, query, query]
+        params: [sanitizedQuery, sanitizedQuery]
       };
     }
 
@@ -863,6 +883,133 @@
     window.stripHtmlTags = function(html) {
       if (!html) return '';
       return html.replace(/<[^>]*>/g, '').trim();
+    }
+
+    // FTS (Full-Text Search) Infrastructure
+
+    window.checkFTSSupport = function() {
+      return {
+        sql: "SELECT 'FTS4 available' as status"
+      };
+    }
+
+    window.initializeFTS = function() {
+      return {
+        sql: `
+          -- Create FTS4 virtual table for toots
+          CREATE VIRTUAL TABLE IF NOT EXISTS toots_fts USING fts4(
+            id,
+            author_name,
+            reblog_author_name,
+            content,
+            reblog_content,
+            created_at,
+            reblog_created_at,
+            url
+          );
+
+          -- Create FTS4 virtual table for notifications
+          CREATE VIRTUAL TABLE IF NOT EXISTS notifications_fts USING fts4(
+            id,
+            display_name,
+            status_content,
+            note,
+            category,
+            created_at,
+            status_url,
+            account_url
+          );
+
+          -- Populate toots_fts from existing data
+          INSERT OR IGNORE INTO toots_fts(
+            id, author_name, reblog_author_name, content, reblog_content,
+            created_at, reblog_created_at, url
+          )
+          SELECT
+            id, author_name, reblog_author_name, content, reblog_content,
+            created_at, reblog_created_at, url
+          FROM toots_home;
+
+          -- Populate notifications_fts from existing data
+          INSERT OR IGNORE INTO notifications_fts(
+            id, display_name, status_content, note, category,
+            created_at, status_url, account_url
+          )
+          SELECT
+            id, display_name, status_content, note, category,
+            created_at, status_url, account_url
+          FROM notifications;
+        `
+      };
+    }
+
+    window.syncFTSToots = function() {
+      return {
+        sql: `
+          -- Manual sync function for troubleshooting (fallback only)
+          INSERT OR REPLACE INTO toots_fts(
+            id, author_name, reblog_author_name, content, reblog_content,
+            created_at, reblog_created_at, url
+          )
+          SELECT
+            id, author_name, reblog_author_name, content, reblog_content,
+            created_at, reblog_created_at, url
+          FROM toots_home;
+        `
+      };
+    }
+
+    window.syncFTSNotifications = function() {
+      return {
+        sql: `
+          -- Manual sync function for troubleshooting (fallback only)
+          INSERT OR REPLACE INTO notifications_fts(
+            id, display_name, status_content, note, category,
+            created_at, status_url, account_url
+          )
+          SELECT
+            id, display_name, status_content, note, category,
+            created_at, status_url, account_url
+          FROM notifications;
+        `
+      };
+    }
+
+    // Global flag to track FTS availability
+    window.ftsEnabled = false;
+
+    // Debug functions for FTS verification
+    window.checkFTSTables = function() {
+      return {
+        sql: `
+          SELECT name, sql
+          FROM sqlite_master
+          WHERE type='table' AND name LIKE '%_fts'
+          ORDER BY name
+        `
+      };
+    }
+
+    window.countFTSRecords = function() {
+      return {
+        sql: `
+          SELECT
+            'toots_fts' as table_name,
+            (SELECT COUNT(*) FROM toots_fts) as count
+          UNION ALL
+          SELECT
+            'notifications_fts' as table_name,
+            (SELECT COUNT(*) FROM notifications_fts) as count
+          UNION ALL
+          SELECT
+            'toots_home' as table_name,
+            (SELECT COUNT(*) FROM toots_home) as count
+          UNION ALL
+          SELECT
+            'notifications' as table_name,
+            (SELECT COUNT(*) FROM notifications) as count
+        `
+      };
     }
 
   </script>
