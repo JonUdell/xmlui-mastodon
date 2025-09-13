@@ -17,6 +17,7 @@
         <!-- Avatar (positioned to overlap header if exists) -->
         <VStack marginTop="{window.avatarTopMargin($param.header_url)}" gap="0" padding="0 1rem">
         <Avatar
+          borderRadius="50%"
           url="{$param.avatar_url}"
           size="lg"
           name="{window.getDisplayName($param)}"
