@@ -1,6 +1,7 @@
 # Contents
 
 - [Purpose](#purpose)
+- [Snapshot 37: Implement FTS4 full-text search with match indicators](#snapshot-37-implement-fts4-full-text-search-with-match-indicators)
 - [Snapshot 36: Track db storage](#snapshot-36-track-db-storage)
 - [Snapshot 35: Solve timestamp alignment with iterative codefence approach](#snapshot-35-solve-timestamp-alignment-with-iterative-codefence-approach)
 - [Snapshot 34: Improve and wire up social buttons](#snapshot-34-improve-and-wire-up-social-buttons)
@@ -44,6 +45,44 @@ We are going to improve [steampipe-mod-mastodon-insights](https://github.com/tur
 
 This should result in a beautiful Mastodon reader which, because database backed, will also (unlike the stock Mastodon client or others like Elk and Mona) have a long memory and enable powerful search and data visualization.
 
+# Snapshot 37: Implement FTS4 full-text search with match indicators
+
+Replaced the slow LIKE-based search with FTS4 (Full-Text Search) for dramatically improved performance. The implementation includes:
+
+**FTS Infrastructure:**
+
+- Created `window.initializeFTS()` and `window.checkFTSSupport()` functions
+- Built `toots_fts` and `notifications_fts` virtual tables using FTS4 (FTS5 not available)
+- Added automatic data population from existing `toots_home` and `notifications` tables
+- Implemented query sanitization to handle FTS4 special characters safely
+
+**Enhanced Search Experience:**
+
+- Replaced `window.searchTootsAndNotifications()` with FTS4 MATCH queries
+- Added special handling for hashtag searches (single `#` finds all hashtag posts)
+- Implemented intelligent match indicators that show users exactly why results appeared:
+  - "Found in author bio" - matches in user profile descriptions
+  - "Found in author name: [name]" - matches in author names
+  - "Found in content" - matches in post text
+  - "Found in reblog author: [name]" - matches in reblogged authors
+  - "Found in category: [type]" - matches in notification categories
+
+**Technical Details:**
+
+- FTS4 searches across all relevant fields: author names, content, reblog content, user bios, categories
+- Maintains exact same result schema for UI compatibility
+- No artificial result limits - returns all matches
+- Proper UNION ALL structure for combined toot and notification results
+- Added blue caption text in search results showing match context
+
+**Mystery Solved:**
+
+- Debugged seemingly unrelated search results (e.g., "krugman" returning Tesla posts)
+- Discovered matches were in user profile bios mentioning economists like Paul Krugman
+- This is correct behavior - comprehensive search across all user-generated content
+
+The search is now significantly faster and provides clear feedback on match locations, greatly improving the user experience for finding relevant content across the growing database of 5,700+ toots and 1,400+ notifications.
+
 # Snapshot 36: Track db storage
 
 We are saving everything that gets displayed so it can all be searched. Initially we were saving too much and bloating the db. We went to a more conservative strategy, and made a tool to evaluate it.
@@ -73,6 +112,7 @@ Follower and Following are medium-heft but they will change more slowly than not
 ## The Problem
 
 Timestamps in our Mastodon app were not aligning properly:
+
 - **ReblogPost timestamps** were centered instead of top-aligned
 - **RegularPost timestamps** had similar alignment issues
 - We wanted to achieve Elk's fixed top-right timestamp behavior, discovered apparent XMLUI limitation, found a different and nice solution.
@@ -82,6 +122,7 @@ Timestamps in our Mastodon app were not aligning properly:
 The breakthrough came from using a systematic **iterative codefence approach** that was brilliantly informative:
 
 ### Step 1: Basic Working Example
+
 ```xmlui
 <Component name="AlignmentTest">
   <HStack height="200px">
@@ -100,6 +141,7 @@ The breakthrough came from using a systematic **iterative codefence approach** t
 Result: Worked perfectly - timestamp was top-aligned
 
 ### Step 2: Add Avatar and Text Structure
+
 ```xmlui
 <Component name="AlignmentTest">
   <HStack height="200px">
@@ -133,6 +175,7 @@ Result: Worked perfectly - timestamp was top-aligned
 Result: Still worked - timestamp remained top-aligned
 
 ### Step 3: Add wrapContent and Complex Layout
+
 ```xmlui
 <Component name="AlignmentTest">
   <HStack gap="0.5rem" wrapContent="true" height="200px">
@@ -166,6 +209,7 @@ Result: Still worked - timestamp remained top-aligned
 Result: Still worked - timestamp remained top-aligned
 
 ### Step 4: Exact ReblogPost Structure
+
 ```xmlui
 <Component name="AlignmentTest">
   <HStack gap="0.5rem" wrapContent="true" height="200px">
@@ -199,6 +243,7 @@ Result: Still worked - timestamp remained top-aligned
 Result: Still worked - timestamp remained top-aligned
 
 ### Step 5: Remove Height Constraint (The Key Discovery)
+
 ```xmlui
 <Component name="AlignmentTest">
   <HStack verticalAlignment="center" gap="0.5rem" wrapContent="true">
@@ -232,7 +277,6 @@ Result: Still worked - timestamp remained top-aligned
 Result: BROKE - timestamp became centered instead of top-aligned
 
 ## Step 6: isolate verticalAlignment (no wrapContent)
-
 
 ```xmlui
 <Component name="AlignmentTest">
@@ -272,8 +316,8 @@ Elk uses absolute positioning, instead of fighting with XMLUI we restructured th
 
 ## Timestamp on Its Own Line
 
-
 ### Before (Problematic):
+
 ```xmlui
 <HStack verticalAlignment="center" gap="0.5rem" wrapContent="true" height="60px">
   <!-- Avatar and user info -->
@@ -285,6 +329,7 @@ Elk uses absolute positioning, instead of fighting with XMLUI we restructured th
 ```
 
 ### After (Clean Solution):
+
 ```xmlui
 <VStack gap="0.25rem">
   <!-- Timestamp line -->
@@ -302,28 +347,33 @@ Elk uses absolute positioning, instead of fighting with XMLUI we restructured th
 ## Key Learnings
 
 The step-by-step playground approach was incredibly valuable because:
+
 - Isolated variables: Each step changed only one thing
 - Immediate feedback: We could see exactly when things broke
 - Systematic discovery: We found the exact condition that caused the failure
 - Reproducible: Each step was a complete, testable example
 
 It seems XMLUI does not deal with fixed positioning:
+
 - No `position` property: Unlike CSS, XMLUI doesn't expose `position: absolute` or `position: fixed`
 - Scope interactions are tricky: Layout properties interact in complex, unpredictable ways
 
 Instead of trying to force a complex solution, we:
+
 - Accepted the constraint
 - Redesigned the approach to put timestamp on its own line
 
 Outcome:
+
 - No more alignment issues - timestamps are naturally at the top
 - Cleaner visual hierarchy - timestamp → user info → content
 - Simpler code - no complex height/positioning logic needed
 
 ## Conclusion
+
 XMLUI might need deep change to support fixed positioning - but maybe it should not try? It seems to work with flexbox-based layouts rather than absolute positioning. That creates fundamental constraints for certain UI patterns. However we like the workaround, and embracing the constraint may be a good strategy vs trying to add absolute positioning that might create more problems than it solves.
 
- The iterative codefence approach proved to be an incredibly powerful debugging and discovery method. The current method is gnarly: run the docs server locally, temporarily sacrifice an existing howto with codefence (we used chain-a-refetch), iterate there, then throw away the change. It will be very cool to be able to do that in hosted playground!
+The iterative codefence approach proved to be an incredibly powerful debugging and discovery method. The current method is gnarly: run the docs server locally, temporarily sacrifice an existing howto with codefence (we used chain-a-refetch), iterate there, then throw away the change. It will be very cool to be able to do that in hosted playground!
 
 # Snapshot 34: Improve and wire up social buttons
 
