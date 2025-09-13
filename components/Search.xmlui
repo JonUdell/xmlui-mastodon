@@ -13,11 +13,13 @@
     <Fragment when="{$item.reblog_author_name}">
       <ReblogHeader item="{$item}" />
       <Markdown content="{$item.reblog_content}" />
+      <Text when="{$item.note}" variant="caption" color="blue">{$item.note}</Text>
     </Fragment>
 
     <Fragment when="{!$item.reblog_author_name}">
       <Text variant="strong">{$item.author_name}</Text>
       <Markdown content="{$item.content}" />
+      <Text when="{$item.note}" variant="caption" color="blue">{$item.note}</Text>
     </Fragment>
 
     <ContentSeparator />

@@ -604,7 +604,16 @@
     // FTS search query sanitization
     window.sanitizeFTSQuery = function(query) {
       if (!query) return '';
+
+      // Special case: single # should search for hashtags
+      // Since FTS4 strips punctuation, we need a different approach
+      if (query.trim() === '#') {
+        // Return empty to trigger a special hashtag search
+        return '';
+      }
+
       // Escape FTS4 special characters: " - ( ) AND OR NOT
+      // But preserve # for hashtag searches
       return query.replace(/["\-()]/g, ' ')
                   .replace(/\b(AND|OR|NOT)\b/gi, ' ')
                   .trim()
@@ -615,6 +624,39 @@
 
     // FTS-based search function
     window.searchTootsAndNotifications = function(query) {
+      // Special case: hashtag search
+      if (query.trim() === '#') {
+        return {
+          sql: `
+          SELECT * FROM (
+            SELECT
+              'toot' as result_type,
+              id,
+              author_name,
+              reblog_author_name,
+              created_at,
+              reblog_created_at,
+              COALESCE(content, '') as content,
+              COALESCE(reblog_content, '') as reblog_content,
+              url,
+              NULL as display_name,
+              NULL as username,
+              NULL as avatar_url,
+              NULL as reblog_display_name,
+              NULL as reblog_username,
+              NULL as reblog_avatar_url,
+              NULL as category,
+              NULL as account_url,
+              NULL as note
+            FROM toots_home
+            WHERE content LIKE '%#%' OR reblog_content LIKE '%#%'
+          )
+          ORDER BY created_at DESC
+          `,
+          params: []
+        };
+      }
+
       const sanitizedQuery = window.sanitizeFTSQuery(query);
       if (!sanitizedQuery) {
         return { sql: 'SELECT NULL LIMIT 0' }; // Return empty result for empty query
@@ -630,8 +672,8 @@
             th.reblog_author_name,
             th.created_at,
             th.reblog_created_at,
-            th.content,
-            th.reblog_content,
+            COALESCE(th.content, '') as content,
+            COALESCE(th.reblog_content, '') as reblog_content,
             th.url,
             NULL as display_name,
             NULL as username,
@@ -641,7 +683,13 @@
             NULL as reblog_avatar_url,
             NULL as category,
             NULL as account_url,
-            NULL as note
+            CASE
+              WHEN th.author_name LIKE '%' || ? || '%' THEN 'Found in author name: ' || th.author_name
+              WHEN th.reblog_author_name LIKE '%' || ? || '%' THEN 'Found in reblog author: ' || th.reblog_author_name
+              WHEN th.content LIKE '%' || ? || '%' THEN 'Found in content'
+              WHEN th.reblog_content LIKE '%' || ? || '%' THEN 'Found in reblog content'
+              ELSE 'Match: ' || snippet(toots_fts, '[', ']', '...', -1, 64)
+            END as note
           FROM toots_fts tf
           JOIN toots_home th ON tf.id = th.id
           WHERE toots_fts MATCH ?
@@ -655,7 +703,7 @@
             NULL as reblog_author_name,
             n.created_at,
             NULL as reblog_created_at,
-            n.status_content as content,
+            COALESCE(n.status_content, '') as content,
             NULL as reblog_content,
             n.status_url as url,
             n.display_name,
@@ -666,14 +714,20 @@
             NULL as reblog_avatar_url,
             n.category,
             n.account_url,
-            n.note
+            CASE
+              WHEN n.display_name LIKE '%' || ? || '%' THEN 'Found in author name: ' || n.display_name
+              WHEN n.status_content LIKE '%' || ? || '%' THEN 'Found in content'
+              WHEN n.note LIKE '%' || ? || '%' THEN 'Found in author bio'
+              WHEN n.category LIKE '%' || ? || '%' THEN 'Found in category: ' || n.category
+              ELSE 'Match: ' || snippet(notifications_fts, '[', ']', '...', -1, 64)
+            END as note
           FROM notifications_fts nf
           JOIN notifications n ON nf.id = n.id
           WHERE notifications_fts MATCH ?
         )
         ORDER BY created_at DESC
         `,
-        params: [sanitizedQuery, sanitizedQuery]
+        params: [sanitizedQuery, sanitizedQuery, sanitizedQuery, sanitizedQuery, sanitizedQuery, sanitizedQuery, sanitizedQuery, sanitizedQuery, sanitizedQuery, sanitizedQuery]
       };
     }
 
