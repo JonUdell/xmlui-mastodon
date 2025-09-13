@@ -10,10 +10,6 @@
     method="POST"
     body="{ window.searchTootsAndNotifications(query) }" />
   <Items data="{searchResults}">
-    <Text variant="caption" color="$color-text-subtle">
-      {$item.result_type} • {window.formatHumanReadableDate($item.created_at)}
-    </Text>
-
     <Fragment when="{$item.reblog_author_name}">
       <ReblogHeader item="{$item}" />
       <Markdown content="{$item.reblog_content}" />

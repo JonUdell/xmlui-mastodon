@@ -607,8 +607,13 @@
           content,
           reblog_content,
           url,
-          NULL as category,
           NULL as display_name,
+          NULL as username,
+          NULL as avatar_url,
+          NULL as reblog_display_name,
+          NULL as reblog_username,
+          NULL as reblog_avatar_url,
+          NULL as category,
           NULL as account_url,
           NULL as note
         FROM toots_home
@@ -630,8 +635,13 @@
           status_content as content,
           NULL as reblog_content,
           status_url as url,
-          category,
           display_name,
+          NULL as username,
+          NULL as avatar_url,
+          NULL as reblog_display_name,
+          NULL as reblog_username,
+          NULL as reblog_avatar_url,
+          category,
           account_url,
           note
         FROM notifications
@@ -642,7 +652,6 @@
           OR category LIKE '%' || ? || '%'
 
         ORDER BY created_at DESC
-        LIMIT 50
         `,
         params: [query, query, query, query, query, query, query, query]
       };
