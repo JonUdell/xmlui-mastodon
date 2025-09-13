@@ -384,51 +384,7 @@
       };
     }
 
-    /*
-    window.updateTootsHomeReactions = `
-      WITH recent_ids AS (
-        SELECT id
-        FROM toots_home
-        ORDER BY id DESC
-        LIMIT 50
-      ),
-      mastodon_data AS (
-        SELECT
-          mth.id,
-          -- Extract reblogs_count, fallback to status
-          CASE
-            WHEN json_type(json_extract(mth.reblog, '$.reblogs_count')) IS NOT NULL
-            THEN CAST(json_extract(mth.reblog, '$.reblogs_count') AS INTEGER)
-            ELSE CAST(json_extract(mth.status, '$.reblogs_count') AS INTEGER)
-          END AS reblogs_count,
-
-          -- Extract replies_count, fallback to status
-          CASE
-            WHEN json_type(json_extract(mth.reblog, '$.replies_count')) IS NOT NULL
-            THEN CAST(json_extract(mth.reblog, '$.replies_count') AS INTEGER)
-            ELSE CAST(json_extract(mth.status, '$.replies_count') AS INTEGER)
-          END AS replies_count,
-
-          -- Extract favourites_count, fallback to status
-          CASE
-            WHEN json_type(json_extract(mth.reblog, '$.favourites_count')) IS NOT NULL
-            THEN CAST(json_extract(mth.reblog, '$.favourites_count') AS INTEGER)
-            ELSE CAST(json_extract(mth.status, '$.favourites_count') AS INTEGER)
-          END AS favourites_count
-
-        FROM mastodon_toot_home mth
-        INNER JOIN recent_ids r
-          ON mth.id = r.id
-      )
-      UPDATE toots_home
-      SET
-        reblogs_count = mastodon_data.reblogs_count,
-        replies_count = mastodon_data.replies_count,
-        favourites_count = mastodon_data.favourites_count
-      FROM mastodon_data
-      WHERE toots_home.id = mastodon_data.id;
-    `
-*/
+    
     window.countTootsHome = `
       select count(*) from toots_home
     `

@@ -11,6 +11,7 @@
     window.ephemeralData = data;
     loaded = true;
     updateTootsHome.execute();
+    syncTootsHome.execute();
   }"
 />
 
@@ -24,6 +25,18 @@
     console.log('updateTootsHome success')
   }"
 />
+
+<APICall
+  id="syncTootsHome"
+  method="post"
+  url="{window.query}"
+  body="{ window.syncFTSToots() }"
+
+  onSuccess="() => {
+    console.log('syncFTSToots success')
+  }"
+/>
+
 
 
   <VStack width="90%" maxWidth="90vw" marginRight="$space-4">
