@@ -28,6 +28,11 @@
 
   <VStack width="90%" maxWidth="90vw" marginRight="$space-4">
 
+  <!--
+   <Text preserveLinebreaks="true"> { JSON.stringify(mediaSize, null, 2) } </Text>
+  -->
+
+
     <!-- Loading indicator -->
     <Fragment when="{!loaded}" >
       <VStack>

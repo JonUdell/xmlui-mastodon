@@ -1,21 +1,17 @@
-<App
-  layout="horizontal-sticky"
->
-
-  <DataSource
-    id="data"
-    url="{ window.query }"
-    body="{ window.init() }"
-    method="POST"
-  />
-
-  <DataSource
-    id="account"
-    url="{ window.query }"
-    body="{ window.customSql('select * from mastodon_my_account') }"
-    method="POST"
-  />
-
+<Theme width-navPanel-App="{mediaSize.size === 'xs' || mediaSize.size === 'sm' ? '$space-14' : '$space-40'}">
+  <App
+    layout="vertical">
+    <DataSource
+      id="data"
+      url="{ window.query }"
+      body="{ window.init() }"
+      method="POST" />
+    <DataSource
+      id="account"
+      url="{ window.query }"
+      body="{ window.customSql('select * from mastodon_my_account') }"
+      method="POST" />
+    <!--
   <AppHeader>
     <property name="logoTemplate">
        <Text>xmlui-mastodon</Text>
@@ -25,75 +21,55 @@
             when="{['/', '/notifications', '/search', '/projectLog'].includes($pathname)}" />
     </property>
   </AppHeader>
-
-  <ModalDialog
+  -->
+    <ModalDialog
       id="settingsDialog"
       title="Settings"
-    width="50%"
-  >
-    <Tools />
-  </ModalDialog>
-
-  <NavPanel>
-
-    <NavLink label=" Home"           to="/"              icon="home" />
-    <NavLink label=" Notifications"  to="/notifications" icon="info" />
-    <NavLink label=" Search"         to="/search"        icon="search" />
-    <NavLink label=" Followers"      to="/followers"     icon="users" />
-    <NavLink label=" Following"      to="/following"     icon="users" />
-    <NavLink label=" Query"          to="/query"         icon="database" />
-    <NavLink label=" ProjectLog"     to="/projectLog"    icon="doc-outline" />
-    <NavLink label=" Palettes"       to="/palettes"      icon="palette" />
-    <NavLink label=" Icons"          to="/icons"         icon="" />
-
-  </NavPanel>
-
-  <Pages >
-
-    <Page url="/">
-      <Home />
-    </Page>
-
-    <Page url="/notifications">
-      <Notifications />
-    </Page>
-
-    <Page url="/search">
-      <Search />
-    </Page>
-
-    <Page url="/followers">
-      <Followers />
-    </Page>
-
-    <Page url="/following">
-      <Following />
-    </Page>
-
-    <Page url="/projectLog">
-      <Markdown data="/pages/projectLog.md" />
-    </Page>
-
-    <Page url="/query">
-      <Query />
-    </Page>
-
-    <Page url="/palettes">
-      <Palettes />
-    </Page>
-
-    <Page url="/icons">
-      <Icons />
-    </Page>
-
-
-  </Pages>
-
-  <Footer>
-    <Text>
-      Powered by XMLUI
-    </Text>
-    <ToneSwitch />
-  </Footer>
-
-</App>
+      width="50%">
+      <Tools />
+    </ModalDialog>
+     <NavPanel>
+      <NavLink label="{mediaSize.size === 'xs' || mediaSize.size === 'sm' ? '' : 'Home'}" to="/" icon="home" />
+      <NavLink label="{mediaSize.size === 'xs' || mediaSize.size === 'sm' ? '' : 'Notifications'}" to="/notifications" icon="info" />
+      <NavLink label="{mediaSize.size === 'xs' || mediaSize.size === 'sm' ? '' : 'Search'}" to="/search" icon="search" />
+      <NavLink label="{mediaSize.size === 'xs' || mediaSize.size === 'sm' ? '' : 'Followers'}" to="/followers" icon="users" />
+      <NavLink label="{mediaSize.size === 'xs' || mediaSize.size === 'sm' ? '' : 'Following'}" to="/following" icon="users" />
+      <NavLink label="{mediaSize.size === 'xs' || mediaSize.size === 'sm' ? '' : 'Query'}" to="/query" icon="database" />
+    </NavPanel>
+    <Pages>
+      <Page url="/">
+        <Home />
+      </Page>
+      <Page url="/notifications">
+        <Notifications />
+      </Page>
+      <Page url="/search">
+        <Search />
+      </Page>
+      <Page url="/followers">
+        <Followers />
+      </Page>
+      <Page url="/following">
+        <Following />
+      </Page>
+      <Page url="/projectLog">
+        <Markdown data="/pages/projectLog.md" />
+      </Page>
+      <Page url="/query">
+        <Query />
+      </Page>
+      <Page url="/palettes">
+        <Palettes />
+      </Page>
+      <Page url="/icons">
+        <Icons />
+      </Page>
+    </Pages>
+    <Footer>
+      <Text>
+        Powered by XMLUI
+      </Text>
+      <ToneSwitch />
+    </Footer>
+  </App>
+</Theme>

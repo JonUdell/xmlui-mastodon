@@ -3,7 +3,6 @@
 
   <ReblogHeader item="{$props.item}" />
 
-  <!-- Original content -->
   <VStack>
     <Markdown content="{$props.item.reblog_content}" />
 
