@@ -49,14 +49,14 @@ This should result in a beautiful Mastodon reader which, because database backed
 
 Replaced the slow LIKE-based search with FTS4 (Full-Text Search) for dramatically improved performance. The implementation includes:
 
-**FTS Infrastructure:**
+## FTS Infrastructure
 
 - Created `window.initializeFTS()` and `window.checkFTSSupport()` functions
 - Built `toots_fts` and `notifications_fts` virtual tables using FTS4 (FTS5 not available)
 - Added automatic data population from existing `toots_home` and `notifications` tables
 - Implemented query sanitization to handle FTS4 special characters safely
 
-**Enhanced Search Experience:**
+## Enhanced Search Experience
 
 - Replaced `window.searchTootsAndNotifications()` with FTS4 MATCH queries
 - Added special handling for hashtag searches (single `#` finds all hashtag posts)
@@ -67,7 +67,7 @@ Replaced the slow LIKE-based search with FTS4 (Full-Text Search) for dramaticall
   - "Found in reblog author: [name]" - matches in reblogged authors
   - "Found in category: [type]" - matches in notification categories
 
-**Technical Details:**
+## Technical Details
 
 - FTS4 searches across all relevant fields: author names, content, reblog content, user bios, categories
 - Maintains exact same result schema for UI compatibility
@@ -75,7 +75,7 @@ Replaced the slow LIKE-based search with FTS4 (Full-Text Search) for dramaticall
 - Proper UNION ALL structure for combined toot and notification results
 - Added blue caption text in search results showing match context
 
-**Mystery Solved:**
+## Mystery Solved
 
 - Debugged seemingly unrelated search results (e.g., "krugman" returning Tesla posts)
 - Discovered matches were in user profile bios mentioning economists like Paul Krugman
@@ -83,7 +83,27 @@ Replaced the slow LIKE-based search with FTS4 (Full-Text Search) for dramaticall
 
 The search is now significantly faster and provides clear feedback on match locations, greatly improving the user experience for finding relevant content across the growing database of 5,700+ toots and 1,400+ notifications.
 
-Session summary.
+## Kiro tasks
+
+[x] 1. Create FTS infrastructure and initialization functions
+
+- Create window.initializeFTS() function to set up FTS virtual tables
+- Add FTS availability check with window.checkFTSSupport()
+- Create toots_fts virtual table with content='toots_home' auto-sync
+- Create notifications_fts virtual table with auto-sync
+- Add initial data population from existing tables
+- Requirements: 4.2, 4.3
+
+[x] 2. Implement FTS search query function
+
+- Create window.searchTootsAndNotificationsFTS(query) function
+- Implement FTS5 MATCH query syntax for toots and notifications
+- Add query sanitization to escape FTS special characters
+- Maintain same result schema as current search for UI compatibility
+- Add proper UNION ALL structure for combined results
+- Requirements: 2.1, 2.3, 5.1, 5.3
+
+## Session summary
 
 ### FTS Version Discovery
 
@@ -140,11 +160,8 @@ Hashtag Search: Single # query finds all posts with hashtags (using LIKE fallbac
 Query Sanitization: Handles FTS4 special characters safely
 UI Integration: Added blue caption text showing match context
 
-### Next steps
 
-Experiment and refine.
-
-### Special note about Project Log
+## Special note about Project Log
 
 The FTS implementation we just completed actually solves a memory issue that was documented in snapshot 23. That makes perfect sense - LIKE-based searches on large datasets (like your 5,720+ toots) can indeed run out of memory because they have to scan through all the text data.
 
@@ -156,10 +173,15 @@ The FTS4 solution we implemented is much more memory-efficient because:
 
 - The virtual tables handle memory management more efficiently
 
-So our FTS work wasn't just about speed - it was also solving a scalability/memory problem that became apparent as your dataset grew. That's a great example of how technical debt from earlier solutions (LIKE queries) gets resolved by better architecture (FTS indexes).
+So our FTS work wasn't just about speed - it was also solving a scalability/memory problem that became apparent as your dataset grew.
 
 It's interesting that I could reference snapshot 23 in a previous session but can't recall it now - each conversation is independent for me, but the ProjectLog.md serves as the persistent memory that connects the sessions and shows the evolution of the codebase.
 
+## Next steps
+
+Experiment and refine.
+
+FTS works differently than the dumb search. With dumb search you always get instant feedback for `k`, `kr`, `kru`, and `krugman`. With FTS you see nothing for `kru` which is disconcerting. Investigate whether/how to marry the two approaches.
 
 # Snapshot 36: Track db storage
 
