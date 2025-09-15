@@ -1,6 +1,7 @@
 # Contents
 
 - [Purpose](#purpose)
+- [Snapshot 38: Refine FTS sync](#snapshot-38-refine-fts-sync)
 - [Snapshot 37: Implement FTS4 full-text search with match indicators](#snapshot-37-implement-fts4-full-text-search-with-match-indicators)
 - [Snapshot 36: Track db storage](#snapshot-36-track-db-storage)
 - [Snapshot 35: Solve timestamp alignment with iterative codefence approach](#snapshot-35-solve-timestamp-alignment-with-iterative-codefence-approach)
@@ -44,6 +45,65 @@
 We are going to improve [steampipe-mod-mastodon-insights](https://github.com/turbot/steampipe-mod-mastodon-insights), with special focus on realizing the design approach discussed in [A Bloomberg terminal for Mastodon](https://blog.jonudell.net/2022/12/17/a-bloomberg-terminal-for-mastodon/). XMLUI gives us many more degrees of freedom to improve on the original bare-bones Powerpipe dashboard. Both projects use the same Mastodon API access, abstracted as a set of Postgres tables provided by [steampipe-plugin-mastodon](https://github.com/turbot/steampipe-plugin-mastodon).
 
 This should result in a beautiful Mastodon reader which, because database backed, will also (unlike the stock Mastodon client or others like Elk and Mona) have a long memory and enable powerful search and data visualization.
+
+# Snapshot 38: Refine FTS sync
+
+In this development phase, we solved major FTS (Full-Text Search) synchronization issues that were causing massive data duplication and learned important lessons about XMLUI reactivity patterns.
+
+## Problem Identification
+
+- Massive FTS Duplication: Discovered 53,481 total FTS records with only 6,693 unique IDs (8x duplication)
+- Reactive Multiplication: `ChangeListener` components were firing multiple times for each data change, overwhelming the sync system
+- Concurrent Insert Issues: Multiple simultaneous calls to FTS sync functions were bypassing the `NOT IN (SELECT id FROM toots_fts)` deduplication logic
+
+## Reactive Approaches Tried and Abandoned
+
+- Counter-Based ChangeListener: Used `window.tootsUpdateCounter` variable with `ChangeListener` watching for changes
+  - Result: Still caused 4-5x multiplication due to rapid successive triggers
+  - Throttling Attempts: Added `throttleWaitInMs="100"` but reactivity continued to overwhelm the system
+
+- Function-Based Reactive Gate: Created `window.getFTSSyncTrigger()` function as a reactive boundary
+  - Result: Function calls didn't solve the core reactivity multiplication issue
+  - Learning: XMLUI's reactive system is designed to be very responsive, but our use case needed "run exactly once per data update" semantics
+
+## Final Solution: Direct Imperative Approach
+
+- Abandoned Reactive Patterns: Removed `ChangeListener` and counter-based triggering entirely
+- Direct Execution in Home Component: Modified the existing `onLoaded` callback pattern:
+  ```javascript
+  onLoaded="(data) => {
+    window.ephemeralData = data;
+    loaded = true;
+    if (!syncCompleted) {
+      syncCompleted = true;
+      updateTootsHome.execute();
+      syncTootsHome.execute();
+    }
+  }"
+  ```
+- Component-Level Guard: Added `var.syncCompleted="{false}"` to prevent multiple lifecycle executions
+
+## Architecture Changes
+
+- Cleaned updateTootsHome: Removed counter increment and timeout logic, simplified to pure permanent table updates
+- Dedicated FTS Function: `window.syncFTSAfterUpdate()` handles only FTS synchronization with proper deduplication
+- Execution Flow:
+  1. Data loads → set `window.ephemeralData`
+  2. Execute `updateTootsHome` (permanent table)
+  3. Execute `syncTootsHome` (FTS sync)
+  4. Guard prevents re-execution until next data load
+
+## Results
+
+- Perfect 1:1 Sync: Achieved 6,755 total FTS records with 6,755 unique IDs
+- Eliminated Multiplication: Reduced from 10+ sequential calls to exactly 1 call per data load
+- Robust Deduplication: `WHERE id NOT IN (SELECT id FROM toots_fts)` now works reliably without concurrent interference
+
+## Key Learnings About XMLUI Reactivity
+
+- "Reactivity is a beast": XMLUI's reactive system is optimized for responsiveness, not "exactly once" execution patterns
+- ChangeListener Multiplication: Even with throttling, `ChangeListener` can fire multiple times during component lifecycle events
+- Direct Imperative Calls: For critical operations requiring single execution, explicit `execute()` calls in event handlers work more reliably than reactive watching
 
 # Snapshot 37: Implement FTS4 full-text search with match indicators
 
