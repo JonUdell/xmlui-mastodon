@@ -34,7 +34,6 @@
   method="post"
   url="{window.query}"
   body="{ window.syncFTSAfterUpdate() }"
-
   onSuccess="() => {
     console.log('syncFTSAfterUpdate success')
   }"
