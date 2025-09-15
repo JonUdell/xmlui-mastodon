@@ -1,0 +1,9 @@
+<Component name="SocialButton">
+  <Button
+    borderRadius="50%"
+    icon="{$props.icon}"
+    variant="outlined"
+    themeColor="{$props.themeColor || 'secondary'}"
+    size="xs"
+    onClick="{emitEvent('click')}" />
+</Component>

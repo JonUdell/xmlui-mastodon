@@ -384,7 +384,7 @@
       };
     }
 
-    
+
     window.countTootsHome = `
       select count(*) from toots_home
     `
@@ -603,7 +603,8 @@
               NULL as reblog_avatar_url,
               NULL as category,
               NULL as account_url,
-              NULL as note
+              'hashtag' as match_field,
+              NULL as match_snippet
             FROM toots_home
             WHERE content LIKE '%#%' OR reblog_content LIKE '%#%'
           )
@@ -639,13 +640,15 @@
             NULL as reblog_avatar_url,
             NULL as category,
             NULL as account_url,
+            -- Use simple LIKE checks to determine match field
             CASE
-              WHEN th.author_name LIKE '%' || ? || '%' THEN 'Found in author name: ' || th.author_name
-              WHEN th.reblog_author_name LIKE '%' || ? || '%' THEN 'Found in reblog author: ' || th.reblog_author_name
-              WHEN th.content LIKE '%' || ? || '%' THEN 'Found in content'
-              WHEN th.reblog_content LIKE '%' || ? || '%' THEN 'Found in reblog content'
-              ELSE 'Match: ' || snippet(toots_fts, '[', ']', '...', -1, 64)
-            END as note
+              WHEN th.author_name LIKE '%' || ? || '%' THEN 'author'
+              WHEN th.reblog_author_name LIKE '%' || ? || '%' THEN 'reblog_author'
+              WHEN th.content LIKE '%' || ? || '%' THEN 'content'
+              WHEN th.reblog_content LIKE '%' || ? || '%' THEN 'reblog_content'
+              ELSE 'content'
+            END as match_field,
+            snippet(toots_fts, '[', ']', '...', -1, 64) as match_snippet
           FROM toots_fts tf
           JOIN toots_home th ON tf.id = th.id
           WHERE toots_fts MATCH ?
@@ -670,13 +673,15 @@
             NULL as reblog_avatar_url,
             n.category,
             n.account_url,
+            -- Use simple LIKE checks for notifications
             CASE
-              WHEN n.display_name LIKE '%' || ? || '%' THEN 'Found in author name: ' || n.display_name
-              WHEN n.status_content LIKE '%' || ? || '%' THEN 'Found in content'
-              WHEN n.note LIKE '%' || ? || '%' THEN 'Found in author bio'
-              WHEN n.category LIKE '%' || ? || '%' THEN 'Found in category: ' || n.category
-              ELSE 'Match: ' || snippet(notifications_fts, '[', ']', '...', -1, 64)
-            END as note
+              WHEN n.display_name LIKE '%' || ? || '%' THEN 'author'
+              WHEN n.status_content LIKE '%' || ? || '%' THEN 'content'
+              WHEN n.note LIKE '%' || ? || '%' THEN 'bio'
+              WHEN n.category LIKE '%' || ? || '%' THEN 'category'
+              ELSE 'content'
+            END as match_field,
+            snippet(notifications_fts, '[', ']', '...', -1, 64) as match_snippet
           FROM notifications_fts nf
           JOIN notifications n ON nf.id = n.id
           WHERE notifications_fts MATCH ?

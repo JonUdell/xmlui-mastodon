@@ -13,13 +13,40 @@
     <Fragment when="{$item.reblog_author_name}">
       <ReblogHeader item="{$item}" />
       <Markdown content="{$item.reblog_content}" />
-      <Text when="{$item.note}" variant="caption" color="blue">{$item.note}</Text>
+
+      <!-- Show "Found in" only when match is NOT visible in reblog display -->
+      <Text when="{$item.match_field === 'author'}"
+            variant="caption" fontSize="smaller" color="$color-text-subtle">
+        Found in original author: {$item.author_name}
+      </Text>
+      <Text when="{$item.match_field === 'content'}"
+            variant="caption" fontSize="smaller" color="$color-text-subtle">
+        Found in original content
+      </Text>
     </Fragment>
 
     <Fragment when="{!$item.reblog_author_name}">
       <Text variant="strong">{$item.author_name}</Text>
       <Markdown content="{$item.content}" />
-      <Text when="{$item.note}" variant="caption" color="blue">{$item.note}</Text>
+
+      <!-- For regular posts, author and content are visible, so no "Found in" needed -->
+    </Fragment>
+
+    <!-- Handle notification results -->
+    <Fragment when="{$item.result_type === 'notification'}">
+      <Text variant="strong">{$item.author_name}</Text>
+      <Text variant="caption">{$item.category}</Text>
+      <Markdown when="{$item.content}" content="{$item.content}" />
+
+      <!-- Show "Found in" for non-visible notification fields -->
+      <Text when="{$item.match_field === 'bio'}"
+            variant="caption" fontSize="smaller" color="$color-text-subtle">
+        Found in author bio
+      </Text>
+      <Text when="{$item.match_field === 'category'}"
+            variant="caption" fontSize="smaller" color="$color-text-subtle">
+        Found in category: {$item.category}
+      </Text>
     </Fragment>
 
     <ContentSeparator />

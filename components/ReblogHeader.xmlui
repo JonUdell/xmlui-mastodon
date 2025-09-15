@@ -1,0 +1,46 @@
+<Component name="ReblogHeader">
+  <!-- Reblog header with timestamp on its own line -->
+  <VStack gap="0.25rem">
+    <!-- Timestamp line -->
+    <Text variant="caption" fontSize="0.75rem" color="$color-text-subtle">
+      {formatHumanElapsedTime($props.item.reblog_created_at)}
+    </Text>
+
+    <!-- Avatar and user info line -->
+    <HStack verticalAlignment="center" gap="0.5rem" wrapContent="true">
+      <HStack verticalAlignment="center" gap="0.3rem">
+        <Fragment when="{$props.item.avatar_url}">
+          <MastodonAvatar
+            url="{$props.item.avatar_url}"
+            size="xs"
+            name="{window.getDisplayName($props.item)}"
+            item="{$props.item}"
+          />
+        </Fragment>
+        <VStack gap="$gap-none">
+          <Text variant="caption">{window.getDisplayName($props.item) || $props.item.author_name}</Text>
+          <Fragment when="{window.getUsername($props.item)}">
+            <Text variant="caption" marginTop="-.5rem">@{window.getUsername($props.item)}</Text>
+          </Fragment>
+        </VStack>
+      </HStack>
+      <SocialButton icon="arrowright" />
+      <HStack verticalAlignment="center" gap="0.4rem">
+        <Fragment when="{$props.item.reblog_avatar_url}">
+          <MastodonAvatar
+            url="{$props.item.reblog_avatar_url}"
+            size="xs"
+            name="{window.getReblogDisplayName($props.item)}"
+            item="{$props.item}"
+          />
+        </Fragment>
+        <VStack gap="$gap-none">
+          <Text variant="strong">{window.getReblogDisplayName($props.item) || $props.item.reblog_author_name}</Text>
+          <Fragment when="{window.getReblogUsername($props.item)}">
+            <Text variant="caption" marginTop="-.5rem">@{window.getReblogUsername($props.item)}</Text>
+          </Fragment>
+        </VStack>
+      </HStack>
+    </HStack>
+  </VStack>
+</Component>
