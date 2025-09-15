@@ -53,7 +53,7 @@
           </Fragment>
         </Card>
 
-        <Text marginTop="1rem" variant="caption">Joined {window.formatDate($param.created_at)}</Text>
+
 
         <!--
         <Text preserveLinebreaks="true">{JSON.stringify($param, null, 2)}</Text>
