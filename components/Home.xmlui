@@ -30,10 +30,10 @@
   id="syncTootsHome"
   method="post"
   url="{window.query}"
-  body="{ window.syncFTSToots() }"
+  body="{ window.syncFTSAfterUpdate() }"
 
   onSuccess="() => {
-    console.log('syncFTSToots success')
+    console.log('syncFTSAfterUpdate success')
   }"
 />
 

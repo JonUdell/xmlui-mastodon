@@ -55,6 +55,12 @@
 
     window.query = 'http://localhost:8080/query'
 
+    // Reactive gate function for FTS sync triggering
+    window.tootsUpdateCounter = 0; // Initialize counter
+    window.getFTSSyncTrigger = function() {
+      return window.tootsUpdateCounter;
+    }
+
     // followers
 
     window.createFollower = function () {
@@ -383,9 +389,21 @@
             url
           )
           VALUES ${values};
+        `
+      };
+    }
 
-          -- Sync new data to FTS table
-          INSERT OR REPLACE INTO toots_fts (
+
+    window.syncFTSAfterUpdate = function() {
+      if (!window.ephemeralData || window.ephemeralData.length === 0) {
+        return { sql: 'SELECT 1' }; // No-op if no data
+      }
+
+      const ids = window.ephemeralData.map(toot => `'${toot.id}'`).join(',');
+
+      return {
+        sql: `
+          INSERT INTO toots_fts (
             id,
             author_name,
             reblog_author_name,
@@ -405,11 +423,47 @@
             reblog_created_at,
             url
           FROM toots_home
-          WHERE id IN (${window.ephemeralData.map(toot => `'${toot.id}'`).join(',')});
+          WHERE id IN (${ids})
+          AND id NOT IN (SELECT id FROM toots_fts);
         `
       };
     }
 
+    window.syncFTSAfterUpdateDebug = function() {
+      const trigger = window.getFTSSyncTrigger();
+      console.log('syncFTSAfterUpdate called, trigger:', trigger);
+      
+      // Skip if trigger is null or undefined (initial state)
+      if (trigger == null) {
+        console.log('Trigger is null/undefined, skipping');
+        return { sql: 'SELECT 1' };
+      }
+      
+      console.log('ephemeralData length:', window.ephemeralData ? window.ephemeralData.length : 'null');
+      
+      if (!window.ephemeralData || window.ephemeralData.length === 0) {
+        console.log('No ephemeral data, returning no-op');
+        return { sql: 'SELECT 1' };
+      }
+
+      const ids = window.ephemeralData.map(toot => `'${toot.id}'`).join(',');
+      console.log('Processing IDs:', ids.substring(0, 100) + '...');
+
+      return {
+        sql: `
+          INSERT INTO toots_fts (
+            id, author_name, reblog_author_name, content, reblog_content,
+            created_at, reblog_created_at, url
+          )
+          SELECT
+            id, author_name, reblog_author_name, content, reblog_content,
+            created_at, reblog_created_at, url
+          FROM toots_home
+          WHERE id IN (${ids})
+          AND id NOT IN (SELECT id FROM toots_fts);
+        `
+      };
+    }
 
     window.countTootsHome = `
       select count(*) from toots_home
