@@ -11,22 +11,47 @@
     body="{ window.searchTootsAndNotifications(query) }" />
 
   <!-- Modal for displaying single toot with full interactions -->
-  <ModalDialog id="tootModal" title="Post Details">
+  <ModalDialog id="tootModal" title="">
     <VStack>
       <DataSource
         when="{$param && $param.id}"
         id="focusToot"
         url="{window.query}"
         method="POST"
-        body="{ { sql: `select * from mastodon_single_toot where id = '${$param.id}'` } }"
+        body="{ $param.result_type === 'notification' ?
+          { sql: `select * from notifications where id = '${$param.id}'` } :
+          { sql: `select * from mastodon_single_toot where id = '${$param.id}'` } }"
       />
 
       <Fragment when="{focusToot && focusToot.value && focusToot.value.length > 0}">
-        <Fragment when="{!focusToot.value[0].reblog}">
-          <RegularPost item="{focusToot.value[0]}" />
+        <Fragment when="{$param.result_type === 'notification'}">
+          <!-- Display notification and associated post -->
+          <Text variant="strong">Notification: {focusToot.value[0].category}</Text>
+          <Text variant="strong">From: {focusToot.value[0].display_name}</Text>
+
+          <Fragment when="{focusToot.value[0].status}">
+            <!-- Show the associated post using RegularPost component -->
+            <Text variant="caption" color="$color-text-subtle">Associated post:</Text>
+            <RegularPost item="{window.transformNotificationStatus(JSON.parse(focusToot.value[0].status))}" />
+          </Fragment>
+
+          <Fragment when="{!focusToot.value[0].status}">
+            <!-- Notification without associated post (like follow) -->
+            <Text>{focusToot.value[0].category} notification</Text>
+          </Fragment>
+
+          <Text variant="caption">
+            {formatHumanElapsedTime(focusToot.value[0].created_at ? focusToot.value[0].created_at.replace(' ', 'T') + 'Z' : 'Unknown time')}
+          </Text>
         </Fragment>
-        <Fragment when="{focusToot.value[0].reblog}">
-          <ReblogPost item="{focusToot.value[0]}" />
+
+        <Fragment when="{$param.result_type !== 'notification'}">
+          <Fragment when="{!focusToot.value[0].reblog}">
+            <RegularPost item="{focusToot.value[0]}" />
+          </Fragment>
+          <Fragment when="{focusToot.value[0].reblog}">
+            <ReblogPost item="{focusToot.value[0]}" />
+          </Fragment>
         </Fragment>
       </Fragment>
 
