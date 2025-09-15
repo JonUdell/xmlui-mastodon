@@ -92,7 +92,7 @@
           <!-- For regular posts, author and content are visible, so no "Found in" needed -->
         </Fragment>
 
-        <Button variant="primary" size="xs"
+        <Button variant="solid" size="xs"
                 onClick="console.log('Toot button clicked for ID:', $item.id); tootModal.open($item)"
                 label="open" />
       </VStack>
@@ -117,7 +117,7 @@
           Found in category: {$item.category}
         </Text>
 
-        <Button variant="primary" size="xs"
+        <Button variant="solid" size="xs"
                 onClick="console.log('Notification button clicked for ID:', $item.id); tootModal.open($item)"
                 label="open" />
       </VStack>
