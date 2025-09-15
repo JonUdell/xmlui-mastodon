@@ -22,7 +22,9 @@
           { sql: `select * from notifications where id = '${$param.id}'` } :
           { sql: `select
             id, username, display_name, created_at, url, instance_qualified_url, instance_qualified_account_url,
-            status, reblog, content, replies_count, reblogs_count, favourites_count, favourited, reblogged,
+            status, reblog,
+            json_extract(status, '$.content') as content,
+            replies_count, reblogs_count, favourites_count, favourited, reblogged,
             avatar_url,
             json_extract(account, '$.header') as header_url,
             json_extract(account, '$.note') as note,
@@ -51,9 +53,6 @@
             <Text>{focusToot.value[0].category} notification</Text>
           </Fragment>
 
-          <Text variant="caption">
-            {formatHumanElapsedTime(focusToot.value[0].created_at ? focusToot.value[0].created_at.replace(' ', 'T') + 'Z' : 'Unknown time')}
-          </Text>
         </Fragment>
 
         <Fragment when="{$param.result_type !== 'notification'}">
