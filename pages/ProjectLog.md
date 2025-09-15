@@ -1,6 +1,7 @@
 # Contents
 
 - [Purpose](#purpose)
+- [Snapshot 39: Refine search display and open modal to view and interact](#snapshot-39-refine-search-display-and-open-modal-to-view-and-interact)
 - [Snapshot 38: Refine FTS sync](#snapshot-38-refine-fts-sync)
 - [Snapshot 37: Implement FTS4 full-text search with match indicators](#snapshot-37-implement-fts4-full-text-search-with-match-indicators)
 - [Snapshot 36: Track db storage](#snapshot-36-track-db-storage)
@@ -46,19 +47,66 @@ We are going to improve [steampipe-mod-mastodon-insights](https://github.com/tur
 
 This should result in a beautiful Mastodon reader which, because database backed, will also (unlike the stock Mastodon client or others like Elk and Mona) have a long memory and enable powerful search and data visualization.
 
+# Snapshot 39: Refine search display and open modal to view and interact
+
+In this iteration we significantly improved the search experience by compressing the display, adding modal interactions, and leveraging the upgraded Mastodon plugin tables.
+
+## Compressed Search Results Display
+
+The search results were redesigned for better information density and clarity:
+
+- Compact layout with subtle type indicators ("Post/Reblog" and "Notification · category")
+- Smart "Found in" labels that only appear when the match location isn't already visible
+- Match snippets showing relevant text excerpts where search terms were found
+- Cleaner visual hierarchy with reduced redundancy
+
+For reblogs, we show "Found in original author" or "Found in original content" only when the match isn't visible in the reblog header. For regular posts, since author and content are already displayed, no additional "Found in" labels are needed.
+
+## Modal System for Full Toot Interaction
+
+We implemented a complete modal system triggered from search results:
+
+- Single shared modal (`tootModal`) instead of dynamic per-item modals
+- Click "open" button → `tootModal.open($item)` → fetch full toot details → display with interactions
+- Handles both regular toots and notifications with appropriate data sources
+- Full reaction buttons (reply, reblog, favorite) available in modal
+
+## Leveraging mastodon_single_toot Table
+
+A key architectural improvement was adopting the (new) `mastodon_single_toot` Steampipe table:
+
+- Direct queries by toot ID instead of complex joins or cached lookups
+- Real-time data fetching for modal content
+- Cleaner, more maintainable code structure
+
+Using steampipe-mcp, we discovered that the upgraded plugin now provides `mastodon_toot_home` and `mastodon_single_toot` with identical column structures, enabling consistent data handling.
+
+## Data Structure Alignment
+
+To ensure feature parity between search and home timeline, we aligned the data structures:
+
+- JSON extraction for profile data: `json_extract(account, '$.followers_count') as followers_count`
+- Content extraction: `json_extract(status, '$.content') as content`
+- Proper field mapping from table structure to component expectations
+
+## Avatar Profile Integration
+
+Search results now provide the same rich avatar functionality as the home timeline:
+
+- Clickable avatars that open full profile modals
+- Complete user information: follower counts, bios, header images
+- Consistent user experience across all toot displays
+
+The search modal query was structured to match the home timeline approach, extracting all necessary profile and content data from the JSON fields to ensure the MastodonAvatar component receives the expected data format.
+
 # Snapshot 38: Refine FTS sync
 
 In this development phase, we solved major FTS (Full-Text Search) synchronization issues that were causing massive data duplication and learned important lessons about XMLUI reactivity patterns.
 
-## Problem Identification
-
-- Massive FTS Duplication: Discovered 53,481 total FTS records with only 6,693 unique IDs (8x duplication)
-- Reactive Multiplication: `ChangeListener` components were firing multiple times for each data change, overwhelming the sync system
-- Concurrent Insert Issues: Multiple simultaneous calls to FTS sync functions were bypassing the `NOT IN (SELECT id FROM toots_fts)` deduplication logic
-
 ## Reactive Approaches Tried and Abandoned
 
 - Counter-Based ChangeListener: Used `window.tootsUpdateCounter` variable with `ChangeListener` watching for changes
+
   - Result: Still caused 4-5x multiplication due to rapid successive triggers
   - Throttling Attempts: Added `throttleWaitInMs="100"` but reactivity continued to overwhelm the system
 
@@ -104,6 +152,7 @@ In this development phase, we solved major FTS (Full-Text Search) synchronizatio
 - "Reactivity is a beast": XMLUI's reactive system is optimized for responsiveness, not "exactly once" execution patterns
 - ChangeListener Multiplication: Even with throttling, `ChangeListener` can fire multiple times during component lifecycle events
 - Direct Imperative Calls: For critical operations requiring single execution, explicit `execute()` calls in event handlers work more reliably than reactive watching
+  This snapshot demonstrates that sometimes the most elegant solution is the simplest one. By moving away from complex reactive patterns to straightforward imperative execution, we achieved both reliability and perfect data integrity in our FTS synchronization system.
 
 # Snapshot 37: Implement FTS4 full-text search with match indicators
 
@@ -219,7 +268,6 @@ Hashtag Search: Single # query finds all posts with hashtags (using LIKE fallbac
 
 Query Sanitization: Handles FTS4 special characters safely
 UI Integration: Added blue caption text showing match context
-
 
 ## Special note about Project Log
 
