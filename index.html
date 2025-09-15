@@ -45,7 +45,10 @@
       // Initialize FTS4 after app startup
       window.ftsEnabled = true;
       console.log('FTS4 initialized successfully');
-      return window.initializeFTS();
+      const result = window.initializeFTS();
+      // Set flag after successful initialization
+      window.ftsInitialized = true;
+      return result;
     }
 
     window.ephemeralData = ''
@@ -909,6 +912,12 @@
     }
 
     window.initializeFTS = function() {
+      // Prevent multiple initialization
+      if (window.ftsInitialized) {
+        console.log('FTS already initialized, skipping...');
+        return { sql: 'SELECT 1 as already_initialized' };
+      }
+
       return {
         sql: `
           -- Create FTS4 virtual table for toots
@@ -935,25 +944,26 @@
             account_url
           );
 
-          -- Populate toots_fts from existing data
-          INSERT OR IGNORE INTO toots_fts(
+          -- Only populate if tables are empty (prevents duplicates)
+          INSERT INTO toots_fts(
             id, author_name, reblog_author_name, content, reblog_content,
             created_at, reblog_created_at, url
           )
           SELECT
             id, author_name, reblog_author_name, content, reblog_content,
             created_at, reblog_created_at, url
-          FROM toots_home;
+          FROM toots_home
+          WHERE NOT EXISTS (SELECT 1 FROM toots_fts LIMIT 1);
 
-          -- Populate notifications_fts from existing data
-          INSERT OR IGNORE INTO notifications_fts(
+          INSERT INTO notifications_fts(
             id, display_name, status_content, note, category,
             created_at, status_url, account_url
           )
           SELECT
             id, display_name, status_content, note, category,
             created_at, status_url, account_url
-          FROM notifications;
+          FROM notifications
+          WHERE NOT EXISTS (SELECT 1 FROM notifications_fts LIMIT 1);
         `
       };
     }
