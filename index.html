@@ -690,6 +690,7 @@
           WHERE notifications_fts MATCH ?
         )
         ORDER BY created_at DESC
+        limit 30
         `,
         params: [sanitizedQuery, sanitizedQuery, sanitizedQuery, sanitizedQuery, sanitizedQuery, sanitizedQuery, sanitizedQuery, sanitizedQuery, sanitizedQuery, sanitizedQuery]
       };
