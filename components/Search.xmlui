@@ -64,7 +64,7 @@
   <Items data="{searchResults}">
     <!-- Toot results (not notifications) -->
     <Fragment when="{$item.result_type === 'toot'}">
-      <VStack gap="0.25rem">
+      <VStack gap="$space-1">
         <!-- Subtle indicator for toot results -->
         <Text variant="caption" fontSize="smaller" color="$color-text-subtle">
           {$item.reblog_author_name ? 'Reblog' : 'Post'}
@@ -92,7 +92,7 @@
           <!-- For regular posts, author and content are visible, so no "Found in" needed -->
         </Fragment>
 
-        <Button variant="solid" size="xs"
+        <Button variant="solid" size="xs" themeColor="secondary"
                 onClick="console.log('Toot button clicked for ID:', $item.id); tootModal.open($item)"
                 label="open" />
       </VStack>
@@ -100,7 +100,7 @@
 
     <!-- Notification results -->
     <Fragment when="{$item.result_type === 'notification'}">
-      <VStack gap="0.25rem">
+      <VStack gap="$space-1">
         <!-- Subtle indicator for notification results -->
         <Text variant="caption" fontSize="smaller" color="$color-text-subtle">Notification · {$item.category}</Text>
 
@@ -117,7 +117,7 @@
           Found in category: {$item.category}
         </Text>
 
-        <Button variant="solid" size="xs"
+        <Button variant="solid" size="xs" themeColor="secondary"
                 onClick="console.log('Notification button clicked for ID:', $item.id); tootModal.open($item)"
                 label="open" />
       </VStack>
