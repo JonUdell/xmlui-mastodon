@@ -14,7 +14,7 @@
     <Fragment when="{$item.result_type === 'toot'}">
       <!-- Subtle indicator for toot results -->
       <Text variant="caption" fontSize="smaller" color="$color-text-subtle">
-        {$item.reblog_author_name ? 'Reblog' : 'Post'} · ID: {$item.id}
+        {$item.reblog_author_name ? 'Reblog' : 'Post'}
       </Text>
 
       <Fragment when="{$item.reblog_author_name}">
@@ -43,7 +43,7 @@
     <!-- Notification results -->
     <Fragment when="{$item.result_type === 'notification'}">
       <!-- Subtle indicator for notification results -->
-      <Text variant="caption" fontSize="smaller" color="$color-text-subtle">Notification · {$item.category} · ID: {$item.id}</Text>
+      <Text variant="caption" fontSize="smaller" color="$color-text-subtle">Notification · {$item.category}</Text>
 
       <Text variant="strong">{$item.author_name}</Text>
       <Text when="{$item.match_snippet}">{$item.match_snippet}</Text>
