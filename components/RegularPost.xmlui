@@ -24,7 +24,7 @@
   <VStack gap="0.25rem">
     <!-- Timestamp line -->
     <Text variant="caption" fontSize="0.75rem" color="$color-text-subtle">
-      {formatHumanElapsedTime($props.item.created_at + 'Z')}
+      {formatHumanElapsedTime($props.item.created_at)}
     </Text>
 
     <!-- Avatar and user info line -->
