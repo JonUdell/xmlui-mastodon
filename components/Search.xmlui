@@ -10,7 +10,31 @@
     method="POST"
     body="{ window.searchTootsAndNotifications(query) }" />
 
+  <!-- Modal for displaying single toot with full interactions -->
+  <ModalDialog id="tootModal" title="Post Details">
+    <VStack>
+      <DataSource
+        when="{$param && $param.id}"
+        id="focusToot"
+        url="{window.query}"
+        method="POST"
+        body="{ { sql: `select * from mastodon_single_toot where id = '${$param.id}'` } }"
+      />
 
+      <Fragment when="{focusToot && focusToot.value && focusToot.value.length > 0}">
+        <Fragment when="{!focusToot.value[0].reblog}">
+          <RegularPost item="{focusToot.value[0]}" />
+        </Fragment>
+        <Fragment when="{focusToot.value[0].reblog}">
+          <ReblogPost item="{focusToot.value[0]}" />
+        </Fragment>
+      </Fragment>
+
+      <Text when="{!focusToot || !focusToot.value || focusToot.value.length === 0}">
+        Loading post details...
+      </Text>
+    </VStack>
+  </ModalDialog>
 
   <Items data="{searchResults}">
     <!-- Toot results (not notifications) -->
@@ -44,7 +68,7 @@
 
       <Button when="{$item.url && $item.url.includes('social.coop')}"
               variant="ghost" size="xs"
-              onClick="console.log('Toot button clicked for ID:', $item.id); navigate('/toot/' + $item.id)"
+              onClick="console.log('Toot button clicked for ID:', $item.id); tootModal.open($item)"
               label="view" />
     </Fragment>
 
@@ -68,7 +92,7 @@
 
       <Button when="{$item.url && $item.url.includes('social.coop/')}"
               variant="ghost" size="xs"
-              onClick="console.log('Notification button clicked for ID:', $item.id); navigate('/toot/' + $item.id)"
+              onClick="console.log('Notification button clicked for ID:', $item.id); tootModal.open($item)"
               label="view" />
     </Fragment>
 
