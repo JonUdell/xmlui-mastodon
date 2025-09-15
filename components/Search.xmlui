@@ -42,7 +42,8 @@
         <!-- For regular posts, author and content are visible, so no "Found in" needed -->
       </Fragment>
 
-      <Button variant="ghost" size="xs"
+      <Button when="{$item.url && $item.url.includes('social.coop')}"
+              variant="ghost" size="xs"
               onClick="console.log('Toot button clicked for ID:', $item.id); navigate('/toot/' + $item.id)"
               label="view" />
     </Fragment>
@@ -65,7 +66,8 @@
         Found in category: {$item.category}
       </Text>
 
-      <Button variant="ghost" size="xs"
+      <Button when="{$item.url && $item.url.includes('social.coop/')}"
+              variant="ghost" size="xs"
               onClick="console.log('Notification button clicked for ID:', $item.id); navigate('/toot/' + $item.id)"
               label="view" />
     </Fragment>
