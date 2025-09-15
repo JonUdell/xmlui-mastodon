@@ -78,6 +78,9 @@
       <Page url="/query">
         <Query />
       </Page>
+      <Page url="/toot/:id">
+        <SingleToot />
+      </Page>
       <Page url="/palettes">
         <Palettes />
       </Page>

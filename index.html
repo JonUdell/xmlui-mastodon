@@ -346,17 +346,17 @@
       )
     `
 
-    window.updateTootsHome = function() {
+    window.updateTootsHome = function () {
       if (!window.ephemeralData || window.ephemeralData.length === 0) {
         return { sql: 'SELECT 1' }; // No-op if no data
       }
 
       const values = window.ephemeralData.map(toot => {
-      const content = window.stripHtmlTags(toot.content || '');
-      const reblogContent = window.stripHtmlTags(toot.reblog_content || '');
-      const authorName = (toot.display_name || '').replace(/'/g, "''");
-      const reblogAuthorName = (toot.reblog_display_name || '').replace(/'/g, "''");
-      const url = (toot.instance_qualified_url || '').replace(/'/g, "''");
+        const content = window.stripHtmlTags(toot.content || '');
+        const reblogContent = window.stripHtmlTags(toot.reblog_content || '');
+        const authorName = (toot.display_name || '').replace(/'/g, "''");
+        const reblogAuthorName = (toot.reblog_display_name || '').replace(/'/g, "''");
+        const url = (toot.instance_qualified_url || '').replace(/'/g, "''");
 
         return `('${toot.id}', '${authorName}', '${reblogAuthorName}', '${toot.created_at}', '${toot.reblog_created_at || ''}', '${content.replace(/'/g, "''")}', '${reblogContent.replace(/'/g, "''")}', '${url}')`;
       }).join(',');
@@ -378,7 +378,7 @@
       };
     }
 
-    window.syncFTSAfterUpdate = function() {
+    window.syncFTSAfterUpdate = function () {
       if (!window.ephemeralData || window.ephemeralData.length === 0) {
         return { sql: 'SELECT 1' }; // No-op if no data
       }
@@ -568,7 +568,7 @@
 
     // search
 
-    window.searchTootsHome = function(query) {
+    window.searchTootsHome = function (query) {
       return {
         sql: `
           SELECT *
@@ -586,7 +586,7 @@
     };
 
     // FTS search query sanitization
-    window.sanitizeFTSQuery = function(query) {
+    window.sanitizeFTSQuery = function (query) {
       if (!query) return '';
 
       // Special case: single # should search for hashtags
@@ -599,15 +599,15 @@
       // Escape FTS4 special characters: " - ( ) AND OR NOT
       // But preserve # for hashtag searches
       return query.replace(/["\-()]/g, ' ')
-                  .replace(/\b(AND|OR|NOT)\b/gi, ' ')
-                  .trim()
-                  .split(/\s+/)
-                  .filter(term => term.length > 0)
-                  .join(' ');
+        .replace(/\b(AND|OR|NOT)\b/gi, ' ')
+        .trim()
+        .split(/\s+/)
+        .filter(term => term.length > 0)
+        .join(' ');
     }
 
     // FTS-based search function
-    window.searchTootsAndNotifications = function(query) {
+    window.searchTootsAndNotifications = function (query) {
       // Special case: hashtag search
       if (query.trim() === '#') {
         return {
@@ -755,7 +755,7 @@
 
     // stats
     window.tableStats =
-       `
+      `
           SELECT
             'notifications' AS table_name,
             (SELECT COUNT(*) FROM notifications) AS row_count,
@@ -924,28 +924,28 @@
       }
     }
 
-    window.getPostId = function(item) {
+    window.getPostId = function (item) {
       if (item.reblog) {
         return JSON.parse(item.reblog).id;
       }
       return item.id;
     }
 
-    window.getPostFavourited = function(item) {
+    window.getPostFavourited = function (item) {
       if (item.reblog) {
         return JSON.parse(item.reblog).favourited;
       }
       return item.favourited;
     }
 
-    window.getPostReblogged = function(item) {
+    window.getPostReblogged = function (item) {
       if (item.reblog) {
         return JSON.parse(item.reblog).reblogged;
       }
       return item.reblogged;
     }
 
-    window.getPostBookmarked = function(item) {
+    window.getPostBookmarked = function (item) {
       if (item.reblog) {
         return JSON.parse(item.reblog).bookmarked;
       }
@@ -956,14 +956,14 @@
       select name from sqlite_master where type='table' order by name
     `
 
-    window.stripHtmlTags = function(html) {
+    window.stripHtmlTags = function (html) {
       if (!html) return '';
       return html.replace(/<[^>]*>/g, '').trim();
     }
 
     // FTS (Full-Text Search) Infrastructure
 
-    window.createFTSToots = function() {
+    window.createFTSToots = function () {
       return {
         sql: `
           CREATE VIRTUAL TABLE IF NOT EXISTS toots_fts USING fts4(
@@ -980,7 +980,7 @@
       };
     }
 
-    window.populateFTSToots = function() {
+    window.populateFTSToots = function () {
       return {
         sql: `
           INSERT INTO toots_fts(
@@ -996,7 +996,7 @@
       };
     }
 
-    window.createFTSNotifications = function() {
+    window.createFTSNotifications = function () {
       return {
         sql: `
           CREATE VIRTUAL TABLE IF NOT EXISTS notifications_fts USING fts4(
@@ -1013,7 +1013,7 @@
       };
     }
 
-    window.populateFTSNotifications = function() {
+    window.populateFTSNotifications = function () {
       return {
         sql: `
           INSERT INTO notifications_fts(
@@ -1029,7 +1029,7 @@
       };
     }
 
-    window.initializeFTS = function() {
+    window.initializeFTS = function () {
       // Prevent multiple initialization
       if (window.ftsInitialized) {
         console.log('FTS already initialized, skipping...');
@@ -1087,7 +1087,7 @@
     }
 
     // Debug functions for FTS verification
-    window.checkFTSTables = function() {
+    window.checkFTSTables = function () {
       return {
         sql: `
           SELECT name, sql
@@ -1098,7 +1098,7 @@
       };
     }
 
-    window.countFTSRecords = function() {
+    window.countFTSRecords = function () {
       return {
         sql: `
           SELECT

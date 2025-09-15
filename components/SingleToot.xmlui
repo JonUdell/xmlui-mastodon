@@ -1,0 +1,33 @@
+<Component name="SingleToot">
+  <VStack>
+  <!--
+    <Text>Debug: Route ID = {$routeParams.id}</Text>
+    <Text>Debug: Route Params = {JSON.stringify($routeParams)}</Text>
+  -->
+
+    <DataSource
+      when="{$routeParams.id}"
+      id="focusToot"
+      url="{window.query}"
+      method="POST"
+      body="{ { sql: `select * from mastodon_single_toot where id = '${$routeParams.id}'` } }"
+    />
+
+<!--
+    <Text>Debug: SQL Query = select * from mastodon_single_toot where id = '{$routeParams.id}'</Text>
+    <Text when="{focusToot}">Debug: focusToot.value length = {focusToot.value ? focusToot.value.length : 'no value'}</Text>
+    <Text when="{focusToot && focusToot.value && focusToot.value.length > 0}">Debug: First item = {JSON.stringify(focusToot.value[0])}</Text>
+-->
+
+    <Fragment when="{focusToot && focusToot.value && focusToot.value.length > 0}">
+      <Fragment when="{!focusToot.value[0].reblog}">
+        <RegularPost item="{focusToot.value[0]}" />
+      </Fragment>
+      <Fragment when="{focusToot.value[0].reblog}">
+        <ReblogPost item="{focusToot.value[0]}" />
+      </Fragment>
+    </Fragment>
+
+    <Text when="{!focusToot || !focusToot.value || focusToot.value.length === 0}">No toot data found</Text>
+  </VStack>
+</Component>

@@ -14,7 +14,7 @@
       <VStack width="90%" maxWidth="90vw" marginRight="$space-4">
         <Items data="{notifications}">
           <VStack padding="$space-2">
-            <HStack gap="0.5rem" alignItems="center">
+            <HStack gap="0.5rem">
               <MastodonAvatar
                 url="{$item.avatar_url}"
                 size="xs"

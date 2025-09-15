@@ -10,27 +10,7 @@
     method="POST"
     body="{ window.searchTootsAndNotifications(query) }" />
 
-  <!-- Modal for displaying single toot/notification -->
-  <ModalDialog id="tootModal" title="Post Details">
-    <!-- Display the full content using the passed item data -->
-    <Fragment when="{$param.reblog_author_name}">
-      <ReblogHeader item="{$param}" />
-      <Markdown content="{$param.reblog_content}" />
-    </Fragment>
 
-    <Fragment when="{!$param.reblog_author_name}">
-      <Text variant="strong">{$param.author_name}</Text>
-      <Markdown content="{$param.content}" />
-    </Fragment>
-
-    <Text variant="caption" color="$color-text-subtle">
-      Posted: {$param.created_at || 'Unknown date'}
-    </Text>
-
-    <Text when="{$param.result_type}" variant="caption" color="$color-text-subtle">
-      Type: {$param.result_type === 'notification' ? `Notification (${$param.category})` : 'Post'}
-    </Text>
-  </ModalDialog>
 
   <Items data="{searchResults}">
     <!-- Toot results (not notifications) -->
@@ -62,10 +42,9 @@
         <!-- For regular posts, author and content are visible, so no "Found in" needed -->
       </Fragment>
 
-      <Text variant="caption" fontSize="smaller" color="$color-link"
-            onClick="tootModal.open($item)" cursor="pointer">
-        view
-      </Text>
+      <Button variant="ghost" size="xs"
+              onClick="console.log('Toot button clicked for ID:', $item.id); navigate('/toot/' + $item.id)"
+              label="view" />
     </Fragment>
 
     <!-- Notification results -->
@@ -86,10 +65,9 @@
         Found in category: {$item.category}
       </Text>
 
-      <Text variant="caption" fontSize="smaller" color="$color-link"
-            onClick="tootModal.open($item)" cursor="pointer">
-        view
-      </Text>
+      <Button variant="ghost" size="xs"
+              onClick="console.log('Notification button clicked for ID:', $item.id); navigate('/toot/' + $item.id)"
+              label="view" />
     </Fragment>
 
     <ContentSeparator />
