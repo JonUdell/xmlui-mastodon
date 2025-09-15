@@ -1,4 +1,4 @@
-<Component name="Home" var.loaded="{false}">
+<Component name="Home" var.loaded="{false}" var.syncCompleted="{false}">
 
 <AppState id="toolsState" bucket="toolsState" initialValue="{ { zoom: 20 } }" />
 
@@ -10,8 +10,11 @@
   onLoaded="(data) => {
     window.ephemeralData = data;
     loaded = true;
-    updateTootsHome.execute();
-    syncTootsHome.execute();
+    if (!syncCompleted) {
+      syncCompleted = true;
+      updateTootsHome.execute();
+      syncTootsHome.execute();
+    }
   }"
 />
 
