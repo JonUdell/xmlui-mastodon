@@ -20,7 +20,18 @@
         method="POST"
         body="{ $param.result_type === 'notification' ?
           { sql: `select * from notifications where id = '${$param.id}'` } :
-          { sql: `select * from mastodon_single_toot where id = '${$param.id}'` } }"
+          { sql: `select
+            id, username, display_name, created_at, url, instance_qualified_url, instance_qualified_account_url,
+            status, reblog, content, replies_count, reblogs_count, favourites_count, favourited, reblogged,
+            avatar_url,
+            json_extract(account, '$.header') as header_url,
+            json_extract(account, '$.note') as note,
+            json_extract(account, '$.followers_count') as followers_count,
+            json_extract(account, '$.following_count') as following_count,
+            json_extract(account, '$.statuses_count') as statuses_count,
+            in_reply_to_account_id,
+            json_extract(status, '$.media_attachments[0].preview_url') as preview_url
+            from mastodon_single_toot where id = '${$param.id}'` } }"
       />
 
       <Fragment when="{focusToot && focusToot.value && focusToot.value.length > 0}">
