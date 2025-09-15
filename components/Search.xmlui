@@ -13,7 +13,9 @@
     <!-- Toot results (not notifications) -->
     <Fragment when="{$item.result_type === 'toot'}">
       <!-- Subtle indicator for toot results -->
-      <Text variant="caption" fontSize="smaller" color="$color-text-subtle">Post</Text>
+      <Text variant="caption" fontSize="smaller" color="$color-text-subtle">
+        {$item.reblog_author_name ? 'Reblog' : 'Post'}
+      </Text>
 
       <Fragment when="{$item.reblog_author_name}">
         <ReblogHeader item="{$item}" />
