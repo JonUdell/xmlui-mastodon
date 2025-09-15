@@ -41,25 +41,9 @@
       return { sql: sql }
     }
 
-    window.initializeApp = function() {
-      // Initialize FTS4 after app startup
-      window.ftsEnabled = true;
-      console.log('FTS4 initialized successfully');
-      const result = window.initializeFTS();
-      // Set flag after successful initialization
-      window.ftsInitialized = true;
-      return result;
-    }
-
     window.ephemeralData = ''
 
     window.query = 'http://localhost:8080/query'
-
-    // Reactive gate function for FTS sync triggering
-    window.tootsUpdateCounter = 0; // Initialize counter
-    window.getFTSSyncTrigger = function() {
-      return window.tootsUpdateCounter;
-    }
 
     // followers
 
@@ -361,6 +345,7 @@
         url TEXT
       )
     `
+
     window.updateTootsHome = function() {
       if (!window.ephemeralData || window.ephemeralData.length === 0) {
         return { sql: 'SELECT 1' }; // No-op if no data
@@ -392,7 +377,6 @@
         `
       };
     }
-
 
     window.syncFTSAfterUpdate = function() {
       if (!window.ephemeralData || window.ephemeralData.length === 0) {
@@ -429,44 +413,8 @@
       };
     }
 
-    window.syncFTSAfterUpdateDebug = function() {
-      const trigger = window.getFTSSyncTrigger();
-      console.log('syncFTSAfterUpdate called, trigger:', trigger);
-      
-      // Skip if trigger is null or undefined (initial state)
-      if (trigger == null) {
-        console.log('Trigger is null/undefined, skipping');
-        return { sql: 'SELECT 1' };
-      }
-      
-      console.log('ephemeralData length:', window.ephemeralData ? window.ephemeralData.length : 'null');
-      
-      if (!window.ephemeralData || window.ephemeralData.length === 0) {
-        console.log('No ephemeral data, returning no-op');
-        return { sql: 'SELECT 1' };
-      }
-
-      const ids = window.ephemeralData.map(toot => `'${toot.id}'`).join(',');
-      console.log('Processing IDs:', ids.substring(0, 100) + '...');
-
-      return {
-        sql: `
-          INSERT INTO toots_fts (
-            id, author_name, reblog_author_name, content, reblog_content,
-            created_at, reblog_created_at, url
-          )
-          SELECT
-            id, author_name, reblog_author_name, content, reblog_content,
-            created_at, reblog_created_at, url
-          FROM toots_home
-          WHERE id IN (${ids})
-          AND id NOT IN (SELECT id FROM toots_fts);
-        `
-      };
-    }
-
     window.countTootsHome = `
-      select count(*) from toots_home
+    select count(*) from toots_home
     `
 
     // notifications
@@ -1015,12 +963,6 @@
 
     // FTS (Full-Text Search) Infrastructure
 
-    window.checkFTSSupport = function() {
-      return {
-        sql: "SELECT 'FTS4 available' as status"
-      };
-    }
-
     window.createFTSToots = function() {
       return {
         sql: `
@@ -1143,41 +1085,6 @@
         `
       };
     }
-
-    window.syncFTSToots = function() {
-      return {
-        sql: `
-          -- Manual sync function for troubleshooting (fallback only)
-          INSERT OR REPLACE INTO toots_fts(
-            id, author_name, reblog_author_name, content, reblog_content,
-            created_at, reblog_created_at, url
-          )
-          SELECT
-            id, author_name, reblog_author_name, content, reblog_content,
-            created_at, reblog_created_at, url
-          FROM toots_home;
-        `
-      };
-    }
-
-    window.syncFTSNotifications = function() {
-      return {
-        sql: `
-          -- Manual sync function for troubleshooting (fallback only)
-          INSERT OR REPLACE INTO notifications_fts(
-            id, display_name, status_content, note, category,
-            created_at, status_url, account_url
-          )
-          SELECT
-            id, display_name, status_content, note, category,
-            created_at, status_url, account_url
-          FROM notifications;
-        `
-      };
-    }
-
-    // Global flag to track FTS availability
-    window.ftsEnabled = false;
 
     // Debug functions for FTS verification
     window.checkFTSTables = function() {
