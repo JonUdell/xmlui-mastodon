@@ -5,65 +5,8 @@
     url="{ window.query }"
     body="{ window.followers() }"
     method="POST"
-
   />
 
-  <VStack>
-    <Table data="{followers}">
-      <!-- Avatar column - always show -->
-      <Column header="" width="60px">
-        <MastodonAvatar
-          url="{$item.avatar_url}"
-          size="xs"
-          name="{$item.display_name || $item.username}"
-          item="{$item}"
-        />
-      </Column>
-      
-      <!-- Mutual column - always show but narrower on small screens -->
-      <Column width="{mediaSize.size === 'xs' || mediaSize.size === 'sm' ? '50px' : '80px'}" header="Mutual" bindTo="mutual" canSort="true">
-        <Fragment when="{$item.mutual}">
-          <CHStack width="100%">
-            <Icon name="binding" />
-          </CHStack>
-        </Fragment>
-      </Column>
-      
-      <!-- Name column - always show -->
-      <Column header="Name" bindTo="display_name" canSort="true">
-        <Fragment when="{$item.instance_qualified_account_url}">
-          <Link to="{$item.instance_qualified_account_url}" target="_blank">
-            {$item.display_name || $item.username}
-          </Link>
-        </Fragment>
-      </Column>
-      
-      <!-- Username column - hide on xs screens -->
-      <Fragment when="{mediaSize.size !== 'xs'}">
-        <Column header="Username" bindTo="username" canSort="true">
-          @{$item.username}
-        </Column>
-      </Fragment>
-      
-      <!-- Server column - hide on xs/sm screens -->
-      <Fragment when="{mediaSize.size !== 'xs' && mediaSize.size !== 'sm'}">
-        <Column header="Server" bindTo="server" canSort="true" />
-      </Fragment>
-      
-      <!-- Stats columns - hide on xs/sm screens -->
-      <Fragment when="{mediaSize.size !== 'xs' && mediaSize.size !== 'sm'}">
-        <Column header="Followers" bindTo="followers_count" canSort="true" width="80px" />
-        <Column header="Following" bindTo="following_count" canSort="true" width="80px" />
-        <Column header="Posts" bindTo="statuses_count" canSort="true" width="80px" />
-      </Fragment>
-      
-      <!-- Joined column - only show on lg+ screens -->
-      <Fragment when="{mediaSize.size === 'lg' || mediaSize.size === 'xl' || mediaSize.size === 'xxl'}">
-        <Column header="Joined" bindTo="created_at" canSort="true">
-          {window.formatShortDate($item.created_at)}
-        </Column>
-      </Fragment>
-    </Table>
-  </VStack>
+  <PeopleTable data="{followers}" />
 
 </Component>
