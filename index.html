@@ -382,7 +382,30 @@
             reblog_content,
             url
           )
-          VALUES ${values}
+          VALUES ${values};
+
+          -- Sync new data to FTS table
+          INSERT OR REPLACE INTO toots_fts (
+            id,
+            author_name,
+            reblog_author_name,
+            content,
+            reblog_content,
+            created_at,
+            reblog_created_at,
+            url
+          )
+          SELECT
+            id,
+            author_name,
+            reblog_author_name,
+            content,
+            reblog_content,
+            created_at,
+            reblog_created_at,
+            url
+          FROM toots_home
+          WHERE id IN (${window.ephemeralData.map(toot => `'${toot.id}'`).join(',')});
         `
       };
     }
@@ -909,6 +932,70 @@
     window.checkFTSSupport = function() {
       return {
         sql: "SELECT 'FTS4 available' as status"
+      };
+    }
+
+    window.createFTSToots = function() {
+      return {
+        sql: `
+          CREATE VIRTUAL TABLE IF NOT EXISTS toots_fts USING fts4(
+            id,
+            author_name,
+            reblog_author_name,
+            content,
+            reblog_content,
+            created_at,
+            reblog_created_at,
+            url
+          );
+        `
+      };
+    }
+
+    window.populateFTSToots = function() {
+      return {
+        sql: `
+          INSERT INTO toots_fts(
+            id, author_name, reblog_author_name, content, reblog_content,
+            created_at, reblog_created_at, url
+          )
+          SELECT
+            id, author_name, reblog_author_name, content, reblog_content,
+            created_at, reblog_created_at, url
+          FROM toots_home;
+        `
+      };
+    }
+
+    window.createFTSNotifications = function() {
+      return {
+        sql: `
+          CREATE VIRTUAL TABLE IF NOT EXISTS notifications_fts USING fts4(
+            id,
+            display_name,
+            status_content,
+            note,
+            category,
+            created_at,
+            status_url,
+            account_url
+          );
+        `
+      };
+    }
+
+    window.populateFTSNotifications = function() {
+      return {
+        sql: `
+          INSERT INTO notifications_fts(
+            id, display_name, status_content, note, category,
+            created_at, status_url, account_url
+          )
+          SELECT
+            id, display_name, status_content, note, category,
+            created_at, status_url, account_url
+          FROM notifications;
+        `
       };
     }
 

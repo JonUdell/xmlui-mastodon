@@ -7,6 +7,26 @@
       body="{ window.init() }"
       method="POST" />
     <DataSource
+      id="createFTSToots"
+      url="{ window.query }"
+      body="{ window.createFTSToots() }"
+      method="POST" />
+    <DataSource
+      id="populateFTSToots"
+      url="{ window.query }"
+      body="{ window.populateFTSToots() }"
+      method="POST" />
+    <DataSource
+      id="createFTSNotifications"
+      url="{ window.query }"
+      body="{ window.createFTSNotifications() }"
+      method="POST" />
+    <DataSource
+      id="populateFTSNotifications"
+      url="{ window.query }"
+      body="{ window.populateFTSNotifications() }"
+      method="POST" />
+    <DataSource
       id="account"
       url="{ window.query }"
       body="{ window.customSql('select * from mastodon_my_account') }"

@@ -14,12 +14,12 @@
     <Fragment when="{$item.result_type === 'toot'}">
       <!-- Subtle indicator for toot results -->
       <Text variant="caption" fontSize="smaller" color="$color-text-subtle">
-        {$item.reblog_author_name ? 'Reblog' : 'Post'}
+        {$item.reblog_author_name ? 'Reblog' : 'Post'} · ID: {$item.id}
       </Text>
 
       <Fragment when="{$item.reblog_author_name}">
         <ReblogHeader item="{$item}" />
-        <Markdown content="{$item.reblog_content}" />
+        <Text>{$item.match_snippet}</Text>
 
         <!-- Show "Found in" only when match is NOT visible in reblog display -->
         <Text when="{$item.match_field === 'author'}"
@@ -34,7 +34,7 @@
 
       <Fragment when="{!$item.reblog_author_name}">
         <Text variant="strong">{$item.author_name}</Text>
-        <Markdown content="{$item.content}" />
+        <Text>{$item.match_snippet}</Text>
 
         <!-- For regular posts, author and content are visible, so no "Found in" needed -->
       </Fragment>
@@ -43,10 +43,10 @@
     <!-- Notification results -->
     <Fragment when="{$item.result_type === 'notification'}">
       <!-- Subtle indicator for notification results -->
-      <Text variant="caption" fontSize="smaller" color="$color-text-subtle">Notification · {$item.category}</Text>
+      <Text variant="caption" fontSize="smaller" color="$color-text-subtle">Notification · {$item.category} · ID: {$item.id}</Text>
 
       <Text variant="strong">{$item.author_name}</Text>
-      <Markdown when="{$item.content}" content="{$item.content}" />
+      <Text when="{$item.match_snippet}">{$item.match_snippet}</Text>
 
       <!-- Show "Found in" for non-visible notification fields -->
       <Text when="{$item.match_field === 'bio'}"
