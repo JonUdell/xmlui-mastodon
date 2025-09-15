@@ -12,33 +12,30 @@
 
   <!-- Modal for displaying single toot/notification -->
   <ModalDialog id="tootModal" title="Post Details">
-    <DataSource
-      id="singleToot"
-      url="{ window.query }"
-      method="POST"
-      body="{ `select * from mastodon_single_toot where id = '${$param}'` }" />
+    <!-- Display the full content using the passed item data -->
+    <Fragment when="{$param.reblog_author_name}">
+      <ReblogHeader item="{$param}" />
+      <Markdown content="{$param.reblog_content}" />
+    </Fragment>
 
-    <Items data="{singleToot}">
-      <Fragment when="{$item.reblog_author_name}">
-        <ReblogHeader item="{$item}" />
-        <Markdown content="{$item.reblog_content}" />
-      </Fragment>
+    <Fragment when="{!$param.reblog_author_name}">
+      <Text variant="strong">{$param.author_name}</Text>
+      <Markdown content="{$param.content}" />
+    </Fragment>
 
-      <Fragment when="{!$item.reblog_author_name}">
-        <Text variant="strong">{$item.author_name}</Text>
-        <Markdown content="{$item.content}" />
-      </Fragment>
+    <Text variant="caption" color="$color-text-subtle">
+      Posted: {$param.created_at || 'Unknown date'}
+    </Text>
 
-      <Text variant="caption" color="$color-text-subtle">
-        Posted: {$item.created_at}
-      </Text>
-    </Items>
+    <Text when="{$param.result_type}" variant="caption" color="$color-text-subtle">
+      Type: {$param.result_type === 'notification' ? `Notification (${$param.category})` : 'Post'}
+    </Text>
   </ModalDialog>
 
   <Items data="{searchResults}">
     <!-- Toot results (not notifications) -->
     <Fragment when="{$item.result_type === 'toot'}">
-      <Card onClick="tootModal.open($item.id)" cursor="pointer">
+      <Card onClick="tootModal.open($item)" cursor="pointer">
         <!-- Subtle indicator for toot results -->
         <Text variant="caption" fontSize="smaller" color="$color-text-subtle">
           {$item.reblog_author_name ? 'Reblog' : 'Post'}
@@ -70,7 +67,7 @@
 
     <!-- Notification results -->
     <Fragment when="{$item.result_type === 'notification'}">
-      <Card onClick="tootModal.open($item.id)" cursor="pointer">
+      <Card onClick="tootModal.open($item)" cursor="pointer">
         <!-- Subtle indicator for notification results -->
         <Text variant="caption" fontSize="smaller" color="$color-text-subtle">Notification · {$item.category}</Text>
 
