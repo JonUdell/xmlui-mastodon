@@ -446,7 +446,8 @@
         statuses_count integer,
         in_reply_to_id text,
         in_reply_to_account_id text,
-        preview_url text
+        preview_url text,
+        username text
       )
     `
 
@@ -482,7 +483,8 @@
         statuses_count,
         in_reply_to_id,
         in_reply_to_account_id,
-        preview_url
+        preview_url,
+        username
       )
       select
         id,
@@ -509,7 +511,8 @@
         cast(json_extract(account, '$.statuses_count') as integer) as statuses_count,
         json_extract(status, '$.in_reply_to_id') as in_reply_to_id,
         json_extract(status, '$.in_reply_to_account_id') as in_reply_to_account_id,
-        json_extract(status, '$.media_attachments[0].preview_url') as preview_url
+        json_extract(status, '$.media_attachments[0].preview_url') as preview_url,
+        json_extract(account, '$.username') as username
       from limited_notifications
     `
 
@@ -541,7 +544,8 @@
             statuses_count,
             in_reply_to_id,
             in_reply_to_account_id,
-            preview_url
+            preview_url,
+            username
           from notifications
           order by created_at desc
           limit ${count}
