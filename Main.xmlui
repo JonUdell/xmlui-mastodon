@@ -49,16 +49,17 @@
       <Tools />
     </ModalDialog>
      <NavPanel>
-      <NavLink label="{mediaSize.size === 'xs' || mediaSize.size === 'sm' ? '' : 'Home'}" to="/" icon="home" />
-      <NavLink label="{mediaSize.size === 'xs' || mediaSize.size === 'sm' ? '' : 'Notifications'}" to="/notifications" icon="info" />
-      <NavLink label="{mediaSize.size === 'xs' || mediaSize.size === 'sm' ? '' : 'Search'}" to="/search" icon="search" />
-      <NavLink label="{mediaSize.size === 'xs' || mediaSize.size === 'sm' ? '' : 'Followers'}" to="/followers" icon="users" />
-      <NavLink label="{mediaSize.size === 'xs' || mediaSize.size === 'sm' ? '' : 'Following'}" to="/following" icon="users" />
-      <NavLink label="{mediaSize.size === 'xs' || mediaSize.size === 'sm' ? '' : 'Query'}" to="/query" icon="database" />
+      <NavLink label="{mediaSize.size === 'xs' || mediaSize.size === 'sm' ? '' : 'Home'}" to="/" icon="home" tooltip="Home" />
+      <NavLink label="{mediaSize.size === 'xs' || mediaSize.size === 'sm' ? '' : 'Notifications'}" to="/notifications" icon="info" tooltip="Notifications" />
+      <NavLink label="{mediaSize.size === 'xs' || mediaSize.size === 'sm' ? '' : 'Search'}" to="/search" icon="search" tooltip="Search" />
+      <NavLink label="{mediaSize.size === 'xs' || mediaSize.size === 'sm' ? '' : 'Followers'}" to="/followers" icon="users" tooltip="Followers" />
+      <NavLink label="{mediaSize.size === 'xs' || mediaSize.size === 'sm' ? '' : 'Following'}" to="/following" icon="users" tooltip="Following" />
+      <NavLink label="{mediaSize.size === 'xs' || mediaSize.size === 'sm' ? '' : 'Query'}" to="/query" icon="database" tooltip="Query" />
       <NavLink
         label="{mediaSize.size === 'xs' || mediaSize.size === 'sm' ? '' : 'Settings'}"
         icon="cog"
         onClick="settingsDialog.open()"
+        tooltip="Settings"
         when="{['/', '/notifications'].includes($pathname)}" />
     </NavPanel>
     <Pages>
