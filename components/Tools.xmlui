@@ -3,22 +3,26 @@
   <AppState id="toolsState" bucket="toolsState" />
 
   <VStack spacing="md">
-    <Slider
-      width="100%"
-      label="Image zoom"
-      minValue="{0}"
-      maxValue="{100}"
-      step="{10}"
-      initialValue="{toolsState.value.zoom}"
-      showValues="true"
-      onDidChange="(value) => { toolsState.update({ zoom: value }) }"
-    />
+    <Fragment when="{$pathname === '/'}">
+      <Slider
+        width="100%"
+        label="Image zoom"
+        minValue="{0}"
+        maxValue="{100}"
+        step="{10}"
+        initialValue="{toolsState.value.zoom}"
+        showValues="true"
+        onDidChange="(value) => { toolsState.update({ zoom: value }) }"
+      />
+    </Fragment>
 
-    <Switch
-      label="Truncate long links"
-      initialValue="{localStorage.getItem('truncateLinks')}"
-      onDidChange="(value) => { window.setTruncateLinks(value); toolsState.update({ truncateLinks: value }); }"
-    />
+    <Fragment when="{['/', '/notifications'].includes($pathname)}">
+      <Switch
+        label="Truncate long links"
+        initialValue="{localStorage.getItem('truncateLinks')}"
+        onDidChange="(value) => { window.setTruncateLinks(value); toolsState.update({ truncateLinks: value }); }"
+      />
+    </Fragment>
   </VStack>
 
 </Component>
