@@ -96,6 +96,11 @@
         </Fragment>
 
         <Fragment when="{!$item.reblog_author_name}">
+          <!-- Timestamp line -->
+          <Text variant="caption" fontSize="0.75rem" color="$color-text-subtle">
+            {formatHumanElapsedTime($item.created_at ? $item.created_at.replace(' ', 'T') + 'Z' : 'Unknown time')}
+          </Text>
+          
           <Text variant="strong">{$item.author_name}</Text>
           <Text>{$item.match_snippet}</Text>
 
@@ -113,6 +118,11 @@
       <VStack gap="$space-1">
         <!-- Subtle indicator for notification results -->
         <Text variant="caption" fontSize="smaller" color="$color-text-subtle">Notification · {$item.category}</Text>
+
+        <!-- Timestamp line -->
+        <Text variant="caption" fontSize="0.75rem" color="$color-text-subtle">
+          {formatHumanElapsedTime($item.created_at ? $item.created_at.replace(' ', 'T') + 'Z' : 'Unknown time')}
+        </Text>
 
         <Text variant="strong">{$item.author_name}</Text>
         <Text when="{$item.match_snippet}">{$item.match_snippet}</Text>
