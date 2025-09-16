@@ -2,8 +2,7 @@
 
   <AppState id="toolsState" bucket="toolsState" />
 
-  <Fragment when="{['/', '/notifications'].includes($pathname)}">
-
+  <VStack spacing="md">
     <Slider
       width="100%"
       label="Image zoom"
@@ -15,16 +14,11 @@
       onDidChange="(value) => { toolsState.update({ zoom: value }) }"
     />
 
-  </Fragment>
-
-  <Fragment when="{['/', '/notifications', '/search', '/projectLog'].includes($pathname)}">
-
     <Switch
       label="Truncate long links"
       initialValue="{localStorage.getItem('truncateLinks')}"
       onDidChange="(value) => { window.setTruncateLinks(value); toolsState.update({ truncateLinks: value }); }"
     />
-
-  </Fragment>
+  </VStack>
 
 </Component>

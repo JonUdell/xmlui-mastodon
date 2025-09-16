@@ -55,6 +55,13 @@
       <NavLink label="{mediaSize.size === 'xs' || mediaSize.size === 'sm' ? '' : 'Followers'}" to="/followers" icon="users" />
       <NavLink label="{mediaSize.size === 'xs' || mediaSize.size === 'sm' ? '' : 'Following'}" to="/following" icon="users" />
       <NavLink label="{mediaSize.size === 'xs' || mediaSize.size === 'sm' ? '' : 'Query'}" to="/query" icon="database" />
+      <SpaceFiller />
+      <Button
+        label="{mediaSize.size === 'xs' || mediaSize.size === 'sm' ? '' : 'Settings'}"
+        icon="cog"
+        variant="ghost"
+        onClick="settingsDialog.open()"
+        when="{$pathname === '/'}" />
     </NavPanel>
     <Pages>
       <Page url="/">
