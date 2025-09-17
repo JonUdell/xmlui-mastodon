@@ -4,7 +4,8 @@
   <TextBox
     placeholder="Enter search term..."
     onDidChange="(val) => query = val"
-    width="300px" />
+    width="300px"
+    autoFocus="true" />
   <DataSource
     when="{query}"
     id="searchResults"
