@@ -63,6 +63,8 @@ CREATE TABLE notifications (
         in_reply_to_id text,
         in_reply_to_account_id text,
         preview_url text,
+        media_url text,
+        media_type text,
         username text
       );
 CREATE INDEX idx_follower_id on follower(id);
@@ -74,8 +76,18 @@ CREATE TABLE toots_home (
         reblog_created_at TEXT,
         content TEXT,
         reblog_content TEXT,
-        url TEXT
-      , in_reply_to_id text, in_reply_to_account_id text, account_id text, replies_count integer);
+        url TEXT,
+        preview_url TEXT,
+        media_url TEXT,
+        media_type TEXT,
+        reblog_preview_url TEXT,
+        reblog_media_url TEXT,
+        reblog_media_type TEXT,
+        in_reply_to_id text,
+        in_reply_to_account_id text,
+        account_id text,
+        replies_count integer
+      );
 CREATE VIRTUAL TABLE fts4_test USING fts4(content)
 /* fts4_test(content) */;
 CREATE VIRTUAL TABLE toots_fts USING fts4(

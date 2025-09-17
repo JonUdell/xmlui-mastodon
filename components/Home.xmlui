@@ -1,4 +1,4 @@
-<Component name="Home" var.loaded="{false}" var.syncCompleted="{false}">
+<Component name="Home" var.loaded="{false}" var.syncCompleted="{false}" var.debugMode="{true}">
 
 <AppState id="toolsState" bucket="toolsState" initialValue="{ { zoom: 20 } }" />
 
@@ -67,12 +67,12 @@
         <VStack>
                <!-- Regular Post Display -->
                <Fragment when="{!$item.reblog}">
-                 <RegularPost item="{$item}" />
+                 <RegularPost item="{$item}" debugMode="{debugMode}" />
                </Fragment>
 
                <!-- Reblog Display -->
                <Fragment when="{$item.reblog}">
-                 <ReblogPost item="{$item}" />
+                 <ReblogPost item="{$item}" debugMode="{debugMode}" />
                </Fragment>
         </VStack>
 

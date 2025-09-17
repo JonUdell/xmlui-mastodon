@@ -1,13 +1,35 @@
 <Component name="ReblogPost">
   <AppState id="toolsState" bucket="toolsState" />
 
+  <!-- Debug info for reblog posts -->
+  <Fragment when="{$props.debugMode}">
+    <VStack gap="0.25rem" marginBottom="0.5rem">
+      <Text variant="caption" fontSize="0.7rem" color="$color-text-subtle" fontFamily="monospace">
+        Reblog Post ID: {$props.item.id}
+      </Text>
+      <Text variant="caption" fontSize="0.7rem" color="$color-text-subtle" fontFamily="monospace">
+        Original Post ID: {JSON.parse($props.item.reblog).id}
+      </Text>
+      <Fragment when="{$props.item.reblog_media_type}">
+        <Text variant="caption" fontSize="0.7rem" color="$color-text-subtle" fontFamily="monospace">
+          Media: {$props.item.reblog_media_type} | Preview: {$props.item.reblog_preview_url ? 'Yes' : 'No'} | Original: {$props.item.reblog_media_url ? 'Yes' : 'No'}
+        </Text>
+      </Fragment>
+    </VStack>
+  </Fragment>
+
   <ReblogHeader item="{$props.item}" />
 
   <VStack>
     <Markdown content="{$props.item.reblog_content}" />
 
     <Fragment when="{$props.item.reblog_preview_url}">
-      <ImageWithModal src="{$props.item.reblog_preview_url}" width="{toolsState.value.zoom}%" />
+      <ImageWithModal
+        src="{$props.item.reblog_preview_url}"
+        mediaUrl="{$props.item.reblog_media_url}"
+        mediaType="{$props.item.reblog_media_type}"
+        width="{toolsState.value.zoom}%"
+      />
     </Fragment>
 
     <Tooltip text="view on home server">

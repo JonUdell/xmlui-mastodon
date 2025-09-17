@@ -321,10 +321,20 @@
                 json_extract(status, '$.in_reply_to_id') as in_reply_to_id,
                 json_extract(status, '$.in_reply_to_account_id') as in_reply_to_account_id,
                 json_extract(status, '$.media_attachments[0].preview_url') as preview_url,
+                json_extract(status, '$.media_attachments[0].url') as media_url,
+                json_extract(status, '$.media_attachments[0].type') as media_type,
                 case
                   when reblog is not null then json_extract(reblog, '$.media_attachments[0].preview_url')
                   else null
                 end as reblog_preview_url,
+                case
+                  when reblog is not null then json_extract(reblog, '$.media_attachments[0].url')
+                  else null
+                end as reblog_media_url,
+                case
+                  when reblog is not null then json_extract(reblog, '$.media_attachments[0].type')
+                  else null
+                end as reblog_media_type,
             instance_qualified_account_url
             from mastodon_toot_home
             order by created_at desc
@@ -342,7 +352,13 @@
         reblog_created_at TEXT,
         content TEXT,
         reblog_content TEXT,
-        url TEXT
+        url TEXT,
+        preview_url TEXT,
+        media_url TEXT,
+        media_type TEXT,
+        reblog_preview_url TEXT,
+        reblog_media_url TEXT,
+        reblog_media_type TEXT
       )
     `
 
@@ -358,7 +374,14 @@
         const reblogAuthorName = (toot.reblog_display_name || '').replace(/'/g, "''");
         const url = (toot.instance_qualified_url || '').replace(/'/g, "''");
 
-        return `('${toot.id}', '${authorName}', '${reblogAuthorName}', '${toot.created_at}', '${toot.reblog_created_at || ''}', '${content.replace(/'/g, "''")}', '${reblogContent.replace(/'/g, "''")}', '${url}')`;
+        const previewUrl = (toot.preview_url || '').replace(/'/g, "''");
+        const mediaUrl = (toot.media_url || '').replace(/'/g, "''");
+        const mediaType = (toot.media_type || '').replace(/'/g, "''");
+        const reblogPreviewUrl = (toot.reblog_preview_url || '').replace(/'/g, "''");
+        const reblogMediaUrl = (toot.reblog_media_url || '').replace(/'/g, "''");
+        const reblogMediaType = (toot.reblog_media_type || '').replace(/'/g, "''");
+
+        return `('${toot.id}', '${authorName}', '${reblogAuthorName}', '${toot.created_at}', '${toot.reblog_created_at || ''}', '${content.replace(/'/g, "''")}', '${reblogContent.replace(/'/g, "''")}', '${url}', '${previewUrl}', '${mediaUrl}', '${mediaType}', '${reblogPreviewUrl}', '${reblogMediaUrl}', '${reblogMediaType}')`;
       }).join(',');
 
       return {
@@ -371,7 +394,13 @@
             reblog_created_at,
             content,
             reblog_content,
-            url
+            url,
+            preview_url,
+            media_url,
+            media_type,
+            reblog_preview_url,
+            reblog_media_url,
+            reblog_media_type
           )
           VALUES ${values};
         `
