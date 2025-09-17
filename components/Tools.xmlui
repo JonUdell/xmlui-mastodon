@@ -3,6 +3,14 @@
   <AppState id="toolsState" bucket="toolsState" />
 
   <VStack spacing="md">
+    <!-- Theme switcher -->
+    <HStack verticalAlignment="center" gap="$space-2">
+      <ToneSwitch />
+      <Text>Tone switch</Text>
+    </HStack>
+
+    <ContentSeparator />
+
     <Fragment when="{$pathname === '/'}">
       <Slider
         width="100%"
@@ -14,6 +22,8 @@
         showValues="true"
         onDidChange="(value) => { toolsState.update({ zoom: value }) }"
       />
+
+      <ContentSeparator />
     </Fragment>
 
     <Fragment when="{['/', '/notifications'].includes($pathname)}">

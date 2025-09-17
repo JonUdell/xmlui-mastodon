@@ -45,7 +45,7 @@
     <ModalDialog
       id="settingsDialog"
       title="Settings"
-      width="50%">
+      maxWidth="25%">
       <Tools />
     </ModalDialog>
      <NavPanel>
@@ -98,7 +98,6 @@
       <Text>
         Powered by XMLUI
       </Text>
-      <ToneSwitch />
     </Footer>
   </App>
 </Theme>
