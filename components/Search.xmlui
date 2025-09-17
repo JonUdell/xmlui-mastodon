@@ -32,7 +32,21 @@
             json_extract(account, '$.following_count') as following_count,
             json_extract(account, '$.statuses_count') as statuses_count,
             in_reply_to_account_id,
-            json_extract(status, '$.media_attachments[0].preview_url') as preview_url
+            json_extract(status, '$.media_attachments[0].preview_url') as preview_url,
+            json_extract(status, '$.media_attachments[0].url') as media_url,
+            json_extract(status, '$.media_attachments[0].type') as media_type,
+            case
+              when reblog is not null then json_extract(reblog, '$.media_attachments[0].preview_url')
+              else null
+            end as reblog_preview_url,
+            case
+              when reblog is not null then json_extract(reblog, '$.media_attachments[0].url')
+              else null
+            end as reblog_media_url,
+            case
+              when reblog is not null then json_extract(reblog, '$.media_attachments[0].type')
+              else null
+            end as reblog_media_type
             from mastodon_single_toot where id = '${$param.id}'` } }"
       />
 
@@ -100,7 +114,7 @@
           <Text variant="caption" fontSize="0.75rem" color="$color-text-subtle">
             {formatHumanElapsedTime($item.created_at ? $item.created_at.replace(' ', 'T') + 'Z' : 'Unknown time')}
           </Text>
-          
+
           <Text variant="strong">{$item.author_name}</Text>
           <Text>{$item.match_snippet}</Text>
 

@@ -1,20 +1,26 @@
 <Component name="ImageWithModal">
   <ModalDialog id="imageModal" title="" fullScreen="true">
-    <Fragment when="{$param && $param.includes('.mp4')}">
+    <!-- Debug info -->
+    <Fragment> when="{$param}">
+      <Text>Debug: Modal param = {$param}</Text>
+    </Fragment>
+
+    <Fragment when="{$param && ($param.includes('.mp4') || $param.includes('.gifv') || $param.includes('.webm'))}">
       <Markdown content="<video src='{$param}' width='100%' controls></video>" />
     </Fragment>
-    <Fragment when="{$param && !$param.includes('.mp4')}">
+    <Fragment when="{$param && !$param.includes('.mp4') && !$param.includes('.gifv') && !$param.includes('.webm')}">
       <Image src="{$param}" width="100%" fit="contain" />
     </Fragment>
   </ModalDialog>
 
-  <Fragment when="{$props.mediaType === 'video'}">
-    <Markdown
-      content="<video src='{$props.mediaUrl}' width='{$props.width}' controls></video>"
-      onClick="imageModal.open($props.mediaUrl)"
-    />
+  <Fragment when="{$props.mediaType === 'video' || $props.mediaType === 'gifv'}">
+    <VStack onClick="imageModal.open($props.mediaUrl)">
+      <Markdown
+        content="<video src='{$props.mediaUrl}' width='{$props.width}' controls></video>"
+      />
+    </VStack>
   </Fragment>
-  <Fragment when="{$props.mediaType !== 'video'}">
+  <Fragment when="{$props.mediaType !== 'video' && $props.mediaType !== 'gifv'}">
     <Image
       onClick="imageModal.open($props.src.replace('/small/','/original/'))"
       src="{$props.src}"
