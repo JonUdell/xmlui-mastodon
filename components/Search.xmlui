@@ -1,4 +1,6 @@
 <Component name="Search" var.query="">
+
+<AppState id="debugState" bucket="debugState" />
   <TextBox
     placeholder="Enter search term..."
     onDidChange="(val) => query = val"
@@ -48,9 +50,34 @@
               else null
             end as reblog_media_type
             from mastodon_single_toot where id = '${$param.id}'` } }"
+        errorNotificationMessage="Failed to load post: {$error.details}"
+        onError="(error) => {
+          console.log('Error loading toot:', error);
+        }"
       />
 
       <Fragment when="{focusToot && focusToot.value && focusToot.value.length > 0}">
+        <!-- Debug info for modal data -->
+        <Fragment when="{debugState.value.enabled}">
+          <VStack gap="0.1rem" marginBottom="0.5rem" padding="0.5rem" backgroundColor="$color-background-subtle">
+            <Text variant="caption" fontSize="0.7rem" color="$color-text-subtle" fontFamily="monospace">
+              Modal Debug: Result Type = {$param.result_type}
+            </Text>
+            <Text variant="caption" fontSize="0.7rem" color="$color-text-subtle" fontFamily="monospace">
+              Focus Toot ID: {focusToot.value[0].id}
+            </Text>
+            <Text variant="caption" fontSize="0.7rem" color="$color-text-subtle" fontFamily="monospace">
+              Has Reblog: {focusToot.value[0].reblog ? 'Yes' : 'No'}
+            </Text>
+            <Text variant="caption" fontSize="0.7rem" color="$color-text-subtle" fontFamily="monospace">
+              Media Type: {focusToot.value[0].media_type || 'None'}
+            </Text>
+            <Text variant="caption" fontSize="0.7rem" color="$color-text-subtle" fontFamily="monospace">
+              Preview URL: {focusToot.value[0].preview_url ? 'Yes' : 'No'}
+            </Text>
+          </VStack>
+        </Fragment>
+
         <Fragment when="{$param.result_type === 'notification'}">
           <!-- Display notification and associated post -->
           <Text variant="strong">Notification: {focusToot.value[0].category}</Text>
@@ -59,7 +86,7 @@
           <Fragment when="{focusToot.value[0].status}">
             <!-- Show the associated post using RegularPost component -->
             <Text variant="caption" color="$color-text-subtle">Associated post:</Text>
-            <RegularPost item="{window.transformNotificationStatus(JSON.parse(focusToot.value[0].status))}" />
+            <RegularPost item="{window.transformNotificationStatus(JSON.parse(focusToot.value[0].status))}" debugMode="{debugState.value.enabled}" />
           </Fragment>
 
           <Fragment when="{!focusToot.value[0].status}">
@@ -71,17 +98,30 @@
 
         <Fragment when="{$param.result_type !== 'notification'}">
           <Fragment when="{!focusToot.value[0].reblog}">
-            <RegularPost item="{focusToot.value[0]}" />
+            <RegularPost item="{focusToot.value[0]}" debugMode="{debugState.value.enabled}" />
           </Fragment>
           <Fragment when="{focusToot.value[0].reblog}">
-            <ReblogPost item="{focusToot.value[0]}" />
+            <ReblogPost item="{focusToot.value[0]}" debugMode="{debugState.value.enabled}" />
           </Fragment>
         </Fragment>
       </Fragment>
 
-      <Text when="{!focusToot || !focusToot.value || focusToot.value.length === 0}">
-        Loading post details...
-      </Text>
+      <Fragment when="{!focusToot || !focusToot.loaded}">
+        <Text>Loading post details...</Text>
+      </Fragment>
+
+      <!-- Error handling for missing toots (null response) -->
+      <Fragment when="{focusToot && focusToot.loaded && (!focusToot.value || focusToot.value.length === 0)}">
+        <VStack gap="1rem" padding="1rem">
+          <Text variant="strong" color="$color-text-error">
+            Post Not Found
+          </Text>
+          <Text>
+            The post with ID {$param?.id} could not be found.
+            It may have been deleted or is no longer available.
+          </Text>
+        </VStack>
+      </Fragment>
     </VStack>
   </ModalDialog>
 
@@ -89,6 +129,18 @@
     <!-- Toot results (not notifications) -->
     <Fragment when="{$item.result_type === 'toot'}">
       <VStack gap="$space-1">
+        <!-- Debug info for search results -->
+        <Fragment when="{debugState.value.enabled}">
+          <VStack gap="0.1rem" marginBottom="0.5rem">
+            <Text variant="caption" fontSize="0.7rem" color="$color-text-subtle" fontFamily="monospace">
+              Search Result ID: {$item.id}
+            </Text>
+            <Text variant="caption" fontSize="0.7rem" color="$color-text-subtle" fontFamily="monospace">
+              Match Field: {$item.match_field} | Type: {$item.result_type}
+            </Text>
+          </VStack>
+        </Fragment>
+
         <!-- Subtle indicator for toot results -->
         <Text variant="caption" fontSize="smaller" color="$color-text-subtle">
           {$item.reblog_author_name ? 'Reblog' : 'Post'}
@@ -130,6 +182,18 @@
     <!-- Notification results -->
     <Fragment when="{$item.result_type === 'notification'}">
       <VStack gap="$space-1">
+        <!-- Debug info for notification results -->
+        <Fragment when="{debugState.value.enabled}">
+          <VStack gap="0.1rem" marginBottom="0.5rem">
+            <Text variant="caption" fontSize="0.7rem" color="$color-text-subtle" fontFamily="monospace">
+              Notification ID: {$item.id}
+            </Text>
+            <Text variant="caption" fontSize="0.7rem" color="$color-text-subtle" fontFamily="monospace">
+              Match Field: {$item.match_field} | Category: {$item.category}
+            </Text>
+          </VStack>
+        </Fragment>
+
         <!-- Subtle indicator for notification results -->
         <Text variant="caption" fontSize="smaller" color="$color-text-subtle">Notification · {$item.category}</Text>
 

@@ -1,6 +1,9 @@
 <Theme width-navPanel-App="{mediaSize.size === 'xs' || mediaSize.size === 'sm' ? '$space-14' : '$space-40'}">
   <App
     layout="vertical">
+
+    <!-- Global debug mode state -->
+    <AppState id="debugState" bucket="debugState" initialValue="{ { enabled: true } }" />
     <DataSource
       id="data"
       url="{ window.query }"
@@ -46,7 +49,18 @@
       id="settingsDialog"
       title="Settings"
       maxWidth="25%">
-      <Tools />
+      <VStack gap="1rem">
+        <!-- Debug Mode Toggle -->
+        <HStack gap="0.5rem" verticalAlignment="center">
+          <Checkbox
+            checked="{debugState.value.enabled}"
+            onChecked="(checked) => { debugState.value.enabled = checked }"
+          />
+          <Text>Debug Mode (show post/reblog IDs and media info)</Text>
+        </HStack>
+
+        <Tools />
+      </VStack>
     </ModalDialog>
      <NavPanel>
       <NavLink label="{mediaSize.size === 'xs' || mediaSize.size === 'sm' ? '' : 'Home'}" to="/" icon="home" tooltip="Home" />

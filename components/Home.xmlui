@@ -1,6 +1,7 @@
-<Component name="Home" var.loaded="{false}" var.syncCompleted="{false}" var.debugMode="{true}">
+<Component name="Home" var.loaded="{false}" var.syncCompleted="{false}">
 
 <AppState id="toolsState" bucket="toolsState" initialValue="{ { zoom: 20 } }" />
+<AppState id="debugState" bucket="debugState" />
 
 <DataSource
   id="ephemeralToots"
@@ -67,12 +68,12 @@
         <VStack>
                <!-- Regular Post Display -->
                <Fragment when="{!$item.reblog}">
-                 <RegularPost item="{$item}" debugMode="{debugMode}" />
+                 <RegularPost item="{$item}" debugMode="{debugState.value.enabled}" />
                </Fragment>
 
                <!-- Reblog Display -->
                <Fragment when="{$item.reblog}">
-                 <ReblogPost item="{$item}" debugMode="{debugMode}" />
+                 <ReblogPost item="{$item}" debugMode="{debugState.value.enabled}" />
                </Fragment>
         </VStack>
 
