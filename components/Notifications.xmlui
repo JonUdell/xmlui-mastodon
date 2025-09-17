@@ -9,6 +9,22 @@
     method="POST"
   />
 
+
+  <APICall
+    id="updateNotifications"
+    method="post"
+    url="{window.query}"
+    body="{ window.customSql(window.updateNotifications) }"
+  />
+
+  <Timer
+      id="notificationTimer"
+      interval="180000"
+      initialDelay="5000"
+      onTick="updateNotifications.execute()"
+    />
+
+
   <VStack>
     <HStack>
       <VStack width="90%" maxWidth="90vw" marginRight="$space-4">
