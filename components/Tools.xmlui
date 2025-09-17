@@ -2,7 +2,6 @@
 
   <AppState id="toolsState" bucket="toolsState" />
 
-  <VStack spacing="md">
     <!-- Theme switcher -->
     <HStack verticalAlignment="center" gap="$space-2">
       <ToneSwitch />
@@ -33,6 +32,5 @@
         onDidChange="(value) => { window.setTruncateLinks(value); toolsState.update({ truncateLinks: value }); }"
       />
     </Fragment>
-  </VStack>
 
 </Component>

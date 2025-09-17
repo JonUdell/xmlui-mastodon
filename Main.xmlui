@@ -50,15 +50,6 @@
       title="Settings"
       maxWidth="25%">
       <VStack gap="1rem">
-        <!-- Debug Mode Toggle -->
-        <HStack gap="0.5rem" verticalAlignment="center">
-          <Checkbox
-            checked="{debugState.value.enabled}"
-            onChecked="(checked) => { debugState.value.enabled = checked }"
-          />
-          <Text>Debug Mode (show post/reblog IDs and media info)</Text>
-        </HStack>
-
         <Tools />
       </VStack>
     </ModalDialog>
