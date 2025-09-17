@@ -30,7 +30,7 @@
       <VStack width="90%" maxWidth="90vw" marginRight="$space-4">
         <Items data="{notifications}">
           <VStack padding="$space-2">
-            <HStack gap="0.5rem">
+            <HStack gap="0.5rem" verticalAlignment="center">
               <MastodonAvatar
                 url="{$item.avatar_url}"
                 size="xs"
@@ -40,7 +40,7 @@
               <Text variant="strong">{$item.display_name}</Text>
               <Text>{window.getNotificationType($item.category)}</Text>
               <SpaceFiller />
-              <Text variant="caption">{window.formatShortDate($item.created_at)}</Text>
+              <Text variant="caption" fontSize="smaller" color="$color-text-subtle">{formatHumanElapsedTime($item.created_at)}</Text>
             </HStack>
 
             <!-- Content if available -->
