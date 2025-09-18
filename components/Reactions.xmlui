@@ -1,4 +1,5 @@
-<Component name="Reactions" var.favoriteStartTime="null" var.localFavorited="null" var.localReblogged="null">
+<Component name="Reactions" var.favoriteStartTime="{null}" var.localFavorited="{null}" var.localReblogged="{null}" var.localFavoritesCount="{null}" var.localReblogsCount="{null}">
+
   <APICall
     id="favoritePost"
     method="post"
@@ -19,7 +20,10 @@
 
       // IMMEDIATE LOCAL UPDATE: Set local state for instant UI feedback
       localFavorited = true;
+      localFavoritesCount = ($props.item.favourites_count || 0) + 1;
+
       console.log('🔄 Local favorite state updated to:', localFavorited);
+      console.log('🔄 Local favorites count updated to:', localFavoritesCount);
     </event>
     <event name="error">
       const endTime = Date.now();
@@ -48,7 +52,10 @@
 
       // IMMEDIATE LOCAL UPDATE: Set local state for instant UI feedback
       localFavorited = false;
+      localFavoritesCount = Math.max(0, ($props.item.favourites_count || 0) - 1);
+
       console.log('🔄 Local favorite state updated to:', localFavorited);
+      console.log('🔄 Local favorites count updated to:', localFavoritesCount);
     </event>
     <event name="error">
       const endTime = Date.now();
@@ -90,20 +97,23 @@
         </event>
       </SocialButton>
       <Text variant="secondary">
-        {$props.item.reblogs_count || 0}
+        {localReblogsCount !== null ? localReblogsCount : ($props.item.reblogs_count || 0)}
       </Text>
     </HStack>
-    <HStack verticalAlignment="center" gap="0.75rem">
+    <HStack verticalAlignment="center" gap="0.25rem">
       <SocialButton
         icon="like"
         themeColor="{(localFavorited !== null ? localFavorited : window.getPostFavourited($props.item)) ? 'attention' : 'secondary'}">
         <event name="click">
-          console.log('❤️ Like button clicked - current state:', localFavorited !== null ? localFavorited : window.getPostFavourited($props.item));
+          console.log('❤️ Like button clicked');
+          console.log('❤️ localFavorited:', localFavorited);
+          console.log('❤️ window.getPostFavourited($props.item):', window.getPostFavourited($props.item));
+          console.log('❤️ Final state:', localFavorited !== null ? localFavorited : window.getPostFavourited($props.item));
           (localFavorited !== null ? localFavorited : window.getPostFavourited($props.item)) ? unfavoritePost.execute() : favoritePost.execute()
         </event>
       </SocialButton>
       <Text variant="secondary">
-        {$props.item.favourites_count || 0}
+        {localFavoritesCount !== null ? localFavoritesCount : ($props.item.favourites_count || 0)}
       </Text>
     </HStack>
   </HStack>
