@@ -1,5 +1,5 @@
 <Component name="PeopleTable">
-
+  <Text>size: { mediaSize.size }</Text>
   <VStack>
     <Table data="{$props.data}">
       <!-- Avatar column - always show -->
@@ -13,7 +13,7 @@
       </Column>
 
       <!-- Mutual column - always show but narrower on small screens -->
-      <Column width="{mediaSize.size === 'xs' || mediaSize.size === 'sm' ? '50px' : '80px'}" header="Mutual" bindTo="mutual" canSort="true">
+      <Column header="Mutual" width="50px" bindTo="mutual">
         <Fragment when="{$item.mutual}">
           <CHStack width="100%">
             <Icon name="binding" />
@@ -22,7 +22,7 @@
       </Column>
 
       <!-- Name column - always show -->
-      <Column header="Name" bindTo="display_name" canSort="true">
+      <Column header="Name" bindTo="display_name">
         <Fragment when="{$item.instance_qualified_account_url}">
           <Link to="{$item.instance_qualified_account_url}" target="_blank">
             {$item.display_name || $item.username}
@@ -30,23 +30,17 @@
         </Fragment>
       </Column>
 
-      <!-- Username column - hide on xs screens -->
-      <Column header="Username" bindTo="username" canSort="true" when="{mediaSize.size !== 'xs'}">
+      <Column header="Username" bindTo="username" when="{mediaSize.size !== 'xs' && mediaSize.size !== 'sm' && mediaSize.size !== 'md'}">
         @{$item.username}
       </Column>
 
-      <!-- Server column - hide on xs/sm screens -->
-      <Column header="Server" bindTo="server" canSort="true" when="{mediaSize.size !== 'xs' && mediaSize.size !== 'sm'}" />
+      <Column header="Posts" bindTo="statuses_count" />
+      <Column header="Server" bindTo="server" when="{mediaSize.size !== 'xs' && mediaSize.size !== 'sm'}" />
+      <Column header="Followers" bindTo="followers_count" when="{mediaSize.size !== 'xs' && mediaSize.size !== 'sm'}" />
+      <Column header="Following" bindTo="following_count" when="{mediaSize.size !== 'xs' && mediaSize.size !== 'sm'}" />
 
-      <!-- Stats columns - hide on xs/sm screens -->
-      <Column header="Followers" bindTo="followers_count" canSort="true" width="80px" when="{mediaSize.size !== 'xs' && mediaSize.size !== 'sm'}" />
-      <Column header="Following" bindTo="following_count" canSort="true" width="80px" when="{mediaSize.size !== 'xs' && mediaSize.size !== 'sm'}" />
-      <Column header="Posts" bindTo="statuses_count" canSort="true" width="80px" when="{mediaSize.size !== 'xs' && mediaSize.size !== 'sm'}" />
 
-      <!-- Joined column - only show on lg+ screens -->
-      <Column header="Joined" bindTo="created_at" canSort="true" when="{mediaSize.size === 'lg' || mediaSize.size === 'xl' || mediaSize.size === 'xxl'}">
-        {window.formatShortDate($item.created_at)}
-      </Column>
+
     </Table>
   </VStack>
 
