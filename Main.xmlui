@@ -3,7 +3,7 @@
     layout="vertical">
 
     <!-- Global debug mode state -->
-    <AppState id="debugState" bucket="debugState" initialValue="{ { enabled: true } }" />
+    <AppState id="debugState" bucket="debugState" initialValue="{ { enabled: false } }" />
     <DataSource
       id="data"
       url="{ window.query }"
