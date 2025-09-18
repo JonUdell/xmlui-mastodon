@@ -50,16 +50,17 @@ This should result in a beautiful Mastodon reader which, because database backed
 
 # Snapshot 40: Fix UX lag
 
-In this iteration we solved a critical UX issue where social interaction buttons (favorite/unfavorite) had noticeable lag between API completion and visual feedback, creating a sluggish user experience compared to other Mastodon clients.
+In this iteration we solved a critical UX issue where social interaction buttons (favorite/unfavorite, boost/unboost) had noticeable lag between API completion and visual feedback, creating a sluggish user experience compared to other Mastodon clients.
 
 ## Problem Diagnosis
 
 Timing analysis revealed the issue was not network latency but UI state update lag:
 
 - API requests completed in ~815ms (favorite) and ~481ms (unfavorite)
-- However, like icon remained in old state for additional 200-500ms after API success
+- However, heart icon remained in old state for additional 200-500ms after API success
 - Root cause: `window.getPostFavourited($props.item)` read from immutable props that only updated during data refresh cycles
 - Screen jumps occurred on first interactions due to layout changes during refresh
+- First-click initialization lag: 461ms delay on fresh page load, dropping to ~12ms on subsequent clicks
 
 ## Technical Investigation
 
@@ -69,10 +70,22 @@ Initial attempts to directly modify `$props.item.favourited` failed with "Cannot
 
 Implemented immediate UI feedback using mutable component variables:
 
-- Added `var.localFavorited="null"` to track local favorite state
-- Updated local state immediately in APICall success handlers: `localFavorited = true/false`
+- Added component variables: `var.localFavorited="{null}"`, `var.localFavoritesCount="{null}"`, `var.localReblogged="{null}"`, `var.localReblogsCount="{null}"`
+- Updated local state immediately in APICall success handlers
 - Used fallback logic: `(localFavorited !== null ? localFavorited : window.getPostFavourited($props.item))`
-- Heart icon now changes color instantly when API completes, before background data sync
+- Icons and counts change instantly when API completes, before background data sync
+
+## Applied to Both Favorites and Boosts
+
+The same pattern was applied to both interaction types:
+
+**Favorites:**
+- `localFavorited = true/false` for heart icon state
+- `localFavoritesCount = count ± 1` for immediate count updates
+
+**Boosts:**
+- `localReblogged = true/false` for boost icon state  
+- `localReblogsCount = count ± 1` for immediate count updates
 
 ## Code Structure
 
@@ -83,13 +96,22 @@ The solution follows documented XMLUI patterns:
 - Graceful fallback to original data when local state is unset
 - Proper event syntax following XMLUI documentation
 
+## Performance Analysis
+
+Detailed timing revealed:
+- **First-click lag**: 461ms due to XMLUI APICall lazy initialization (one-time cost)
+- **Subsequent interactions**: ~12ms click-to-API delay
+- **Network timing**: 815ms favorite, 382ms unfavorite (consistent with Elk)
+- **UI update lag**: Eliminated completely
+
 ## Result
 
-Eliminated UI lag completely:
-- Like icon responds immediately
-- No waiting for additional data refresh cycles
+Eliminated UI lag completely for both favorites and boosts:
+- Icons respond immediately after API completion
+- Counts update instantly with optimistic increments/decrements
+- No waiting for data refresh cycles
 - Maintains data integrity through eventual consistency
-- Performance matches other Mastodon clients
+- Performance now matches other Mastodon clients
 
 This demonstrates a key XMLUI pattern: using local component state for immediate UI feedback while allowing background data sources to maintain authoritative state.
 
