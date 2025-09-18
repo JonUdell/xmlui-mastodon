@@ -1,6 +1,7 @@
 # Contents
 
 - [Purpose](#purpose)
+- [Snapshot 40: Fix UX lag](snapshot-40-fix-ux-lag)
 - [Snapshot 39: Refine search display and open modal to view and interact](#snapshot-39-refine-search-display-and-open-modal-to-view-and-interact)
 - [Snapshot 38: Refine FTS sync](#snapshot-38-refine-fts-sync)
 - [Snapshot 37: Implement FTS4 full-text search with match indicators](#snapshot-37-implement-fts4-full-text-search-with-match-indicators)
@@ -46,6 +47,51 @@
 We are going to improve [steampipe-mod-mastodon-insights](https://github.com/turbot/steampipe-mod-mastodon-insights), with special focus on realizing the design approach discussed in [A Bloomberg terminal for Mastodon](https://blog.jonudell.net/2022/12/17/a-bloomberg-terminal-for-mastodon/). XMLUI gives us many more degrees of freedom to improve on the original bare-bones Powerpipe dashboard. Both projects use the same Mastodon API access, abstracted as a set of Postgres tables provided by [steampipe-plugin-mastodon](https://github.com/turbot/steampipe-plugin-mastodon).
 
 This should result in a beautiful Mastodon reader which, because database backed, will also (unlike the stock Mastodon client or others like Elk and Mona) have a long memory and enable powerful search and data visualization.
+
+# Snapshot 40: Fix UX lag
+
+In this iteration we solved a critical UX issue where social interaction buttons (favorite/unfavorite) had noticeable lag between API completion and visual feedback, creating a sluggish user experience compared to other Mastodon clients.
+
+## Problem Diagnosis
+
+Timing analysis revealed the issue was not network latency but UI state update lag:
+
+- API requests completed in ~815ms (favorite) and ~481ms (unfavorite)
+- However, like icon remained in old state for additional 200-500ms after API success
+- Root cause: `window.getPostFavourited($props.item)` read from immutable props that only updated during data refresh cycles
+- Screen jumps occurred on first interactions due to layout changes during refresh
+
+## Technical Investigation
+
+Initial attempts to directly modify `$props.item.favourited` failed with "Cannot update a read-only variable" error, confirming that XMLUI props are immutable. This forced the UI to wait for complete data source refresh before reflecting changes.
+
+## Solution: Local Component State Override
+
+Implemented immediate UI feedback using mutable component variables:
+
+- Added `var.localFavorited="null"` to track local favorite state
+- Updated local state immediately in APICall success handlers: `localFavorited = true/false`
+- Used fallback logic: `(localFavorited !== null ? localFavorited : window.getPostFavourited($props.item))`
+- Heart icon now changes color instantly when API completes, before background data sync
+
+## Code Structure
+
+The solution follows documented XMLUI patterns:
+
+- Component variables (`var.`) for mutable local state
+- APICall event handlers (`<event name="success">`) for immediate updates
+- Graceful fallback to original data when local state is unset
+- Proper event syntax following XMLUI documentation
+
+## Result
+
+Eliminated UI lag completely:
+- Like icon responds immediately
+- No waiting for additional data refresh cycles
+- Maintains data integrity through eventual consistency
+- Performance matches other Mastodon clients
+
+This demonstrates a key XMLUI pattern: using local component state for immediate UI feedback while allowing background data sources to maintain authoritative state.
 
 # Snapshot 39: Refine search display and open modal to view and interact
 
