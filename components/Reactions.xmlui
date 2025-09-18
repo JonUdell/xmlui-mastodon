@@ -1,4 +1,4 @@
-<Component name="Reactions">
+<Component name="Reactions" var.favoriteStartTime="null" var.localFavorited="null" var.localReblogged="null">
   <APICall
     id="favoritePost"
     method="post"
@@ -6,7 +6,28 @@
     headers="{{
       'Authorization': 'Bearer ' + window.config.mastodonToken
     }}"
-    errorNotificationMessage="Failed to favorite post" />
+    errorNotificationMessage="Failed to favorite post">
+    <event name="beforeRequest">
+      favoriteStartTime = Date.now();
+      console.log('🟡 Favorite request started at:', favoriteStartTime);
+      console.log('🟡 Pre-favorite UI state - getPostFavourited:', window.getPostFavourited($props.item));
+    </event>
+    <event name="success">
+      const endTime = Date.now();
+      const duration = endTime - favoriteStartTime;
+      console.log('🟢 Favorite API completed in:', duration + 'ms');
+
+      // IMMEDIATE LOCAL UPDATE: Set local state for instant UI feedback
+      localFavorited = true;
+      console.log('🔄 Local favorite state updated to:', localFavorited);
+    </event>
+    <event name="error">
+      const endTime = Date.now();
+      const duration = endTime - favoriteStartTime;
+      console.log('🔴 Favorite request failed after:', duration + 'ms');
+    </event>
+  </APICall>
+
   <APICall
     id="unfavoritePost"
     method="post"
@@ -14,7 +35,28 @@
     headers="{{
       'Authorization': 'Bearer ' + window.config.mastodonToken
     }}"
-    errorNotificationMessage="Failed to unfavorite post" />
+    errorNotificationMessage="Failed to unfavorite post">
+    <event name="beforeRequest">
+      favoriteStartTime = Date.now();
+      console.log('🟡 Unfavorite request started at:', favoriteStartTime);
+      console.log('🟡 Pre-unfavorite UI state - getPostFavourited:', window.getPostFavourited($props.item));
+    </event>
+    <event name="success">
+      const endTime = Date.now();
+      const duration = endTime - favoriteStartTime;
+      console.log('🟢 Unfavorite API completed in:', duration + 'ms');
+
+      // IMMEDIATE LOCAL UPDATE: Set local state for instant UI feedback
+      localFavorited = false;
+      console.log('🔄 Local favorite state updated to:', localFavorited);
+    </event>
+    <event name="error">
+      const endTime = Date.now();
+      const duration = endTime - favoriteStartTime;
+      console.log('🔴 Unfavorite request failed after:', duration + 'ms');
+    </event>
+  </APICall>
+
   <APICall
     id="reblogPost"
     method="post"
@@ -31,6 +73,7 @@
       'Authorization': 'Bearer ' + window.config.mastodonToken
     }}"
     errorNotificationMessage="Failed to unboost post" />
+
   <HStack verticalAlignment="center" gap="0.75rem">
     <HStack verticalAlignment="center" gap="0.25rem">
       <SocialButton icon="reply" />
@@ -50,12 +93,13 @@
         {$props.item.reblogs_count || 0}
       </Text>
     </HStack>
-    <HStack verticalAlignment="center" gap="0.25rem">
+    <HStack verticalAlignment="center" gap="0.75rem">
       <SocialButton
         icon="like"
-        themeColor="{window.getPostFavourited($props.item) ? 'attention' : 'secondary'}">
+        themeColor="{(localFavorited !== null ? localFavorited : window.getPostFavourited($props.item)) ? 'attention' : 'secondary'}">
         <event name="click">
-          window.getPostFavourited($props.item) ? unfavoritePost.execute() : favoritePost.execute()
+          console.log('❤️ Like button clicked - current state:', localFavorited !== null ? localFavorited : window.getPostFavourited($props.item));
+          (localFavorited !== null ? localFavorited : window.getPostFavourited($props.item)) ? unfavoritePost.execute() : favoritePost.execute()
         </event>
       </SocialButton>
       <Text variant="secondary">
