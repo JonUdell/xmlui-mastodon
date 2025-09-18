@@ -1,7 +1,7 @@
 # Contents
 
 - [Purpose](#purpose)
-- [Snapshot 40: Fix UX lag](snapshot-40-fix-ux-lag)
+- [Snapshot 40: Fix UX lag](#snapshot-40-fix-ux-lag)
 - [Snapshot 39: Refine search display and open modal to view and interact](#snapshot-39-refine-search-display-and-open-modal-to-view-and-interact)
 - [Snapshot 38: Refine FTS sync](#snapshot-38-refine-fts-sync)
 - [Snapshot 37: Implement FTS4 full-text search with match indicators](#snapshot-37-implement-fts4-full-text-search-with-match-indicators)
