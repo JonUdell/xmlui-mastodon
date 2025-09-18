@@ -102,13 +102,13 @@
     <HStack verticalAlignment="center" gap="0.25rem">
       <SocialButton
         icon="trending-up"
-        themeColor="{(localReblogged !== null ? localReblogged : window.getPostReblogged($props.item)) ? 'attention' : 'secondary'}">
+        themeColor="{(window['localReblogged_' + $props.item.id] !== undefined ? window['localReblogged_' + $props.item.id] : window.getPostReblogged($props.item)) ? 'attention' : 'secondary'}">
         <event name="click">
-          (localReblogged !== null ? localReblogged : window.getPostReblogged($props.item)) ? unreblogPost.execute() : reblogPost.execute()
+          (window['localReblogged_' + $props.item.id] !== undefined ? window['localReblogged_' + $props.item.id] : window.getPostReblogged($props.item)) ? unreblogPost.execute() : reblogPost.execute()
         </event>
       </SocialButton>
       <Text variant="secondary">
-        {localReblogsCount !== null ? localReblogsCount : ($props.item.reblogs_count || 0)}
+        {window['localReblogsCount_' + $props.item.id] !== undefined ? window['localReblogsCount_' + $props.item.id] : ($props.item.reblogs_count || 0)}
       </Text>
     </HStack>
     <HStack verticalAlignment="center" gap="0.25rem">
