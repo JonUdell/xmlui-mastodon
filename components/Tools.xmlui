@@ -10,7 +10,7 @@
 
     <ContentSeparator />
 
-    <Fragment when="{$pathname === '/'}">
+    <Fragment when="{['/', '/notifications'].includes($pathname)}">
       <Slider
         width="100%"
         label="Image zoom"
