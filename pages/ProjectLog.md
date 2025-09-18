@@ -66,35 +66,53 @@ Timing analysis revealed the issue was not network latency but UI state update l
 
 Initial attempts to directly modify `$props.item.favourited` failed with "Cannot update a read-only variable" error, confirming that XMLUI props are immutable. This forced the UI to wait for complete data source refresh before reflecting changes.
 
-## Solution: Local Component State Override
+## Critical Discovery: Component Variable Scope Issue
 
-Implemented immediate UI feedback using mutable component variables:
+During implementation, we discovered a fundamental XMLUI limitation: **component variables (`var.localFavorited`) are shared across all instances of the same component**, not isolated per instance.
 
-- Added component variables: `var.localFavorited="{null}"`, `var.localFavoritesCount="{null}"`, `var.localReblogged="{null}"`, `var.localReblogsCount="{null}"`
-- Updated local state immediately in APICall success handlers
-- Used fallback logic: `(localFavorited !== null ? localFavorited : window.getPostFavourited($props.item))`
-- Icons and counts change instantly when API completes, before background data sync
+**The bug manifested as:**
+- Boosting one post would visually update a different post's boost state
+- The wrong post appeared boosted until page refresh
+- Component variable state was being overwritten by the last-rendered instance
+
+**Root cause:** Multiple `Reactions` components in the timeline all shared the same `var.localReblogged` variable, causing cross-component state pollution.
+
+## Solution: AppState with Unique Buckets
+
+Discovered the proper XMLUI pattern for per-instance state management:
+
+```xml
+<AppState id="favoriteState" bucket="favorite_{$props.item.id}" initialValue="{null}" />
+<AppState id="reblogState" bucket="reblog_{$props.item.id}" initialValue="{null}" />
+```
+
+**Key insights:**
+- Component variables (`var.`) are component-type scoped, not instance-scoped
+- AppState with dynamic bucket names provides true per-instance isolation
+- Pattern: `bucket="state_{$props.uniqueId}"` creates isolated state per data item
 
 ## Applied to Both Favorites and Boosts
 
-The same pattern was applied to both interaction types:
+Implemented consistent per-post state isolation:
 
 **Favorites:**
-- `localFavorited = true/false` for heart icon state
-- `localFavoritesCount = count ± 1` for immediate count updates
+- `favoriteState` with bucket `favorite_{$props.item.id}`
+- `favoriteCountState` with bucket `favoriteCount_{$props.item.id}`
+- Success handlers: `favoriteState.update(true/false)`
 
 **Boosts:**
-- `localReblogged = true/false` for boost icon state  
-- `localReblogsCount = count ± 1` for immediate count updates
+- `reblogState` with bucket `reblog_{$props.item.id}`
+- `reblogCountState` with bucket `reblogCount_{$props.item.id}`
+- Success handlers: `reblogState.update(true/false)`
 
 ## Code Structure
 
 The solution follows documented XMLUI patterns:
 
-- Component variables (`var.`) for mutable local state
+- AppState components with dynamic bucket names for per-instance isolation
 - APICall event handlers (`<event name="success">`) for immediate updates
-- Graceful fallback to original data when local state is unset
-- Proper event syntax following XMLUI documentation
+- Graceful fallback: `{state.value !== null ? state.value : window.getOriginalValue()}`
+- Proper state management using `state.update()` and `state.value`
 
 ## Performance Analysis
 
@@ -103,17 +121,27 @@ Detailed timing revealed:
 - **Subsequent interactions**: ~12ms click-to-API delay
 - **Network timing**: 815ms favorite, 382ms unfavorite (consistent with Elk)
 - **UI update lag**: Eliminated completely
+- **Cross-component pollution**: Eliminated with proper state isolation
 
 ## Result
 
-Eliminated UI lag completely for both favorites and boosts:
-- Icons respond immediately after API completion
+Eliminated UI lag and state pollution completely:
+- Icons respond immediately after API completion on correct posts
 - Counts update instantly with optimistic increments/decrements
+- No cross-component state interference
 - No waiting for data refresh cycles
 - Maintains data integrity through eventual consistency
 - Performance now matches other Mastodon clients
 
-This demonstrates a key XMLUI pattern: using local component state for immediate UI feedback while allowing background data sources to maintain authoritative state.
+## Key XMLUI Pattern Discovered
+
+**Critical insight for component reuse:** When building components that manage local state and are used multiple times on the same page, **never use component variables (`var.`) for instance-specific state**. Instead, use AppState with dynamic bucket names.
+
+**Pattern:**
+- ❌ `var.localState` (shared across all component instances)
+- ✅ `<AppState bucket="state_{$props.uniqueId}" />` (isolated per instance)
+
+This pattern is essential for any reusable component that needs to maintain independent state per instance, such as form components, interactive widgets, or social media reaction buttons.
 
 # Snapshot 39: Refine search display and open modal to view and interact
 
