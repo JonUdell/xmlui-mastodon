@@ -1,4 +1,4 @@
-<Component name="Reactions" var.favoriteStartTime="{null}" var.localFavorited="{null}" var.localReblogged="{null}" var.localFavoritesCount="{null}" var.localReblogsCount="{null}">
+<Component name="Reactions" var.favoriteStartTime="{null}" var.localFavorited="{null}" var.localReblogged="{null}" var.localFavoritesCount="{null}" var.localReblogsCount="{null}" var.clickStartTime="{null}">
 
   <APICall
     id="favoritePost"
@@ -10,6 +10,8 @@
     errorNotificationMessage="Failed to favorite post">
     <event name="beforeRequest">
       favoriteStartTime = Date.now();
+      const clickToApiDelay = clickStartTime ? favoriteStartTime - clickStartTime : 0;
+      console.log('⏱️ Click-to-API delay:', clickToApiDelay + 'ms');
       console.log('🟡 Favorite request started at:', favoriteStartTime);
       console.log('🟡 Pre-favorite UI state - getPostFavourited:', window.getPostFavourited($props.item));
     </event>
@@ -19,8 +21,10 @@
       console.log('🟢 Favorite API completed in:', duration + 'ms');
 
       // IMMEDIATE LOCAL UPDATE: Set local state for instant UI feedback
+      console.log('🔧 Before update - localFavorited:', localFavorited, 'localFavoritesCount:', localFavoritesCount);
       localFavorited = true;
       localFavoritesCount = ($props.item.favourites_count || 0) + 1;
+      console.log('🔧 After update - localFavorited:', localFavorited, 'localFavoritesCount:', localFavoritesCount);
 
       console.log('🔄 Local favorite state updated to:', localFavorited);
       console.log('🔄 Local favorites count updated to:', localFavoritesCount);
@@ -51,8 +55,8 @@
       console.log('🟢 Unfavorite API completed in:', duration + 'ms');
 
       // IMMEDIATE LOCAL UPDATE: Set local state for instant UI feedback
-      localFavorited = false;
-      localFavoritesCount = Math.max(0, ($props.item.favourites_count || 0) - 1);
+      localFavorited = false;  // ← This should be FALSE for unfavorite
+      localFavoritesCount = Math.max(0, ($props.item.favourites_count || 0) - 1);  // ← DECREMENT count
 
       console.log('🔄 Local favorite state updated to:', localFavorited);
       console.log('🔄 Local favorites count updated to:', localFavoritesCount);
@@ -105,10 +109,13 @@
         icon="like"
         themeColor="{(localFavorited !== null ? localFavorited : window.getPostFavourited($props.item)) ? 'attention' : 'secondary'}">
         <event name="click">
+          clickStartTime = Date.now();
+          console.log('🖱️ Click registered at:', clickStartTime);
           console.log('❤️ Like button clicked');
           console.log('❤️ localFavorited:', localFavorited);
           console.log('❤️ window.getPostFavourited($props.item):', window.getPostFavourited($props.item));
           console.log('❤️ Final state:', localFavorited !== null ? localFavorited : window.getPostFavourited($props.item));
+
           (localFavorited !== null ? localFavorited : window.getPostFavourited($props.item)) ? unfavoritePost.execute() : favoritePost.execute()
         </event>
       </SocialButton>
