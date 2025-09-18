@@ -20,11 +20,8 @@
       const duration = endTime - favoriteStartTime;
       console.log('🟢 Favorite API completed in:', duration + 'ms');
 
-      // IMMEDIATE LOCAL UPDATE: Set local state for instant UI feedback
-      console.log('🔧 Before update - localFavorited:', localFavorited, 'localFavoritesCount:', localFavoritesCount);
       localFavorited = true;
       localFavoritesCount = ($props.item.favourites_count || 0) + 1;
-      console.log('🔧 After update - localFavorited:', localFavorited, 'localFavoritesCount:', localFavoritesCount);
 
       console.log('🔄 Local favorite state updated to:', localFavorited);
       console.log('🔄 Local favorites count updated to:', localFavoritesCount);
@@ -75,7 +72,12 @@
     headers="{{
       'Authorization': 'Bearer ' + window.config.mastodonToken
     }}"
-    errorNotificationMessage="Failed to boost post" />
+    errorNotificationMessage="Failed to boost post">
+    <event name="success">
+      localReblogged = true;
+      localReblogsCount = ($props.item.reblogs_count || 0) + 1;
+    </event>
+  </APICall>
   <APICall
     id="unreblogPost"
     method="post"
@@ -83,7 +85,12 @@
     headers="{{
       'Authorization': 'Bearer ' + window.config.mastodonToken
     }}"
-    errorNotificationMessage="Failed to unboost post" />
+    errorNotificationMessage="Failed to unboost post">
+    <event name="success">
+      localReblogged = false;
+      localReblogsCount = Math.max(0, ($props.item.reblogs_count || 0) - 1);
+    </event>
+  </APICall>
 
   <HStack verticalAlignment="center" gap="0.75rem">
     <HStack verticalAlignment="center" gap="0.25rem">
@@ -95,9 +102,9 @@
     <HStack verticalAlignment="center" gap="0.25rem">
       <SocialButton
         icon="trending-up"
-        themeColor="{window.getPostReblogged($props.item) ? 'attention' : 'secondary'}">
+        themeColor="{(localReblogged !== null ? localReblogged : window.getPostReblogged($props.item)) ? 'attention' : 'secondary'}">
         <event name="click">
-          window.getPostReblogged($props.item) ? unreblogPost.execute() : reblogPost.execute()
+          (localReblogged !== null ? localReblogged : window.getPostReblogged($props.item)) ? unreblogPost.execute() : reblogPost.execute()
         </event>
       </SocialButton>
       <Text variant="secondary">
