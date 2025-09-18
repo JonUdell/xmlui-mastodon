@@ -29,7 +29,7 @@
     <HStack>
       <VStack width="90%" maxWidth="90vw" marginRight="$space-4">
         <Items data="{notifications}">
-          <VStack padding="$space-2">
+          <VStack>
             <HStack gap="0.5rem" verticalAlignment="center">
               <MastodonAvatar
                 url="{$item.avatar_url}"
@@ -45,8 +45,10 @@
 
             <!-- Content if available -->
             <Fragment when="{$item.status_content}">
-              <VStack marginLeft="2rem" padding="$space-2">
-                <Markdown content="{$item.status_content}" />
+              <VStack marginLeft="$space-2">
+                <Theme marginLeft-Image-markdown="$space-0">
+                  <Markdown content="{$item.status_content}" />
+                </Theme>
                 <Fragment when="{$item.preview_url}">
                   <Image src="{$item.preview_url}" width="{toolsState.value.zoom}%" />
                 </Fragment>
