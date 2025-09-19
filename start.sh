@@ -1,1 +1,1 @@
-./xmlui-test-server -extension steampipe_sqlite_mastodon.so 
+./xmlui-test-server --extension steampipe_sqlite_mastodon.so 
