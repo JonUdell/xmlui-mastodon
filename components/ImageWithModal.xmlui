@@ -1,9 +1,10 @@
 <Component name="ImageWithModal">
   <ModalDialog id="imageModal" title="" fullScreen="true">
-    <!-- Debug info -->
+    <!-- Debug info
     <Fragment> when="{$param}">
       <Text>Debug: Modal param = {$param}</Text>
     </Fragment>
+    -->
 
     <Fragment when="{$param && ($param.includes('.mp4') || $param.includes('.gifv') || $param.includes('.webm'))}">
       <Markdown content="<video src='{$param}' width='100%' controls></video>" />

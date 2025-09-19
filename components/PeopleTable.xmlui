@@ -1,5 +1,5 @@
 <Component name="PeopleTable">
-  <Text>size: { mediaSize.size }</Text>
+  <!-- <Text>size: { mediaSize.size }</Text> -->
   <VStack>
     <Table data="{$props.data}">
       <!-- Avatar column - always show -->
