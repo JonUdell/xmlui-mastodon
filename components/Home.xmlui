@@ -19,12 +19,6 @@
   }"
 />
 
-<DataSource
-  id="proxy"
-  url="http://localhost:8080/proxy/www.google.com"
-/>
-
-
 <APICall
   id="updateTootsHome"
   method="post"

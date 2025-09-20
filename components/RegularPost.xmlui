@@ -1,7 +1,7 @@
 <Component name="RegularPost">
   <AppState id="toolsState" bucket="toolsState" />
 
-  <!-- Reply indicator if this is a reply -->
+  <!-- Reply indicator if this is a reply
   <Fragment when="{$props.item.in_reply_to_account_id}">
     <DataSource
       id="replyAccount-{$props.item.id}"
@@ -19,6 +19,7 @@
       </Text>
     </DataSource>
   </Fragment>
+-->
 
   <!-- Regular post header with timestamp on its own line -->
   <VStack gap="0.25rem">
