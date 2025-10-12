@@ -50,9 +50,7 @@
 
 
     <!-- Loading indicator -->
-    <VStack when="{!loaded}">
-      <Text>Loading timeline data...</Text>
-    </VStack>
+    <Text when="{!loaded}">Loading timeline data...</Text>
 
     <!-- Timeline display -->
     <List when="{loaded}" height="*" data="{ephemeralToots}">

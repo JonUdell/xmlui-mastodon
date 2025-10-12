@@ -94,30 +94,20 @@
             <RegularPost item="{window.transformNotificationStatus(JSON.parse(focusToot.value[0].status))}" debugMode="{debugState.value.enabled}" />
           </Fragment>
 
-          <Fragment when="{!focusToot.value[0].status}">
-            <!-- Notification without associated post (like follow) -->
-            <Text>{focusToot.value[0].category} notification</Text>
-          </Fragment>
+          <Text when="{!focusToot.value[0].status}">{focusToot.value[0].category} notification</Text>
 
         </Fragment>
 
         <Fragment when="{$param.result_type !== 'notification'}">
-          <Fragment when="{!focusToot.value[0].reblog}">
-            <RegularPost item="{focusToot.value[0]}" debugMode="{debugState.value.enabled}" />
-          </Fragment>
-          <Fragment when="{focusToot.value[0].reblog}">
-            <ReblogPost item="{focusToot.value[0]}" debugMode="{debugState.value.enabled}" />
-          </Fragment>
+          <RegularPost when="{!focusToot.value[0].reblog}" item="{focusToot.value[0]}" debugMode="{debugState.value.enabled}" />
+          <ReblogPost when="{focusToot.value[0].reblog}" item="{focusToot.value[0]}" debugMode="{debugState.value.enabled}" />
         </Fragment>
       </Fragment>
 
-      <Fragment when="{!focusToot || !focusToot.loaded}">
-        <Text>Loading post details...</Text>
-      </Fragment>
+      <Text when="{!focusToot || !focusToot.loaded}">Loading post details...</Text>
 
       <!-- Error handling for missing toots (null response) -->
-      <Fragment when="{focusToot && focusToot.loaded && (!focusToot.value || focusToot.value.length === 0)}">
-        <VStack gap="1rem" padding="1rem">
+      <VStack when="{focusToot && focusToot.loaded && (!focusToot.value || focusToot.value.length === 0)}" gap="1rem" padding="1rem">
           <Text variant="strong" color="$color-text-error">
             Post Not Found
           </Text>
@@ -126,7 +116,6 @@
             It may have been deleted or is no longer available.
           </Text>
         </VStack>
-      </Fragment>
     </VStack>
   </ModalDialog>
 
@@ -151,7 +140,7 @@
           {$item.reblog_author_name ? 'Reblog' : 'Post'}
         </Text>
 
-        <Fragment when="{$item.reblog_author_name}">
+        <VStack when="{$item.reblog_author_name}">
           <ReblogHeader item="{$item}" />
           <Text>{$item.match_snippet}</Text>
 
@@ -164,9 +153,9 @@
                 variant="caption" fontSize="smaller" color="$color-text-subtle">
             Found in original content
           </Text>
-        </Fragment>
+        </VStack>
 
-        <Fragment when="{!$item.reblog_author_name}">
+        <VStack when="{!$item.reblog_author_name}">
           <!-- Timestamp line -->
           <Text variant="caption" fontSize="0.75rem" color="$color-text-subtle">
             {formatHumanElapsedTime($item.created_at ? $item.created_at.replace(' ', 'T') + 'Z' : 'Unknown time')}
@@ -176,7 +165,7 @@
           <Text>{$item.match_snippet}</Text>
 
           <!-- For regular posts, author and content are visible, so no "Found in" needed -->
-        </Fragment>
+        </VStack>
 
         <Button size="xs" themeColor="secondary"
                 onClick="console.log('Toot button clicked for ID:', $item.id); tootModal.open($item)"

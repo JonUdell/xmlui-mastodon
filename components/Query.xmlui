@@ -44,16 +44,15 @@
         enabled="{!appState.value.loading}"
       />
 
-      <Fragment when="{appState.value.nonce > 0}">
-        <DataSource
-          id="queryResults"
-          url="{ window.query }"
-          body="{ { sql: `-- ${appState.value.nonce}\n\n${appState.value.runSql}` } }"
-          method="POST"
-          onLoaded="{ appState.update( { loading: false, results: queryResults.value } ) }"
-          onError="{ appState.update( { loading: false, results: [{ error: queryResults.error }] } ) }"
-        />
-      </Fragment>
+      <DataSource
+        when="{appState.value.nonce > 0}"
+        id="queryResults"
+        url="{ window.query }"
+        body="{ { sql: `-- ${appState.value.nonce}\n\n${appState.value.runSql}` } }"
+        method="POST"
+        onLoaded="{ appState.update( { loading: false, results: queryResults.value } ) }"
+        onError="{ appState.update( { loading: false, results: [{ error: queryResults.error }] } ) }"
+      />
 
       <Text preserveLinebreaks="true">
         { JSON.stringify( appState.value.results, null, 2) }

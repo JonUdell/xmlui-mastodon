@@ -14,20 +14,16 @@
 
       <!-- Mutual column - always show but narrower on small screens -->
       <Column header="Mutual" width="50px" bindTo="mutual">
-        <Fragment when="{$item.mutual}">
-          <CHStack width="100%">
-            <Icon name="binding" />
-          </CHStack>
-        </Fragment>
+        <CHStack when="{$item.mutual}" width="100%">
+          <Icon name="binding" />
+        </CHStack>
       </Column>
 
       <!-- Name column - always show -->
       <Column header="Name" bindTo="display_name">
-        <Fragment when="{$item.instance_qualified_account_url}">
-          <Link to="{$item.instance_qualified_account_url}" target="_blank">
-            {$item.display_name || $item.username}
-          </Link>
-        </Fragment>
+        <Link when="{$item.instance_qualified_account_url}" to="{$item.instance_qualified_account_url}" target="_blank">
+          {$item.display_name || $item.username}
+        </Link>
       </Column>
 
       <Column header="Username" bindTo="username" when="{mediaSize.size !== 'xs' && mediaSize.size !== 'sm' && mediaSize.size !== 'md'}">

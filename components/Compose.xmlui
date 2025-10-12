@@ -84,14 +84,13 @@
             </HStack>
 
             <!-- Status message -->
-            <Fragment when="{publishStatus}">
-                <Text
-                    variant="caption"
-                    color="{publishStatus.includes('Error') || publishStatus.includes('cannot') || publishStatus.includes('exceeds') ? '$color-danger' : '$color-success'}"
-                >
-                    {publishStatus}
-                </Text>
-            </Fragment>
+            <Text
+                when="{publishStatus}"
+                variant="caption"
+                color="{publishStatus.includes('Error') || publishStatus.includes('cannot') || publishStatus.includes('exceeds') ? '$color-danger' : '$color-success'}"
+            >
+                {publishStatus}
+            </Text>
 
             <!-- Publish button -->
             <Button

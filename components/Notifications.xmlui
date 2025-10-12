@@ -44,16 +44,12 @@
             </HStack>
 
             <!-- Content if available -->
-            <Fragment when="{$item.status_content}">
-              <VStack marginLeft="$space-2">
-                <Theme marginLeft-Image-markdown="$space-0">
-                  <Markdown content="{$item.status_content}" />
-                </Theme>
-                <Fragment when="{$item.preview_url}">
-                  <Image src="{$item.preview_url}" width="{toolsState.value.zoom}%" />
-                </Fragment>
-              </VStack>
-            </Fragment>
+            <VStack when="{$item.status_content}" marginLeft="$space-2">
+              <Theme marginLeft-Image-markdown="$space-0">
+                <Markdown content="{$item.status_content}" />
+              </Theme>
+              <Image when="{$item.preview_url}" src="{$item.preview_url}" width="{toolsState.value.zoom}%" />
+            </VStack>
 
             <ContentSeparator />
           </VStack>

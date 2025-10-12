@@ -3,15 +3,14 @@
   <ModalDialog id="userProfileDialog" title="">
     <VStack gap="1rem">
       <!-- Header Image (only shown if available and not a placeholder) -->
-      <Fragment when="{window.hasHeader($param.header_url)}">
-        <Image
-          src="{$param.header_url}"
-          alt="Profile header image"
-          width="100%"
-          fit="cover"
-          aspectRatio="3 / 1"
-        />
-      </Fragment>
+      <Image
+        when="{window.hasHeader($param.header_url)}"
+        src="{$param.header_url}"
+        alt="Profile header image"
+        width="100%"
+        fit="cover"
+        aspectRatio="3 / 1"
+      />
 
       <!-- Profile Info -->
         <!-- Avatar (positioned to overlap header if exists) -->
@@ -45,12 +44,8 @@
 
         <!-- Profile Bio -->
         <Card padding="$space-1" marginTop="1rem">
-          <Fragment when="{$param.note}">
-            <Markdown content="{$param.note}" />
-          </Fragment>
-          <Fragment when="{!$param.note}">
-            <Text variant="caption">No bio available</Text>
-          </Fragment>
+          <Markdown when="{$param.note}" content="{$param.note}" />
+          <Text when="{!$param.note}" variant="caption">No bio available</Text>
         </Card>
 
 
@@ -59,14 +54,12 @@
         <Text preserveLinebreaks="true">{JSON.stringify($param, null, 2)}</Text>
         -->
 
-        <Fragment when="{$param.url}">
+        <HStack when="{$param.url}" marginTop="1rem">
           <!-- Profile Link -->
-          <HStack marginTop="1rem">
-            <Link to="{$param.url}" target="_blank">
-              <Button size="xs" label="View on Mastodon" />
-            </Link>
-          </HStack>
-        </Fragment>
+          <Link to="{$param.url}" target="_blank">
+            <Button size="xs" label="View on Mastodon" />
+          </Link>
+        </HStack>
       </VStack>
     </VStack>
   </ModalDialog>

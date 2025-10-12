@@ -6,26 +6,19 @@
     </Fragment>
     -->
 
-    <Fragment when="{$param && ($param.includes('.mp4') || $param.includes('.gifv') || $param.includes('.webm'))}">
-      <Markdown content="<video src='{$param}' width='100%' controls></video>" />
-    </Fragment>
-    <Fragment when="{$param && !$param.includes('.mp4') && !$param.includes('.gifv') && !$param.includes('.webm')}">
-      <Image src="{$param}" width="100%" fit="contain" />
-    </Fragment>
+    <Markdown when="{$param && ($param.includes('.mp4') || $param.includes('.gifv') || $param.includes('.webm'))}" content="<video src='{$param}' width='100%' controls></video>" />
+    <Image when="{$param && !$param.includes('.mp4') && !$param.includes('.gifv') && !$param.includes('.webm')}" src="{$param}" width="100%" fit="contain" />
   </ModalDialog>
 
-  <Fragment when="{$props.mediaType === 'video' || $props.mediaType === 'gifv'}">
-    <VStack onClick="imageModal.open($props.mediaUrl)">
-      <Markdown
-        content="<video src='{$props.mediaUrl}' width='{$props.width}' controls></video>"
-      />
-    </VStack>
-  </Fragment>
-  <Fragment when="{$props.mediaType !== 'video' && $props.mediaType !== 'gifv'}">
-    <Image
-      onClick="imageModal.open($props.src.replace('/small/','/original/'))"
-      src="{$props.src}"
-      width="{$props.width}"
+  <VStack when="{$props.mediaType === 'video' || $props.mediaType === 'gifv'}" onClick="imageModal.open($props.mediaUrl)">
+    <Markdown
+      content="<video src='{$props.mediaUrl}' width='{$props.width}' controls></video>"
     />
-  </Fragment>
+  </VStack>
+  <Image
+    when="{$props.mediaType !== 'video' && $props.mediaType !== 'gifv'}"
+    onClick="imageModal.open($props.src.replace('/small/','/original/'))"
+    src="{$props.src}"
+    width="{$props.width}"
+  />
 </Component>

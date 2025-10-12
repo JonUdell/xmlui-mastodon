@@ -19,14 +19,10 @@
     <Text when="{focusToot && focusToot.value && focusToot.value.length > 0}">Debug: First item = {JSON.stringify(focusToot.value[0])}</Text>
 -->
 
-    <Fragment when="{focusToot && focusToot.value && focusToot.value.length > 0}">
-      <Fragment when="{!focusToot.value[0].reblog}">
-        <RegularPost item="{focusToot.value[0]}" />
-      </Fragment>
-      <Fragment when="{focusToot.value[0].reblog}">
-        <ReblogPost item="{focusToot.value[0]}" />
-      </Fragment>
-    </Fragment>
+    <VStack when="{focusToot && focusToot.value && focusToot.value.length > 0}">
+      <RegularPost when="{!focusToot.value[0].reblog}" item="{focusToot.value[0]}" />
+      <ReblogPost when="{focusToot.value[0].reblog}" item="{focusToot.value[0]}" />
+    </VStack>
 
     <Text when="{!focusToot || !focusToot.value || focusToot.value.length === 0}">No toot data found</Text>
   </VStack>
