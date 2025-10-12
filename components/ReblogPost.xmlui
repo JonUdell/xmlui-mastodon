@@ -23,14 +23,14 @@
 
     <Fragment when="{toolsState.value.compact}">
       <Theme
-        marginTop-Text-markdown="0"
-        marginBottom-Text-markdown="0"
-        paddingTop-Markdown="0"
-        paddingBottom-Markdown="0"
-        marginTop-Blockquote="0"
-        marginBottom-Blockquote="0"
-        paddingTop-Blockquote="0"
-        paddingBottom-Blockquote="0"
+        marginTop-Text-markdown="$space-0"
+        marginBottom-Text-markdown="$space-0"
+        paddingTop-Markdown="$space-0"
+        paddingBottom-Markdown="$space-0"
+        marginTop-Blockquote="$space-0"
+        marginBottom-Blockquote="$space-0"
+        paddingTop-Blockquote="$space-0"
+        paddingBottom-Blockquote="$space-0"
         paddingHorizontal-Blockquote="$space-2"
       >
         <Markdown content="{$props.item.reblog_content}" />

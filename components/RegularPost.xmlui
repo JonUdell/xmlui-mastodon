@@ -57,20 +57,19 @@
         <Text variant="caption" fontSize="{toolsState.value.compact ? '0.65rem' : '0.75rem'}">@{window.getUsername($props.item)}</Text>
       </HStack>
     </HStack>
-  </VStack>
 
-  <VStack gap="{toolsState.value.compact ? '0' : undefined}">
+    <!-- Content section -->
     <Fragment when="{$props.item.content}">
       <Fragment when="{toolsState.value.compact}">
         <Theme
-          marginTop-Text-markdown="0"
-          marginBottom-Text-markdown="0"
-          paddingTop-Markdown="0"
-          paddingBottom-Markdown="0"
-          marginTop-Blockquote="0"
-          marginBottom-Blockquote="0"
-          paddingTop-Blockquote="0"
-          paddingBottom-Blockquote="0"
+          marginTop-Text-markdown="$space-0"
+          marginBottom-Text-markdown="$space-0"
+          paddingTop-Markdown="$space-0"
+          paddingBottom-Markdown="$space-0"
+          marginTop-Blockquote="$space-0"
+          marginBottom-Blockquote="$space-0"
+          paddingTop-Blockquote="$space-0"
+          paddingBottom-Blockquote="$space-0"
           paddingHorizontal-Blockquote="$space-2"
         >
           <Markdown content="{$props.item.content}" />
