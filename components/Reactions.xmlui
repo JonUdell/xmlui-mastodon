@@ -93,14 +93,14 @@
   </APICall>
 
   <VStack marginBottom="{$props.spacing || '$space-4'}">
-    <HStack verticalAlignment="center" gap="0.75rem">
-      <HStack verticalAlignment="center" gap="0.25rem">
+    <HStack verticalAlignment="center" gap="$space-3">
+      <HStack verticalAlignment="center" gap="$space-1">
         <SocialButton icon="reply" />
         <Text variant="secondary">
           {$props.item.replies_count || 0}
         </Text>
       </HStack>
-      <HStack verticalAlignment="center" gap="0.25rem">
+      <HStack verticalAlignment="center" gap="$space-1">
         <SocialButton
           icon="trending-up"
           themeColor="{(localReblogged !== null ? localReblogged : window.getPostReblogged($props.item)) ? 'attention' : 'secondary'}">
@@ -112,7 +112,7 @@
           {localReblogsCount !== null ? localReblogsCount : ($props.item.reblogs_count || 0)}
         </Text>
       </HStack>
-      <HStack verticalAlignment="center" gap="0.25rem">
+      <HStack verticalAlignment="center" gap="$space-1">
         <SocialButton
           icon="like"
           themeColor="{(localFavorited !== null ? localFavorited : window.getPostFavourited($props.item)) ? 'attention' : 'secondary'}">

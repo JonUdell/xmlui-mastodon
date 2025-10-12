@@ -64,7 +64,7 @@
       <Fragment when="{focusToot && focusToot.value && focusToot.value.length > 0}">
         <!-- Debug info for modal data -->
         <Fragment when="{debugState.value.enabled}">
-          <VStack gap="0.1rem" marginBottom="0.5rem" padding="0.5rem" backgroundColor="$color-background-subtle">
+          <VStack gap="$space-0_5" marginBottom="$space-2" padding="$space-2" backgroundColor="$color-background-subtle">
             <Text variant="caption" fontSize="0.7rem" color="$color-text-subtle" fontFamily="monospace">
               Modal Debug: Result Type = {$param.result_type}
             </Text>
@@ -136,7 +136,7 @@
       <VStack gap="$space-1">
         <!-- Debug info for search results -->
         <Fragment when="{debugState.value.enabled}">
-          <VStack gap="0.1rem" marginBottom="0.5rem">
+          <VStack gap="$space-0_5" marginBottom="$space-2">
             <Text variant="caption" fontSize="0.7rem" color="$color-text-subtle" fontFamily="monospace">
               Search Result ID: {$item.id}
             </Text>
@@ -189,7 +189,7 @@
       <VStack gap="$space-1">
         <!-- Debug info for notification results -->
         <Fragment when="{debugState.value.enabled}">
-          <VStack gap="0.1rem" marginBottom="0.5rem">
+          <VStack gap="$space-0_5" marginBottom="$space-2">
             <Text variant="caption" fontSize="0.7rem" color="$color-text-subtle" fontFamily="monospace">
               Notification ID: {$item.id}
             </Text>
