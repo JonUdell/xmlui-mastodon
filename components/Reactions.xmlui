@@ -92,43 +92,45 @@
     </event>
   </APICall>
 
-  <HStack verticalAlignment="center" gap="0.75rem">
-    <HStack verticalAlignment="center" gap="0.25rem">
-      <SocialButton icon="reply" />
-      <Text variant="secondary">
-        {$props.item.replies_count || 0}
-      </Text>
-    </HStack>
-    <HStack verticalAlignment="center" gap="0.25rem">
-      <SocialButton
-        icon="trending-up"
-        themeColor="{(localReblogged !== null ? localReblogged : window.getPostReblogged($props.item)) ? 'attention' : 'secondary'}">
-        <event name="click">
-          (localReblogged !== null ? localReblogged : window.getPostReblogged($props.item)) ? unreblogPost.execute() : reblogPost.execute()
-        </event>
-      </SocialButton>
-      <Text variant="secondary">
-        {localReblogsCount !== null ? localReblogsCount : ($props.item.reblogs_count || 0)}
-      </Text>
-    </HStack>
-    <HStack verticalAlignment="center" gap="0.25rem">
-      <SocialButton
-        icon="like"
-        themeColor="{(localFavorited !== null ? localFavorited : window.getPostFavourited($props.item)) ? 'attention' : 'secondary'}">
-        <event name="click">
-          clickStartTime = Date.now();
-          console.log('🖱️ Click registered at:', clickStartTime);
-          console.log('❤️ Like button clicked');
-          console.log('❤️ localFavorited:', localFavorited);
-          console.log('❤️ window.getPostFavourited($props.item):', window.getPostFavourited($props.item));
-          console.log('❤️ Final state:', localFavorited !== null ? localFavorited : window.getPostFavourited($props.item));
+  <VStack marginBottom="{$props.spacing || '$space-4'}">
+    <HStack verticalAlignment="center" gap="0.75rem">
+      <HStack verticalAlignment="center" gap="0.25rem">
+        <SocialButton icon="reply" />
+        <Text variant="secondary">
+          {$props.item.replies_count || 0}
+        </Text>
+      </HStack>
+      <HStack verticalAlignment="center" gap="0.25rem">
+        <SocialButton
+          icon="trending-up"
+          themeColor="{(localReblogged !== null ? localReblogged : window.getPostReblogged($props.item)) ? 'attention' : 'secondary'}">
+          <event name="click">
+            (localReblogged !== null ? localReblogged : window.getPostReblogged($props.item)) ? unreblogPost.execute() : reblogPost.execute()
+          </event>
+        </SocialButton>
+        <Text variant="secondary">
+          {localReblogsCount !== null ? localReblogsCount : ($props.item.reblogs_count || 0)}
+        </Text>
+      </HStack>
+      <HStack verticalAlignment="center" gap="0.25rem">
+        <SocialButton
+          icon="like"
+          themeColor="{(localFavorited !== null ? localFavorited : window.getPostFavourited($props.item)) ? 'attention' : 'secondary'}">
+          <event name="click">
+            clickStartTime = Date.now();
+            console.log('🖱️ Click registered at:', clickStartTime);
+            console.log('❤️ Like button clicked');
+            console.log('❤️ localFavorited:', localFavorited);
+            console.log('❤️ window.getPostFavourited($props.item):', window.getPostFavourited($props.item));
+            console.log('❤️ Final state:', localFavorited !== null ? localFavorited : window.getPostFavourited($props.item));
 
-          (localFavorited !== null ? localFavorited : window.getPostFavourited($props.item)) ? unfavoritePost.execute() : favoritePost.execute()
-        </event>
-      </SocialButton>
-      <Text variant="secondary">
-        {localFavoritesCount !== null ? localFavoritesCount : ($props.item.favourites_count || 0)}
-      </Text>
+            (localFavorited !== null ? localFavorited : window.getPostFavourited($props.item)) ? unfavoritePost.execute() : favoritePost.execute()
+          </event>
+        </SocialButton>
+        <Text variant="secondary">
+          {localFavoritesCount !== null ? localFavoritesCount : ($props.item.favourites_count || 0)}
+        </Text>
+      </HStack>
     </HStack>
-  </HStack>
+  </VStack>
 </Component>

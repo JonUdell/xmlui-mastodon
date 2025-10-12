@@ -93,7 +93,19 @@
       </Fragment>
 
       <Fragment when="{toolsState.value.displayMode === 'normal'}">
-        <Markdown content="{$props.item.content}" />
+        <Theme
+          marginTop-Text-markdown="$space-1"
+          marginBottom-Text-markdown="$space-2"
+          paddingTop-Markdown="$space-0"
+          paddingBottom-Markdown="$space-0"
+          marginTop-Blockquote="$space-2"
+          marginBottom-Blockquote="$space-2"
+          paddingTop-Blockquote="$space-1"
+          paddingBottom-Blockquote="$space-1"
+          paddingHorizontal-Blockquote="$space-3"
+        >
+          <Markdown content="{$props.item.content}" />
+        </Theme>
       </Fragment>
     </Fragment>
 
@@ -106,6 +118,9 @@
       />
     </Fragment>
 
-    <Reactions item="{$props.item}" />
+    <Reactions
+      item="{$props.item}"
+      spacing="{toolsState.value.displayMode === 'minimal' ? '$space-1' : toolsState.value.displayMode === 'compact' ? '$space-3' : '$space-4'}"
+    />
   </VStack>
 </Component>
