@@ -1,0 +1,108 @@
+<Component name="Compose" var.postContent="" var.isPublishing="{false}" var.publishStatus="" var.currentLength="{0}">
+
+    <!-- APICall component for publishing posts -->
+    <APICall
+        id="publishPostAPI"
+        method="post"
+        url="{window.config.server}/api/v1/statuses"
+        headers="{{
+            'Authorization': `Bearer ${window.config.mastodonToken}`,
+            'Content-Type': 'application/json'
+        }}"
+        body="{{
+            status: postContent.trim(),
+            visibility: 'direct'
+        }}"
+        completedNotificationMessage="Post published successfully as direct message!"
+        errorNotificationMessage="Failed to publish post: {$error.details || $error.message}"
+        inProgressNotificationMessage="Publishing post..."
+    >
+        <event name="beforeRequest">
+            isPublishing = true;
+            publishStatus = '';
+
+            // Validate content before sending
+            if (!postContent || postContent.trim().length === 0) {
+                publishStatus = 'Post content cannot be empty';
+                isPublishing = false;
+                return false; // Prevent request
+            }
+
+            if (postContent.length > 500) {
+                publishStatus = 'Post content exceeds 500 character limit';
+                isPublishing = false;
+                return false; // Prevent request
+            }
+        </event>
+
+        <event name="success">
+            isPublishing = false;
+            publishStatus = 'Post published successfully!';
+            postContent = '';
+            postTextArea.value = '';
+            currentLength = 0;
+        </event>
+
+        <event name="error">
+            isPublishing = false;
+            publishStatus = `Error: ${$error.details || $error.message}`;
+        </event>
+    </APICall>
+
+    <!-- Post composition area -->
+    <VStack gap="$space-2">
+        <Text variant="strong" fontSize="1.2rem">Compose New Post</Text>
+
+        <!-- Text input and controls aligned to the right -->
+        <VStack gap="$space-2" horizontalAlignment="end" width="100%">
+            <!-- Text input area -->
+            <TextArea
+                id="postTextArea"
+                placeholder="What's on your mind?"
+                autoFocus="true"
+                autoSize="true"
+                minRows="3"
+                maxRows="10"
+                maxLength="500"
+                width="100%"
+                onDidChange="currentLength = postTextArea.value ? postTextArea.value.length : 0"
+            />
+
+            <!-- Character counter -->
+            <HStack width="100%">
+                <Text variant="caption" color="$textColor-subtitle">
+                    Posts will be sent as direct messages (private)
+                </Text>
+                <SpaceFiller />
+                <Text
+                    variant="caption"
+                    color="{currentLength > 450 ? '$color-danger' : currentLength > 400 ? '$color-warn' : '$textColor-subtitle'}"
+                    fontWeight="{currentLength > 400 ? 'bold' : 'normal'}"
+                >
+                    {currentLength} / 500 characters
+                </Text>
+            </HStack>
+
+            <!-- Status message -->
+            <Fragment when="{publishStatus}">
+                <Text
+                    variant="caption"
+                    color="{publishStatus.includes('Error') || publishStatus.includes('cannot') || publishStatus.includes('exceeds') ? '$color-danger' : '$color-success'}"
+                >
+                    {publishStatus}
+                </Text>
+            </Fragment>
+
+            <!-- Publish button -->
+            <Button
+                label="{isPublishing ? 'Publishing...' : 'Publish Post'}"
+                onClick="{
+                    postContent = postTextArea.value;
+                    publishPostAPI.execute();
+                }"
+                enabled="{!isPublishing && currentLength > 0 && currentLength <= 500}"
+            />
+        </VStack>
+    </VStack>
+
+</Component>
