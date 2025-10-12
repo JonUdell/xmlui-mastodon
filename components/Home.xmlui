@@ -1,6 +1,6 @@
 <Component name="Home" var.loaded="{false}" var.syncCompleted="{false}">
 
-<AppState id="toolsState" bucket="toolsState" initialValue="{ { zoom: 20 } }" />
+<AppState id="toolsState" bucket="toolsState" initialValue="{{ zoom: 20, compact: true }}" />
 <AppState id="debugState" bucket="debugState" />
 
 <DataSource

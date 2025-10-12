@@ -1,6 +1,6 @@
 <Component name="Tools">
 
-  <AppState id="toolsState" bucket="toolsState" />
+  <AppState id="toolsState" bucket="toolsState" initialValue="{{ compact: true }}" />
 
     <!-- Theme switcher -->
     <HStack verticalAlignment="center" gap="$space-2">
