@@ -18,9 +18,9 @@
     </VStack>
   </Fragment>
 
-  <ReblogHeader item="{$props.item}" />
+  <VStack gap="{toolsState.value.compact ? '0' : undefined}">
+    <ReblogHeader item="{$props.item}" compact="{toolsState.value.compact}" />
 
-  <VStack>
     <Fragment when="{toolsState.value.compact}">
       <Theme
         marginTop-Text-markdown="0"

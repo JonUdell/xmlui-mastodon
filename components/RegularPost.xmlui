@@ -22,7 +22,7 @@
 -->
 
   <!-- Regular post header with timestamp on its own line -->
-  <VStack gap="0.25rem">
+  <VStack gap="{toolsState.value.compact ? '0' : '0.25rem'}">
     <!-- Debug info -->
     <Fragment when="{$props.debugMode}">
       <VStack gap="0.1rem">
@@ -57,7 +57,7 @@
     </HStack>
   </VStack>
 
-  <VStack>
+  <VStack gap="{toolsState.value.compact ? '0' : undefined}">
     <Fragment when="{$props.item.content}">
       <Fragment when="{toolsState.value.compact}">
         <Theme

@@ -38,7 +38,7 @@
     <Fragment when="{['/', '/notifications'].includes($pathname)}">
       <Switch
         label="Compact timeline"
-        initialValue="{toolsState.value.compact || false}"
+        initialValue="{toolsState.value.compact !== undefined ? toolsState.value.compact : true}"
         onDidChange="(value) => { toolsState.update({ compact: value }); }"
       />
     </Fragment>
