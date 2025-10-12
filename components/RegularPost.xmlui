@@ -22,7 +22,7 @@
 -->
 
   <!-- Regular post header with timestamp on its own line -->
-  <VStack gap="{toolsState.value.compact ? '$space-0' : '$space-1'}">
+  <VStack gap="{toolsState.value.displayMode === 'minimal' ? '$space-0' : toolsState.value.displayMode === 'compact' ? '$space-1' : '$space-1'}">
     <!-- Debug info -->
     <Fragment when="{$props.debugMode}">
       <VStack gap="0.1rem">
@@ -38,13 +38,13 @@
     </Fragment>
 
     <!-- Timestamp line -->
-    <Text variant="caption" fontSize="{toolsState.value.compact ? '0.7rem' : '0.75rem'}" color="$color-text-subtle">
+    <Text variant="caption" fontSize="{toolsState.value.displayMode === 'normal' ? '0.75rem' : '0.7rem'}" color="$color-text-subtle">
       {formatHumanElapsedTime($props.item.created_at)}
     </Text>
 
     <!-- Avatar and user info line -->
-    <HStack gap="{toolsState.value.compact ? '$space-1' : '$space-2'}">
-      <Fragment when="{!toolsState.value.compact}">
+    <HStack gap="{toolsState.value.displayMode === 'minimal' ? '$space-1' : toolsState.value.displayMode === 'compact' ? '$space-1' : '$space-2'}">
+      <Fragment when="{toolsState.value.displayMode === 'normal'}">
         <MastodonAvatar
           url="{$props.item.avatar_url}"
           size="xs"
@@ -52,15 +52,15 @@
           item="{$props.item}"
         />
       </Fragment>
-      <HStack gap="{toolsState.value.compact ? '$space-1' : '$space-2'}">
-        <Text variant="strong" fontSize="{toolsState.value.compact ? '0.7rem' : '0.75rem'}">{window.getDisplayName($props.item)}</Text>
-        <Text variant="caption" fontSize="{toolsState.value.compact ? '0.65rem' : '0.75rem'}">@{window.getUsername($props.item)}</Text>
+      <HStack gap="{toolsState.value.displayMode === 'minimal' ? '$space-1' : toolsState.value.displayMode === 'compact' ? '$space-1' : '$space-2'}">
+        <Text variant="strong" fontSize="{toolsState.value.displayMode === 'normal' ? '0.75rem' : '0.7rem'}">{window.getDisplayName($props.item)}</Text>
+        <Text variant="caption" fontSize="{toolsState.value.displayMode === 'normal' ? '0.75rem' : '0.65rem'}">@{window.getUsername($props.item)}</Text>
       </HStack>
     </HStack>
 
     <!-- Content section -->
     <Fragment when="{$props.item.content}">
-      <Fragment when="{toolsState.value.compact}">
+      <Fragment when="{toolsState.value.displayMode === 'minimal'}">
         <Theme
           marginTop-Text-markdown="$space-0"
           marginBottom-Text-markdown="$space-0"
@@ -76,12 +76,28 @@
         </Theme>
       </Fragment>
 
-      <Fragment when="{!toolsState.value.compact}">
+      <Fragment when="{toolsState.value.displayMode === 'compact'}">
+        <Theme
+          marginTop-Text-markdown="$space-1"
+          marginBottom-Text-markdown="$space-2"
+          paddingTop-Markdown="$space-0"
+          paddingBottom-Markdown="$space-0"
+          marginTop-Blockquote="$space-2"
+          marginBottom-Blockquote="$space-2"
+          paddingTop-Blockquote="$space-1"
+          paddingBottom-Blockquote="$space-1"
+          paddingHorizontal-Blockquote="$space-3"
+        >
+          <Markdown content="{$props.item.content}" />
+        </Theme>
+      </Fragment>
+
+      <Fragment when="{toolsState.value.displayMode === 'normal'}">
         <Markdown content="{$props.item.content}" />
       </Fragment>
     </Fragment>
 
-    <Fragment when="{$props.item.preview_url}">
+    <Fragment when="{$props.item.preview_url && (toolsState.value.displayMode === 'compact' || toolsState.value.displayMode === 'normal')}">
       <ImageWithModal
         src="{$props.item.preview_url}"
         mediaUrl="{$props.item.media_url}"

@@ -1,15 +1,15 @@
 <Component name="ReblogHeader">
   <!-- Reblog header with timestamp on its own line -->
-  <VStack gap="{$props.compact ? '$space-0' : '$space-1'}">
+  <VStack gap="{$props.displayMode === 'minimal' ? '$space-0' : $props.displayMode === 'compact' ? '$space-1' : '$space-1'}">
     <!-- Timestamp line -->
     <Text variant="caption" fontSize="0.75rem" color="$color-text-subtle">
       {formatHumanElapsedTime($props.item.created_at ? $props.item.created_at.replace(' ', 'T') + 'Z' : 'Unknown time')}
     </Text>
 
     <!-- Avatar and user info line -->
-    <HStack verticalAlignment="center" gap="{$props.compact ? '$space-1' : '$space-2'}" wrapContent="true">
-      <HStack verticalAlignment="center" gap="{$props.compact ? '$space-0_5' : '$space-1_5'}">
-        <Fragment when="{$props.item.avatar_url && !$props.compact}">
+    <HStack verticalAlignment="center" gap="{$props.displayMode === 'minimal' ? '$space-1' : $props.displayMode === 'compact' ? '$space-1' : '$space-2'}" wrapContent="true">
+      <HStack verticalAlignment="center" gap="{$props.displayMode === 'minimal' ? '$space-0_5' : $props.displayMode === 'compact' ? '$space-0_5' : '$space-1_5'}">
+        <Fragment when="{$props.item.avatar_url && $props.displayMode === 'normal'}">
           <MastodonAvatar
             url="{$props.item.avatar_url}"
             size="xs"
@@ -17,13 +17,13 @@
             item="{$props.item}"
           />
         </Fragment>
-        <Fragment when="{$props.compact}">
+        <Fragment when="{$props.displayMode === 'minimal' || $props.displayMode === 'compact'}">
           <HStack gap="$space-0_5">
             <Text variant="caption" fontSize="0.7rem">{window.getDisplayName($props.item) || $props.item.author_name}</Text>
             <Text variant="caption" fontSize="0.65rem">@{window.getUsername($props.item)}</Text>
           </HStack>
         </Fragment>
-        <Fragment when="{!$props.compact}">
+        <Fragment when="{$props.displayMode === 'normal'}">
           <VStack gap="$gap-none">
             <Text variant="caption" fontSize="0.75rem">{window.getDisplayName($props.item) || $props.item.author_name}</Text>
             <Fragment when="{window.getUsername($props.item)}">
@@ -33,8 +33,8 @@
         </Fragment>
       </HStack>
       <SocialButton icon="arrowright" />
-      <HStack verticalAlignment="center" gap="{$props.compact ? '$space-0_5' : '$space-2'}">
-        <Fragment when="{$props.item.reblog_avatar_url && !$props.compact}">
+      <HStack verticalAlignment="center" gap="{$props.displayMode === 'minimal' ? '$space-0_5' : $props.displayMode === 'compact' ? '$space-0_5' : '$space-2'}">
+        <Fragment when="{$props.item.reblog_avatar_url && $props.displayMode === 'normal'}">
           <MastodonAvatar
             url="{$props.item.reblog_avatar_url}"
             size="xs"
@@ -42,13 +42,13 @@
             item="{$props.item}"
           />
         </Fragment>
-        <Fragment when="{$props.compact}">
+        <Fragment when="{$props.displayMode === 'minimal' || $props.displayMode === 'compact'}">
           <HStack gap="$space-0_5">
             <Text variant="strong" fontSize="0.7rem">{window.getReblogDisplayName($props.item) || $props.item.reblog_author_name}</Text>
             <Text variant="caption" fontSize="0.65rem">@{window.getReblogUsername($props.item)}</Text>
           </HStack>
         </Fragment>
-        <Fragment when="{!$props.compact}">
+        <Fragment when="{$props.displayMode === 'normal'}">
           <VStack gap="$gap-none">
             <Text variant="strong" fontSize="0.75rem">{window.getReblogDisplayName($props.item) || $props.item.reblog_author_name}</Text>
             <Fragment when="{window.getReblogUsername($props.item)}">

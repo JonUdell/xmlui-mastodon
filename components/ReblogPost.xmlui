@@ -18,10 +18,10 @@
     </VStack>
   </Fragment>
 
-  <VStack gap="{toolsState.value.compact ? '0' : undefined}">
-    <ReblogHeader item="{$props.item}" compact="{toolsState.value.compact}" />
+  <VStack gap="{toolsState.value.displayMode === 'minimal' ? '$space-0' : toolsState.value.displayMode === 'compact' ? '$space-1' : '$space-1'}">
+    <ReblogHeader item="{$props.item}" displayMode="{toolsState.value.displayMode || 'minimal'}" />
 
-    <Fragment when="{toolsState.value.compact}">
+    <Fragment when="{toolsState.value.displayMode === 'minimal'}">
       <Theme
         marginTop-Text-markdown="$space-0"
         marginBottom-Text-markdown="$space-0"
@@ -37,11 +37,27 @@
       </Theme>
     </Fragment>
 
-    <Fragment when="{!toolsState.value.compact}">
+    <Fragment when="{toolsState.value.displayMode === 'compact'}">
+      <Theme
+        marginTop-Text-markdown="$space-1"
+        marginBottom-Text-markdown="$space-2"
+        paddingTop-Markdown="$space-0"
+        paddingBottom-Markdown="$space-0"
+        marginTop-Blockquote="$space-2"
+        marginBottom-Blockquote="$space-2"
+        paddingTop-Blockquote="$space-1"
+        paddingBottom-Blockquote="$space-1"
+        paddingHorizontal-Blockquote="$space-3"
+      >
+        <Markdown content="{$props.item.reblog_content}" />
+      </Theme>
+    </Fragment>
+
+    <Fragment when="{toolsState.value.displayMode === 'normal'}">
       <Markdown content="{$props.item.reblog_content}" />
     </Fragment>
 
-    <Fragment when="{$props.item.reblog_preview_url}">
+    <Fragment when="{$props.item.reblog_preview_url && (toolsState.value.displayMode === 'compact' || toolsState.value.displayMode === 'normal')}">
       <ImageWithModal
         src="{$props.item.reblog_preview_url}"
         mediaUrl="{$props.item.reblog_media_url}"

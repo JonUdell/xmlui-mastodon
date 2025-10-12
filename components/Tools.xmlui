@@ -36,11 +36,15 @@
     <ContentSeparator />
 
     <Fragment when="{['/', '/notifications'].includes($pathname)}">
-      <Switch
-        label="Compact timeline"
-        initialValue="{toolsState.value.compact !== undefined ? toolsState.value.compact : true}"
-        onDidChange="(value) => { toolsState.update({ compact: value }); }"
-      />
+      <Select
+        label="Display mode"
+        initialValue="{toolsState.value.displayMode || 'minimal'}"
+        onDidChange="(value) => { toolsState.update({ displayMode: value }); }"
+      >
+        <Option value="minimal">Minimal</Option>
+        <Option value="compact">Compact</Option>
+        <Option value="normal">Normal</Option>
+      </Select>
     </Fragment>
 
 </Component>

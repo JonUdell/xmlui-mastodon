@@ -1,6 +1,6 @@
 <Component name="Notifications">
 
-  <AppState id="toolsState" bucket="toolsState" initialValue="{{ zoom: 20, compact: true }}" />
+  <AppState id="toolsState" bucket="toolsState" initialValue="{{ zoom: 20, displayMode: 'minimal' }}" />
 
   <DataSource
     id="notifications"
