@@ -27,6 +27,11 @@
         marginBottom-Text-markdown="0"
         paddingTop-Markdown="0"
         paddingBottom-Markdown="0"
+        marginTop-Blockquote="0"
+        marginBottom-Blockquote="0"
+        paddingTop-Blockquote="0"
+        paddingBottom-Blockquote="0"
+        paddingHorizontal-Blockquote="$space-2"
       >
         <Markdown content="{$props.item.reblog_content}" />
       </Theme>
@@ -48,7 +53,7 @@
     <Tooltip text="view on home server">
       <Link target="_blank" icon="binding" to="{JSON.parse($props.item.reblog).url}" />
     </Tooltip>
-  </VStack>
 
-  <Reactions item="{$props.item}" />
+    <Reactions item="{$props.item}" />
+  </VStack>
 </Component>

@@ -58,7 +58,7 @@
 
     <!-- Timeline display -->
     <Fragment when="{loaded}" >
-      <List data="{ephemeralToots}">
+      <List height="*" data="{ephemeralToots}">
         <VStack>
                <!-- Regular Post Display -->
                <Fragment when="{!$item.reblog}">

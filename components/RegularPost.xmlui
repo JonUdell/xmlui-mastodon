@@ -38,21 +38,23 @@
     </Fragment>
 
     <!-- Timestamp line -->
-    <Text variant="caption" fontSize="0.75rem" color="$color-text-subtle">
+    <Text variant="caption" fontSize="{toolsState.value.compact ? '0.7rem' : '0.75rem'}" color="$color-text-subtle">
       {formatHumanElapsedTime($props.item.created_at)}
     </Text>
 
     <!-- Avatar and user info line -->
-    <HStack gap="0.4rem">
-      <MastodonAvatar
-        url="{$props.item.avatar_url}"
-        size="xs"
-        name="{window.getDisplayName($props.item)}"
-        item="{$props.item}"
-      />
-      <HStack gap="0.5rem">
-        <Text variant="strong">{window.getDisplayName($props.item)}</Text>
-        <Text variant="caption">@{window.getUsername($props.item)}</Text>
+    <HStack gap="{toolsState.value.compact ? '0.2rem' : '0.4rem'}">
+      <Fragment when="{!toolsState.value.compact}">
+        <MastodonAvatar
+          url="{$props.item.avatar_url}"
+          size="xs"
+          name="{window.getDisplayName($props.item)}"
+          item="{$props.item}"
+        />
+      </Fragment>
+      <HStack gap="{toolsState.value.compact ? '0.2rem' : '0.5rem'}">
+        <Text variant="strong" fontSize="{toolsState.value.compact ? '0.7rem' : '0.75rem'}">{window.getDisplayName($props.item)}</Text>
+        <Text variant="caption" fontSize="{toolsState.value.compact ? '0.65rem' : '0.75rem'}">@{window.getUsername($props.item)}</Text>
       </HStack>
     </HStack>
   </VStack>
@@ -65,6 +67,11 @@
           marginBottom-Text-markdown="0"
           paddingTop-Markdown="0"
           paddingBottom-Markdown="0"
+          marginTop-Blockquote="0"
+          marginBottom-Blockquote="0"
+          paddingTop-Blockquote="0"
+          paddingBottom-Blockquote="0"
+          paddingHorizontal-Blockquote="$space-2"
         >
           <Markdown content="{$props.item.content}" />
         </Theme>
@@ -83,7 +90,7 @@
         width="{toolsState.value.zoom}%"
       />
     </Fragment>
-  </VStack>
 
-  <Reactions item="{$props.item}" />
+    <Reactions item="{$props.item}" />
+  </VStack>
 </Component>
