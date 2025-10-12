@@ -55,6 +55,7 @@
     </ModalDialog>
      <NavPanel>
       <NavLink label="{mediaSize.size === 'xs' || mediaSize.size === 'sm' ? '' : 'Home'}" to="/" icon="home" tooltip="Home" />
+      <NavLink label="{mediaSize.size === 'xs' || mediaSize.size === 'sm' ? '' : 'Compose'}" to="/compose" icon="plus" tooltip="Compose" />
       <NavLink label="{mediaSize.size === 'xs' || mediaSize.size === 'sm' ? '' : 'Notifications'}" to="/notifications" icon="info" tooltip="Notifications" />
       <NavLink label="{mediaSize.size === 'xs' || mediaSize.size === 'sm' ? '' : 'Search'}" to="/search" icon="search" tooltip="Search" />
       <NavLink label="{mediaSize.size === 'xs' || mediaSize.size === 'sm' ? '' : 'Followers'}" to="/followers" icon="users" tooltip="Followers" />
@@ -85,6 +86,9 @@
       </Page>
       <Page url="/projectLog">
         <Markdown data="/pages/projectLog.md" />
+      </Page>
+      <Page url="/compose">
+        <Compose />
       </Page>
       <Page url="/query">
         <Query />
