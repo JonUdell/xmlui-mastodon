@@ -2,19 +2,17 @@
   <AppState id="toolsState" bucket="toolsState" />
 
   <!-- Debug info for reblog posts -->
-  <Fragment when="{$props.debugMode}">
-    <VStack gap="0.25rem" marginBottom="0.5rem">
-      <Text variant="caption" fontSize="0.7rem" color="$color-text-subtle" fontFamily="monospace">
-        Reblog Post ID: {$props.item.id}
-      </Text>
-      <Text variant="caption" fontSize="0.7rem" color="$color-text-subtle" fontFamily="monospace">
-        Original Post ID: {JSON.parse($props.item.reblog).id}
-      </Text>
-      <Text when="{$props.item.reblog_media_type}" variant="caption" fontSize="0.7rem" color="$color-text-subtle" fontFamily="monospace">
-        Media: {$props.item.reblog_media_type} | Preview: {$props.item.reblog_preview_url ? 'Yes' : 'No'} | Original: {$props.item.reblog_media_url ? 'Yes' : 'No'}
-      </Text>
-    </VStack>
-  </Fragment>
+  <VStack when="{$props.debugMode}" gap="0.25rem" marginBottom="0.5rem">
+    <Text variant="caption" fontSize="0.7rem" color="$color-text-subtle" fontFamily="monospace">
+      Reblog Post ID: {$props.item.id}
+    </Text>
+    <Text variant="caption" fontSize="0.7rem" color="$color-text-subtle" fontFamily="monospace">
+      Original Post ID: {JSON.parse($props.item.reblog).id}
+    </Text>
+    <Text when="{$props.item.reblog_media_type}" variant="caption" fontSize="0.7rem" color="$color-text-subtle" fontFamily="monospace">
+      Media: {$props.item.reblog_media_type} | Preview: {$props.item.reblog_preview_url ? 'Yes' : 'No'} | Original: {$props.item.reblog_media_url ? 'Yes' : 'No'}
+    </Text>
+  </VStack>
 
   <VStack gap="{toolsState.value.displayMode === 'minimal' ? '$space-0' : toolsState.value.displayMode === 'compact' ? '$space-1' : '$space-1'}">
     <ReblogHeader item="{$props.item}" displayMode="{toolsState.value.displayMode || 'minimal'}" />

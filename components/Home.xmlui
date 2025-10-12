@@ -55,19 +55,17 @@
     </VStack>
 
     <!-- Timeline display -->
-    <Fragment when="{loaded}">
-      <List height="*" data="{ephemeralToots}">
-        <VStack>
-               <!-- Regular Post Display -->
-               <RegularPost when="{!$item.reblog}" item="{$item}" debugMode="{debugState.value.enabled}" />
+    <List when="{loaded}" height="*" data="{ephemeralToots}">
+      <VStack>
+             <!-- Regular Post Display -->
+             <RegularPost when="{!$item.reblog}" item="{$item}" debugMode="{debugState.value.enabled}" />
 
-               <!-- Reblog Display -->
-               <ReblogPost when="{$item.reblog}" item="{$item}" debugMode="{debugState.value.enabled}" />
-        </VStack>
+             <!-- Reblog Display -->
+             <ReblogPost when="{$item.reblog}" item="{$item}" debugMode="{debugState.value.enabled}" />
+      </VStack>
 
-        <ContentSeparator />
-      </List>
-    </Fragment>
+      <ContentSeparator />
+    </List>
 
   </VStack>
 

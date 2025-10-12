@@ -24,16 +24,14 @@
   <!-- Regular post header with timestamp on its own line -->
   <VStack gap="{toolsState.value.displayMode === 'minimal' ? '$space-0' : toolsState.value.displayMode === 'compact' ? '$space-1' : '$space-1'}">
     <!-- Debug info -->
-    <Fragment when="{$props.debugMode}">
-      <VStack gap="0.1rem">
-        <Text variant="caption" fontSize="0.7rem" color="$color-text-subtle" fontFamily="monospace">
-          Post ID: {$props.item.id}
-        </Text>
-        <Text when="{$props.item.media_type}" variant="caption" fontSize="0.7rem" color="$color-text-subtle" fontFamily="monospace">
-          Media: {$props.item.media_type} | Preview: {$props.item.preview_url ? 'Yes' : 'No'} | Original: {$props.item.media_url ? 'Yes' : 'No'}
-        </Text>
-      </VStack>
-    </Fragment>
+    <VStack when="{$props.debugMode}" gap="0.1rem">
+      <Text variant="caption" fontSize="0.7rem" color="$color-text-subtle" fontFamily="monospace">
+        Post ID: {$props.item.id}
+      </Text>
+      <Text when="{$props.item.media_type}" variant="caption" fontSize="0.7rem" color="$color-text-subtle" fontFamily="monospace">
+        Media: {$props.item.media_type} | Preview: {$props.item.preview_url ? 'Yes' : 'No'} | Original: {$props.item.media_url ? 'Yes' : 'No'}
+      </Text>
+    </VStack>
 
     <!-- Timestamp line -->
     <Text variant="caption" fontSize="{toolsState.value.displayMode === 'normal' ? '0.75rem' : '0.7rem'}" color="$color-text-subtle">
