@@ -10,41 +10,38 @@
 
     <ContentSeparator />
 
-    <Fragment when="{['/', '/notifications'].includes($pathname)}">
-      <Slider
-        width="100%"
-        label="Image zoom"
-        minValue="{0}"
-        maxValue="{100}"
-        step="{10}"
-        initialValue="{toolsState.value.zoom}"
-        showValues="true"
-        onDidChange="(value) => { toolsState.update({ zoom: value }) }"
-      />
+    <Slider
+      when="{['/', '/notifications'].includes($pathname)}"
+      width="100%"
+      label="Image zoom"
+      minValue="{0}"
+      maxValue="{100}"
+      step="{10}"
+      initialValue="{toolsState.value.zoom}"
+      showValues="true"
+      onDidChange="(value) => { toolsState.update({ zoom: value }) }"
+    />
 
-      <ContentSeparator />
-    </Fragment>
+    <ContentSeparator when="{['/', '/notifications'].includes($pathname)}" />
 
-    <Fragment when="{['/', '/notifications'].includes($pathname)}">
-      <Switch
-        label="Truncate long links"
-        initialValue="{localStorage.getItem('truncateLinks')}"
-        onDidChange="(value) => { window.setTruncateLinks(value); toolsState.update({ truncateLinks: value }); }"
-      />
-    </Fragment>
+    <Switch
+      when="{['/', '/notifications'].includes($pathname)}"
+      label="Truncate long links"
+      initialValue="{localStorage.getItem('truncateLinks')}"
+      onDidChange="(value) => { window.setTruncateLinks(value); toolsState.update({ truncateLinks: value }); }"
+    />
 
     <ContentSeparator />
 
-    <Fragment when="{['/', '/notifications'].includes($pathname)}">
-      <Select
-        label="Display mode"
-        initialValue="{toolsState.value.displayMode || 'minimal'}"
-        onDidChange="(value) => { toolsState.update({ displayMode: value }); }"
-      >
-        <Option value="minimal">Minimal</Option>
-        <Option value="compact">Compact</Option>
-        <Option value="normal">Normal</Option>
-      </Select>
-    </Fragment>
+    <Select
+      when="{['/', '/notifications'].includes($pathname)}"
+      label="Display mode"
+      initialValue="{toolsState.value.displayMode || 'minimal'}"
+      onDidChange="(value) => { toolsState.update({ displayMode: value }); }"
+    >
+      <Option value="minimal">Minimal</Option>
+      <Option value="compact">Compact</Option>
+      <Option value="normal">Normal</Option>
+    </Select>
 
 </Component>

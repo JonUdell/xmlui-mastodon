@@ -29,11 +29,9 @@
         <Text variant="caption" fontSize="0.7rem" color="$color-text-subtle" fontFamily="monospace">
           Post ID: {$props.item.id}
         </Text>
-        <Fragment when="{$props.item.media_type}">
-          <Text variant="caption" fontSize="0.7rem" color="$color-text-subtle" fontFamily="monospace">
-            Media: {$props.item.media_type} | Preview: {$props.item.preview_url ? 'Yes' : 'No'} | Original: {$props.item.media_url ? 'Yes' : 'No'}
-          </Text>
-        </Fragment>
+        <Text when="{$props.item.media_type}" variant="caption" fontSize="0.7rem" color="$color-text-subtle" fontFamily="monospace">
+          Media: {$props.item.media_type} | Preview: {$props.item.preview_url ? 'Yes' : 'No'} | Original: {$props.item.media_url ? 'Yes' : 'No'}
+        </Text>
       </VStack>
     </Fragment>
 
@@ -44,14 +42,13 @@
 
     <!-- Avatar and user info line -->
     <HStack gap="{toolsState.value.displayMode === 'minimal' ? '$space-1' : toolsState.value.displayMode === 'compact' ? '$space-1' : '$space-2'}">
-      <Fragment when="{toolsState.value.displayMode === 'normal'}">
-        <MastodonAvatar
-          url="{$props.item.avatar_url}"
-          size="xs"
-          name="{window.getDisplayName($props.item)}"
-          item="{$props.item}"
-        />
-      </Fragment>
+      <MastodonAvatar
+        when="{toolsState.value.displayMode === 'normal'}"
+        url="{$props.item.avatar_url}"
+        size="xs"
+        name="{window.getDisplayName($props.item)}"
+        item="{$props.item}"
+      />
       <HStack gap="{toolsState.value.displayMode === 'minimal' ? '$space-1' : toolsState.value.displayMode === 'compact' ? '$space-1' : '$space-2'}">
         <Text variant="strong" fontSize="{toolsState.value.displayMode === 'normal' ? '0.75rem' : '0.7rem'}">{window.getDisplayName($props.item)}</Text>
         <Text variant="caption" fontSize="{toolsState.value.displayMode === 'normal' ? '0.75rem' : '0.65rem'}">@{window.getUsername($props.item)}</Text>
@@ -60,63 +57,59 @@
 
     <!-- Content section -->
     <Fragment when="{$props.item.content}">
-      <Fragment when="{toolsState.value.displayMode === 'minimal'}">
-        <Theme
-          marginTop-Text-markdown="$space-0"
-          marginBottom-Text-markdown="$space-0"
-          paddingTop-Markdown="$space-0"
-          paddingBottom-Markdown="$space-0"
-          marginTop-Blockquote="$space-0"
-          marginBottom-Blockquote="$space-0"
-          paddingTop-Blockquote="$space-0"
-          paddingBottom-Blockquote="$space-0"
-          paddingHorizontal-Blockquote="$space-2"
-        >
-          <Markdown content="{$props.item.content}" />
-        </Theme>
-      </Fragment>
+      <Theme
+        when="{toolsState.value.displayMode === 'minimal'}"
+        marginTop-Text-markdown="$space-0"
+        marginBottom-Text-markdown="$space-0"
+        paddingTop-Markdown="$space-0"
+        paddingBottom-Markdown="$space-0"
+        marginTop-Blockquote="$space-0"
+        marginBottom-Blockquote="$space-0"
+        paddingTop-Blockquote="$space-0"
+        paddingBottom-Blockquote="$space-0"
+        paddingHorizontal-Blockquote="$space-2"
+      >
+        <Markdown content="{$props.item.content}" />
+      </Theme>
 
-      <Fragment when="{toolsState.value.displayMode === 'compact'}">
-        <Theme
-          marginTop-Text-markdown="$space-1"
-          marginBottom-Text-markdown="$space-2"
-          paddingTop-Markdown="$space-0"
-          paddingBottom-Markdown="$space-0"
-          marginTop-Blockquote="$space-2"
-          marginBottom-Blockquote="$space-2"
-          paddingTop-Blockquote="$space-1"
-          paddingBottom-Blockquote="$space-1"
-          paddingHorizontal-Blockquote="$space-3"
-        >
-          <Markdown content="{$props.item.content}" />
-        </Theme>
-      </Fragment>
+      <Theme
+        when="{toolsState.value.displayMode === 'compact'}"
+        marginTop-Text-markdown="$space-1"
+        marginBottom-Text-markdown="$space-2"
+        paddingTop-Markdown="$space-0"
+        paddingBottom-Markdown="$space-0"
+        marginTop-Blockquote="$space-2"
+        marginBottom-Blockquote="$space-2"
+        paddingTop-Blockquote="$space-1"
+        paddingBottom-Blockquote="$space-1"
+        paddingHorizontal-Blockquote="$space-3"
+      >
+        <Markdown content="{$props.item.content}" />
+      </Theme>
 
-      <Fragment when="{toolsState.value.displayMode === 'normal'}">
-        <Theme
-          marginTop-Text-markdown="$space-1"
-          marginBottom-Text-markdown="$space-2"
-          paddingTop-Markdown="$space-0"
-          paddingBottom-Markdown="$space-0"
-          marginTop-Blockquote="$space-2"
-          marginBottom-Blockquote="$space-2"
-          paddingTop-Blockquote="$space-1"
-          paddingBottom-Blockquote="$space-1"
-          paddingHorizontal-Blockquote="$space-3"
-        >
-          <Markdown content="{$props.item.content}" />
-        </Theme>
-      </Fragment>
+      <Theme
+        when="{toolsState.value.displayMode === 'normal'}"
+        marginTop-Text-markdown="$space-1"
+        marginBottom-Text-markdown="$space-2"
+        paddingTop-Markdown="$space-0"
+        paddingBottom-Markdown="$space-0"
+        marginTop-Blockquote="$space-2"
+        marginBottom-Blockquote="$space-2"
+        paddingTop-Blockquote="$space-1"
+        paddingBottom-Blockquote="$space-1"
+        paddingHorizontal-Blockquote="$space-3"
+      >
+        <Markdown content="{$props.item.content}" />
+      </Theme>
     </Fragment>
 
-    <Fragment when="{$props.item.preview_url && (toolsState.value.displayMode === 'compact' || toolsState.value.displayMode === 'normal')}">
-      <ImageWithModal
-        src="{$props.item.preview_url}"
-        mediaUrl="{$props.item.media_url}"
-        mediaType="{$props.item.media_type}"
-        width="{toolsState.value.zoom}%"
-      />
-    </Fragment>
+    <ImageWithModal
+      when="{$props.item.preview_url && (toolsState.value.displayMode === 'compact' || toolsState.value.displayMode === 'normal')}"
+      src="{$props.item.preview_url}"
+      mediaUrl="{$props.item.media_url}"
+      mediaType="{$props.item.media_type}"
+      width="{toolsState.value.zoom}%"
+    />
 
     <Reactions
       item="{$props.item}"

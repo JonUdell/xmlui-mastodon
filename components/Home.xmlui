@@ -50,25 +50,19 @@
 
 
     <!-- Loading indicator -->
-    <Fragment when="{!loaded}" >
-      <VStack>
-        <Text>Loading timeline data...</Text>
-      </VStack>
-    </Fragment>
+    <VStack when="{!loaded}">
+      <Text>Loading timeline data...</Text>
+    </VStack>
 
     <!-- Timeline display -->
-    <Fragment when="{loaded}" >
+    <Fragment when="{loaded}">
       <List height="*" data="{ephemeralToots}">
         <VStack>
                <!-- Regular Post Display -->
-               <Fragment when="{!$item.reblog}">
-                 <RegularPost item="{$item}" debugMode="{debugState.value.enabled}" />
-               </Fragment>
+               <RegularPost when="{!$item.reblog}" item="{$item}" debugMode="{debugState.value.enabled}" />
 
                <!-- Reblog Display -->
-               <Fragment when="{$item.reblog}">
-                 <ReblogPost item="{$item}" debugMode="{debugState.value.enabled}" />
-               </Fragment>
+               <ReblogPost when="{$item.reblog}" item="{$item}" debugMode="{debugState.value.enabled}" />
         </VStack>
 
         <ContentSeparator />

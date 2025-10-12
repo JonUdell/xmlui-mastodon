@@ -9,53 +9,39 @@
     <!-- Avatar and user info line -->
     <HStack verticalAlignment="center" gap="{$props.displayMode === 'minimal' ? '$space-1' : $props.displayMode === 'compact' ? '$space-1' : '$space-2'}" wrapContent="true">
       <HStack verticalAlignment="center" gap="{$props.displayMode === 'minimal' ? '$space-0_5' : $props.displayMode === 'compact' ? '$space-0_5' : '$space-1_5'}">
-        <Fragment when="{$props.item.avatar_url && $props.displayMode === 'normal'}">
-          <MastodonAvatar
-            url="{$props.item.avatar_url}"
-            size="xs"
-            name="{window.getDisplayName($props.item)}"
-            item="{$props.item}"
-          />
-        </Fragment>
-        <Fragment when="{$props.displayMode === 'minimal' || $props.displayMode === 'compact'}">
-          <HStack gap="$space-0_5">
-            <Text variant="caption" fontSize="0.7rem">{window.getDisplayName($props.item) || $props.item.author_name}</Text>
-            <Text variant="caption" fontSize="0.65rem">@{window.getUsername($props.item)}</Text>
-          </HStack>
-        </Fragment>
-        <Fragment when="{$props.displayMode === 'normal'}">
-          <VStack gap="$gap-none">
-            <Text variant="caption" fontSize="0.75rem">{window.getDisplayName($props.item) || $props.item.author_name}</Text>
-            <Fragment when="{window.getUsername($props.item)}">
-              <Text variant="caption" fontSize="0.75rem" marginTop="-$space-2">@{window.getUsername($props.item)}</Text>
-            </Fragment>
-          </VStack>
-        </Fragment>
+        <MastodonAvatar
+          when="{$props.item.avatar_url && $props.displayMode === 'normal'}"
+          url="{$props.item.avatar_url}"
+          size="xs"
+          name="{window.getDisplayName($props.item)}"
+          item="{$props.item}"
+        />
+        <HStack when="{$props.displayMode === 'minimal' || $props.displayMode === 'compact'}" gap="$space-0_5">
+          <Text variant="caption" fontSize="0.7rem">{window.getDisplayName($props.item) || $props.item.author_name}</Text>
+          <Text variant="caption" fontSize="0.65rem">@{window.getUsername($props.item)}</Text>
+        </HStack>
+        <VStack when="{$props.displayMode === 'normal'}" gap="$gap-none">
+          <Text variant="caption" fontSize="0.75rem">{window.getDisplayName($props.item) || $props.item.author_name}</Text>
+          <Text when="{window.getUsername($props.item)}" variant="caption" fontSize="0.75rem" marginTop="-$space-2">@{window.getUsername($props.item)}</Text>
+        </VStack>
       </HStack>
       <SocialButton icon="arrowright" />
       <HStack verticalAlignment="center" gap="{$props.displayMode === 'minimal' ? '$space-0_5' : $props.displayMode === 'compact' ? '$space-0_5' : '$space-2'}">
-        <Fragment when="{$props.item.reblog_avatar_url && $props.displayMode === 'normal'}">
-          <MastodonAvatar
-            url="{$props.item.reblog_avatar_url}"
-            size="xs"
-            name="{window.getReblogDisplayName($props.item)}"
-            item="{$props.item}"
-          />
-        </Fragment>
-        <Fragment when="{$props.displayMode === 'minimal' || $props.displayMode === 'compact'}">
-          <HStack gap="$space-0_5">
-            <Text variant="strong" fontSize="0.7rem">{window.getReblogDisplayName($props.item) || $props.item.reblog_author_name}</Text>
-            <Text variant="caption" fontSize="0.65rem">@{window.getReblogUsername($props.item)}</Text>
-          </HStack>
-        </Fragment>
-        <Fragment when="{$props.displayMode === 'normal'}">
-          <VStack gap="$gap-none">
-            <Text variant="strong" fontSize="0.75rem">{window.getReblogDisplayName($props.item) || $props.item.reblog_author_name}</Text>
-            <Fragment when="{window.getReblogUsername($props.item)}">
-              <Text variant="caption" fontSize="0.65rem" marginTop="-$space-2">@{window.getReblogUsername($props.item)}</Text>
-            </Fragment>
-          </VStack>
-        </Fragment>
+        <MastodonAvatar
+          when="{$props.item.reblog_avatar_url && $props.displayMode === 'normal'}"
+          url="{$props.item.reblog_avatar_url}"
+          size="xs"
+          name="{window.getReblogDisplayName($props.item)}"
+          item="{$props.item}"
+        />
+        <HStack when="{$props.displayMode === 'minimal' || $props.displayMode === 'compact'}" gap="$space-0_5">
+          <Text variant="strong" fontSize="0.7rem">{window.getReblogDisplayName($props.item) || $props.item.reblog_author_name}</Text>
+          <Text variant="caption" fontSize="0.65rem">@{window.getReblogUsername($props.item)}</Text>
+        </HStack>
+        <VStack when="{$props.displayMode === 'normal'}" gap="$gap-none">
+          <Text variant="strong" fontSize="0.75rem">{window.getReblogDisplayName($props.item) || $props.item.reblog_author_name}</Text>
+          <Text when="{window.getReblogUsername($props.item)}" variant="caption" fontSize="0.65rem" marginTop="-$space-2">@{window.getReblogUsername($props.item)}</Text>
+        </VStack>
       </HStack>
     </HStack>
   </VStack>
