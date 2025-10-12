@@ -33,4 +33,14 @@
       />
     </Fragment>
 
+    <ContentSeparator />
+
+    <Fragment when="{['/', '/notifications'].includes($pathname)}">
+      <Switch
+        label="Compact timeline"
+        initialValue="{toolsState.value.compact || false}"
+        onDidChange="(value) => { toolsState.update({ compact: value }); }"
+      />
+    </Fragment>
+
 </Component>

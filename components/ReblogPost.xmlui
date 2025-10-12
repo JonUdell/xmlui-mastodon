@@ -21,7 +21,20 @@
   <ReblogHeader item="{$props.item}" />
 
   <VStack>
-    <Markdown content="{$props.item.reblog_content}" />
+    <Fragment when="{toolsState.value.compact}">
+      <Theme
+        marginTop-Text-markdown="0"
+        marginBottom-Text-markdown="0"
+        paddingTop-Markdown="0"
+        paddingBottom-Markdown="0"
+      >
+        <Markdown content="{$props.item.reblog_content}" />
+      </Theme>
+    </Fragment>
+
+    <Fragment when="{!toolsState.value.compact}">
+      <Markdown content="{$props.item.reblog_content}" />
+    </Fragment>
 
     <Fragment when="{$props.item.reblog_preview_url}">
       <ImageWithModal

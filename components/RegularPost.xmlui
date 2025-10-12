@@ -59,7 +59,20 @@
 
   <VStack>
     <Fragment when="{$props.item.content}">
-      <Markdown content="{$props.item.content}" />
+      <Fragment when="{toolsState.value.compact}">
+        <Theme
+          marginTop-Text-markdown="0"
+          marginBottom-Text-markdown="0"
+          paddingTop-Markdown="0"
+          paddingBottom-Markdown="0"
+        >
+          <Markdown content="{$props.item.content}" />
+        </Theme>
+      </Fragment>
+
+      <Fragment when="{!toolsState.value.compact}">
+        <Markdown content="{$props.item.content}" />
+      </Fragment>
     </Fragment>
 
     <Fragment when="{$props.item.preview_url}">
