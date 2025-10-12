@@ -22,7 +22,7 @@
 -->
 
   <!-- Regular post header with timestamp on its own line -->
-  <VStack gap="{toolsState.value.compact ? '0' : '0.25rem'}">
+  <VStack gap="{toolsState.value.compact ? '$space-0' : '$space-1'}">
     <!-- Debug info -->
     <Fragment when="{$props.debugMode}">
       <VStack gap="0.1rem">
@@ -43,7 +43,7 @@
     </Text>
 
     <!-- Avatar and user info line -->
-    <HStack gap="{toolsState.value.compact ? '0.2rem' : '0.4rem'}">
+    <HStack gap="{toolsState.value.compact ? '$space-1' : '$space-2'}">
       <Fragment when="{!toolsState.value.compact}">
         <MastodonAvatar
           url="{$props.item.avatar_url}"
@@ -52,7 +52,7 @@
           item="{$props.item}"
         />
       </Fragment>
-      <HStack gap="{toolsState.value.compact ? '0.2rem' : '0.5rem'}">
+      <HStack gap="{toolsState.value.compact ? '$space-1' : '$space-2'}">
         <Text variant="strong" fontSize="{toolsState.value.compact ? '0.7rem' : '0.75rem'}">{window.getDisplayName($props.item)}</Text>
         <Text variant="caption" fontSize="{toolsState.value.compact ? '0.65rem' : '0.75rem'}">@{window.getUsername($props.item)}</Text>
       </HStack>
