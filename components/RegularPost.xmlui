@@ -57,6 +57,7 @@
     <Fragment when="{$props.item.content}">
       <Theme
         when="{toolsState.value.displayMode === 'minimal'}"
+        lineHeight-Text="1.2"
         marginTop-Text-markdown="$space-0"
         marginBottom-Text-markdown="$space-0"
         paddingTop-Markdown="$space-0"
@@ -72,6 +73,7 @@
 
       <Theme
         when="{toolsState.value.displayMode === 'compact'}"
+        lineHeight-Text="1.2"
         marginTop-Text-markdown="$space-1"
         marginBottom-Text-markdown="$space-2"
         paddingTop-Markdown="$space-0"
@@ -87,6 +89,7 @@
 
       <Theme
         when="{toolsState.value.displayMode === 'normal'}"
+        lineHeight-Text="1.2"
         marginTop-Text-markdown="$space-1"
         marginBottom-Text-markdown="$space-2"
         paddingTop-Markdown="$space-0"
