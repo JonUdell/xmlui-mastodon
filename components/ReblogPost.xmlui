@@ -3,13 +3,13 @@
 
   <!-- Debug info for reblog posts -->
   <VStack when="{$props.debugMode}" gap="$space-1" marginBottom="$space-2">
-    <Text variant="caption" fontSize="0.7rem" color="$color-text-subtle" fontFamily="monospace">
+    <Text fontSize="0.7rem" color="$color-text-subtle" fontFamily="monospace">
       Reblog Post ID: {$props.item.id}
     </Text>
-    <Text variant="caption" fontSize="0.7rem" color="$color-text-subtle" fontFamily="monospace">
+    <Text fontSize="0.7rem" color="$color-text-subtle" fontFamily="monospace">
       Original Post ID: {JSON.parse($props.item.reblog).id}
     </Text>
-    <Text when="{$props.item.reblog_media_type}" variant="caption" fontSize="0.7rem" color="$color-text-subtle" fontFamily="monospace">
+    <Text when="{$props.item.reblog_media_type}" fontSize="0.7rem" color="$color-text-subtle" fontFamily="monospace">
       Media: {$props.item.reblog_media_type} | Preview: {$props.item.reblog_preview_url ? 'Yes' : 'No'} | Original: {$props.item.reblog_media_url ? 'Yes' : 'No'}
     </Text>
   </VStack>
