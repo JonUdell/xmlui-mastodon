@@ -1,6 +1,8 @@
 # Contents
 
 - [Purpose](#purpose)
+- [Snapshot 42: Compact timeline](#snapshot-42-compact-timeline)
+- [Snapshot 41: Implement compose](#snapshot-41-implement-compose)
 - [Snapshot 40: Fix UX lag](#snapshot-40-fix-ux-lag)
 - [Snapshot 39: Refine search display and open modal to view and interact](#snapshot-39-refine-search-display-and-open-modal-to-view-and-interact)
 - [Snapshot 38: Refine FTS sync](#snapshot-38-refine-fts-sync)
@@ -47,6 +49,159 @@
 We are going to improve [steampipe-mod-mastodon-insights](https://github.com/turbot/steampipe-mod-mastodon-insights), with special focus on realizing the design approach discussed in [A Bloomberg terminal for Mastodon](https://blog.jonudell.net/2022/12/17/a-bloomberg-terminal-for-mastodon/). XMLUI gives us many more degrees of freedom to improve on the original bare-bones Powerpipe dashboard. Both projects use the same Mastodon API access, abstracted as a set of Postgres tables provided by [steampipe-plugin-mastodon](https://github.com/turbot/steampipe-plugin-mastodon).
 
 This should result in a beautiful Mastodon reader which, because database backed, will also (unlike the stock Mastodon client or others like Elk and Mona) have a long memory and enable powerful search and data visualization.
+
+# Snapshot 42: Compact timeline
+
+In this iteration we experimented with timeline compression to maximize information density, ultimately simplifying to a single balanced display mode after discovering the complexity wasn't worth the maintenance burden.
+
+## The Journey: From Simple Toggle to Complex Modes to Simple Again
+
+**Phase 1: Binary Compact Mode (commit 121adae)**
+
+We started with a simple approach: a binary toggle between normal and compact display modes. The compact mode removed vertical spacing from Markdown content using Theme variables:
+
+```xmlui
+<Fragment when="{toolsState.value.compact}">
+  <Theme
+    marginTop-Text-markdown="0"
+    marginBottom-Text-markdown="0"
+    paddingTop-Markdown="0"
+    paddingBottom-Markdown="0"
+  >
+    <Markdown content="{$props.item.content}" />
+  </Theme>
+</Fragment>
+```
+
+**Phase 2: Three-Mode Display System (commits 703de60 - aae084b)**
+
+We expanded to three display modes (minimal, compact, normal) with increasingly sophisticated conditional logic:
+
+- **Minimal Mode**: Zero spacing, no avatars, smallest fonts (0.7rem), no images
+- **Compact Mode**: Moderate spacing, no avatars, small fonts, images visible
+- **Normal Mode**: Full spacing, avatars visible, standard fonts (0.75rem), images visible
+
+Each mode required:
+- Separate Theme blocks with different spacing values for Markdown content
+- Conditional avatar rendering based on displayMode
+- Dynamic font size selection via ternary operators
+- Conditional image display
+- Propagating displayMode props through component hierarchy (ReblogHeader)
+- Conditional spacing props on Reactions component
+
+This created significant complexity across RegularPost, ReblogPost, ReblogHeader, and Tools components, with over 100 lines of conditional rendering logic.
+
+**Phase 3: Simplification and Convergence (commits 7afbf53 - 541f8f6)**
+
+After living with the three-mode system, we realized:
+- Users rarely changed modes once set
+- The minimal mode was too dense, sacrificing readability
+- The differences between compact and normal were subtle
+- The maintenance burden of parallel code paths wasn't justified
+
+We simplified by:
+1. Removing all displayMode conditional logic
+2. Converging on "normal" mode settings as the single implementation
+3. Removing the display mode selector from Tools
+4. Eliminating displayMode from AppState
+
+## Typography and Spacing Improvements
+
+**Line Height Discovery**
+
+During compression experiments, we discovered a readability issue: Mastodon content with `<br>` tags created insufficient paragraph spacing. We addressed this with:
+
+1. **Theme-based line height**: Added `lineHeight-Text="1.2"` to Theme blocks wrapping Markdown content
+
+2. **HTML normalization**: Created `window.normalizeParagraphs()` to transform `<br>` tags into double newlines before Markdown rendering:
+   ```javascript
+   window.normalizeParagraphs = function(htmlContent) {
+     if (!htmlContent) return htmlContent;
+     return htmlContent.replace(/<br\s*\/?>/gi, '\n\n');
+      }
+   ```
+
+3. **Applied consistently**: Used the transform in RegularPost, ReblogPost, and Notifications components
+
+**Fragment Normalization**
+
+As part of simplification, we cleaned up unnecessary Fragment wrappers:
+- Replaced single-child Fragments with direct component rendering using `when` attributes
+- Example: `<Fragment when="{condition}"><Image .../></Fragment>` became `<Image when="{condition}" .../>`
+- This reduced nesting and improved code clarity
+
+## Final Architecture
+
+**Standardized Spacing:**
+- VStack gaps: `$space-0_5` to `$space-2`
+- HStack gaps: `$space-1` to `$space-3`
+- Markdown margins: `marginTop-Text-markdown="$space-1"`, `marginBottom-Text-markdown="$space-2"`
+- Blockquote spacing: proper padding and margins for visual hierarchy
+
+**Consistent Typography:**
+- Timestamps: `0.75rem`
+- Display names: `0.75rem` (strong weight)
+- Usernames: `0.75rem` (caption variant)
+- Reblog usernames: `0.65rem` (secondary hierarchy)
+
+**Always Visible Elements:**
+- Avatars render in all contexts
+- Images display when available
+- Reactions use fixed spacing
+
+
+
+# Snapshot 41: Implement compose
+
+In this iteration we added a Compose component that enables users to publish posts directly from the XMLUI Mastodon client.
+
+**Key Features:**
+
+- **Direct API integration**: Uses APICall component to POST to Mastodon's `/api/v1/statuses` endpoint with proper Bearer token authentication
+
+- **Form validation**: Implements client-side validation in `beforeRequest` event handler:
+  - Prevents empty posts
+  - Enforces 500 character limit
+  - Provides immediate user feedback
+
+- **Real-time character counter**: Shows character count with color-coded warnings:
+  - Normal state: subtle text color
+  - Warning state (>400 chars): warning color
+  - Danger state (>450 chars): danger color with bold weight
+
+- **User experience enhancements**:
+  - Auto-sizing TextArea that grows with content (minRows="3", maxRows="10")
+  - Auto-focus on page load for immediate typing
+  - Disabled submit button when invalid (empty or over limit)
+  - Clear status messages for success/error states
+  - Automatic content clearing after successful publish
+
+- **Privacy-first default**: Posts are published with `visibility: 'direct'` (private messages) to ensure users don't accidentally post publicly while testing
+
+**Component State Management:**
+
+Uses component variables for local state:
+- `var.postContent`: Stores the post text
+- `var.isPublishing`: Tracks publishing status to prevent double-submission
+- `var.publishStatus`: Displays success/error messages
+- `var.currentLength`: Powers the character counter
+
+**Event-Driven Architecture:**
+
+Leverages XMLUI's APICall event system:
+- `beforeRequest`: Validates content and can cancel the request
+- `success`: Clears form and shows success message
+- `error`: Displays error details to user
+
+**UI Layout:**
+
+Uses right-aligned controls for a clean composition interface:
+- Full-width TextArea for content
+- Character counter aligned right
+- Status messages aligned right
+- Publish button aligned right
+
+This implementation demonstrates best practices for form handling in XMLUI, including proper validation, user feedback, and API integration using documented components and event patterns.
 
 # Snapshot 40: Fix UX lag
 
