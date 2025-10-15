@@ -92,7 +92,7 @@
     </event>
   </APICall>
 
-  <VStack marginBottom="{$props.spacing || '$space-4'}">
+  <VStack marginBottom="$space-4">
     <HStack verticalAlignment="center" gap="$space-3">
       <HStack verticalAlignment="center" gap="$space-1">
         <SocialButton icon="reply" />

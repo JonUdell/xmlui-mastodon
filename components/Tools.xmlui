@@ -31,17 +31,6 @@
       onDidChange="(value) => { window.setTruncateLinks(value); toolsState.update({ truncateLinks: value }); }"
     />
 
-    <ContentSeparator />
 
-    <Select
-      when="{['/', '/notifications'].includes($pathname)}"
-      label="Display mode"
-      initialValue="{toolsState.value.displayMode || 'normal'}"
-      onDidChange="(value) => { toolsState.update({ displayMode: value }); }"
-    >
-      <Option value="minimal">Minimal</Option>
-      <Option value="compact">Compact</Option>
-      <Option value="normal">Normal</Option>
-    </Select>
 
 </Component>

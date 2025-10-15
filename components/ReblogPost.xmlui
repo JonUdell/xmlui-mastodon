@@ -14,43 +14,10 @@
     </Text>
   </VStack>
 
-  <VStack gap="{toolsState.value.displayMode === 'minimal' ? '$space-0' : toolsState.value.displayMode === 'compact' ? '$space-1' : '$space-1'}">
-    <ReblogHeader item="{$props.item}" displayMode="{toolsState.value.displayMode || 'minimal'}" />
+  <VStack gap="$space-1">
+    <ReblogHeader item="{$props.item}" />
 
     <Theme
-      when="{toolsState.value.displayMode === 'minimal'}"
-      lineHeight-Text="1.2"
-      marginTop-Text-markdown="$space-0"
-      marginBottom-Text-markdown="$space-0"
-      paddingTop-Markdown="$space-0"
-      paddingBottom-Markdown="$space-0"
-      marginTop-Blockquote="$space-0"
-      marginBottom-Blockquote="$space-0"
-      paddingTop-Blockquote="$space-0"
-      paddingBottom-Blockquote="$space-0"
-      paddingHorizontal-Blockquote="$space-2"
-    >
-      <Markdown content="{$props.item.reblog_content}" />
-    </Theme>
-
-    <Theme
-      when="{toolsState.value.displayMode === 'compact'}"
-      lineHeight-Text="1.2"
-      marginTop-Text-markdown="$space-1"
-      marginBottom-Text-markdown="$space-2"
-      paddingTop-Markdown="$space-0"
-      paddingBottom-Markdown="$space-0"
-      marginTop-Blockquote="$space-2"
-      marginBottom-Blockquote="$space-2"
-      paddingTop-Blockquote="$space-1"
-      paddingBottom-Blockquote="$space-1"
-      paddingHorizontal-Blockquote="$space-3"
-    >
-      <Markdown content="{$props.item.reblog_content}" />
-    </Theme>
-
-    <Theme
-      when="{toolsState.value.displayMode === 'normal'}"
       lineHeight-Text="1.2"
       marginTop-Text-markdown="$space-1"
       marginBottom-Text-markdown="$space-2"
@@ -66,7 +33,7 @@
     </Theme>
 
     <ImageWithModal
-      when="{$props.item.reblog_preview_url && (toolsState.value.displayMode === 'compact' || toolsState.value.displayMode === 'normal')}"
+      when="{$props.item.reblog_preview_url}"
       src="{$props.item.reblog_preview_url}"
       mediaUrl="{$props.item.reblog_media_url}"
       mediaType="{$props.item.reblog_media_type}"
@@ -77,9 +44,6 @@
       <Link target="_blank" icon="binding" to="{JSON.parse($props.item.reblog).url}" />
     </Tooltip>
 
-    <Reactions
-      item="{$props.item}"
-      spacing="{toolsState.value.displayMode === 'minimal' ? '$space-1' : toolsState.value.displayMode === 'compact' ? '$space-3' : '$space-4'}"
-    />
+    <Reactions item="{$props.item}" />
   </VStack>
 </Component>
