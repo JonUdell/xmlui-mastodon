@@ -63,9 +63,9 @@
                 autoSize="true"
                 minRows="3"
                 maxRows="10"
-                maxLength="500"
                 width="100%"
-                onDidChange="currentLength = postTextArea.value ? postTextArea.value.length : 0"
+                onDidChange="postContent = postTextArea.value || ''"
+                value="{postContent}"
             />
 
             <!-- Character counter -->
@@ -74,13 +74,18 @@
                     Posts will be sent as direct messages (private)
                 </Text>
                 <SpaceFiller />
-                <Text
-                    variant="caption"
-                    color="{currentLength > 450 ? '$color-danger' : currentLength > 400 ? '$color-warn' : '$textColor-subtitle'}"
-                    fontWeight="{currentLength > 400 ? 'bold' : 'normal'}"
-                >
-                    {currentLength} / 500 characters
-                </Text>
+                <HStack gap="$space-1">
+                    <Text
+                        variant="caption"
+                        color="{(postTextArea.value ? postTextArea.value.length : 0) > 500 ? '$color-danger' : '$textColor-subtitle'}"
+                        fontWeight="{(postTextArea.value ? postTextArea.value.length : 0) > 500 ? 'bold' : 'normal'}"
+                    >
+                        {postTextArea.value ? postTextArea.value.length : 0}
+                    </Text>
+                    <Text variant="caption" color="$textColor-subtitle">
+                        / 500
+                    </Text>
+                </HStack>
             </HStack>
 
             <!-- Status message -->
@@ -99,7 +104,7 @@
                     postContent = postTextArea.value;
                     publishPostAPI.execute();
                 }"
-                enabled="{!isPublishing && currentLength > 0 && currentLength <= 500}"
+                enabled="{!isPublishing && (postTextArea.value ? postTextArea.value.length : 0) > 0 && (postTextArea.value ? postTextArea.value.length : 0) <= 500}"
             />
         </VStack>
     </VStack>
