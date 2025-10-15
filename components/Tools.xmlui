@@ -36,7 +36,7 @@
     <Select
       when="{['/', '/notifications'].includes($pathname)}"
       label="Display mode"
-      initialValue="{toolsState.value.displayMode || 'minimal'}"
+      initialValue="{toolsState.value.displayMode || 'normal'}"
       onDidChange="(value) => { toolsState.update({ displayMode: value }); }"
     >
       <Option value="minimal">Minimal</Option>

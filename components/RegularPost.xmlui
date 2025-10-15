@@ -22,7 +22,7 @@
 -->
 
   <!-- Regular post header with timestamp on its own line -->
-  <VStack gap="{toolsState.value.displayMode === 'minimal' ? '$space-0' : toolsState.value.displayMode === 'compact' ? '$space-1' : '$space-1'}">
+  <VStack gap="{toolsState.value.displayMode === 'minimal' ? '$space-0' : toolsState.value.displayMode === 'compact' ? '$space-0_5' : '$space-0_5'}">
     <!-- Debug info -->
     <VStack when="{$props.debugMode}" gap="$space-0_5">
       <Text variant="caption" fontSize="0.7rem" color="$color-text-subtle" fontFamily="monospace">
