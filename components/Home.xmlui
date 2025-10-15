@@ -6,7 +6,7 @@
 <DataSource
   id="ephemeralToots"
   url="{ window.query }"
-  body="{ window.tootsHome(10) }"
+  body="{ window.tootsHome(50) }"
   method="POST"
   onLoaded="(data) => {
     window.ephemeralData = data;

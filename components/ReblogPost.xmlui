@@ -29,7 +29,7 @@
       paddingBottom-Blockquote="$space-1"
       paddingHorizontal-Blockquote="$space-3"
     >
-      <Markdown content="{$props.item.reblog_content}" />
+      <Markdown content="{window.normalizeParagraphs($props.item.reblog_content)}" />
     </Theme>
 
     <ImageWithModal

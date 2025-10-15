@@ -1052,6 +1052,12 @@ window.logReactivity = {
       return html.replace(/<[^>]*>/g, '').trim();
     }
 
+    window.normalizeParagraphs = function(htmlContent) {
+      if (!htmlContent) return htmlContent;
+      // Replace <br> or <br/> or <br /> with double newlines to create paragraph breaks
+      return htmlContent.replace(/<br\s*\/?>/gi, '\n\n');
+    }
+
     // FTS (Full-Text Search) Infrastructure
 
     window.createFTSToots = function () {
