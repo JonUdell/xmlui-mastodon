@@ -97,34 +97,16 @@
             </HStack>
 
             <!-- Visibility explanation -->
-            <ExpandableItem summary="About post visibility" width="100%">
-                <VStack gap="$space-2" paddingTop="$space-1">
-                    <VStack gap="$space-1">
-                        <Text variant="strong">Public</Text>
-                        <Text variant="caption" color="$textColor-subtitle">
-                            Visible to everyone. Appears in public timelines and can be boosted by others.
-                        </Text>
+            <VStack width="100%" fontSize="$fontSize-xs">
+                <ExpandableItem summary="About post visibility">
+                    <VStack gap="$space-0_5" paddingTop="$space-1">
+                        <Text>Public: Everyone can see. Appears in timelines.</Text>
+                        <Text>Unlisted: Everyone can see. Not in public timelines.</Text>
+                        <Text>Followers only: Only followers and mentioned users.</Text>
+                        <Text>Direct message: Only mentioned users. Private.</Text>
                     </VStack>
-                    <VStack gap="$space-1">
-                        <Text variant="strong">Unlisted</Text>
-                        <Text variant="caption" color="$textColor-subtitle">
-                            Visible to everyone but does not appear in public timelines. Can still be boosted.
-                        </Text>
-                    </VStack>
-                    <VStack gap="$space-1">
-                        <Text variant="strong">Followers only</Text>
-                        <Text variant="caption" color="$textColor-subtitle">
-                            Only visible to your followers and mentioned users. Cannot be boosted.
-                        </Text>
-                    </VStack>
-                    <VStack gap="$space-1">
-                        <Text variant="strong">Direct message</Text>
-                        <Text variant="caption" color="$textColor-subtitle">
-                            Only visible to mentioned users. Private conversation that cannot be boosted or appear in timelines.
-                        </Text>
-                    </VStack>
-                </VStack>
-            </ExpandableItem>
+                </ExpandableItem>
+            </VStack>
 
             <!-- Status message -->
             <Text
