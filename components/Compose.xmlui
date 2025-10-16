@@ -1,5 +1,10 @@
-<Component name="Compose" var.postContent="" var.isPublishing="{false}" var.publishStatus="" var.currentLength="{0}" var.visibility="direct">
-
+<Component
+    name="Compose"
+    var.postContent=""
+    var.isPublishing="{false}"
+    var.publishStatus=""
+    var.currentLength="{0}"
+    var.visibility="direct">
     <!-- APICall component for publishing posts -->
     <APICall
         id="publishPostAPI"
@@ -15,8 +20,7 @@
         }}"
         completedNotificationMessage="Post published successfully!"
         errorNotificationMessage="Failed to publish post: {$error.details || $error.message}"
-        inProgressNotificationMessage="Publishing post..."
-    >
+        inProgressNotificationMessage="Publishing post...">
         <event name="beforeRequest">
             isPublishing = true;
             publishStatus = '';
@@ -34,7 +38,6 @@
                 return false; // Prevent request
             }
         </event>
-
         <event name="success">
             isPublishing = false;
             publishStatus = 'Post published successfully!';
@@ -42,17 +45,14 @@
             postTextArea.value = '';
             currentLength = 0;
         </event>
-
         <event name="error">
             isPublishing = false;
             console.error('Publish error:', $error);
             publishStatus = `Error: ${$error.message || $error.error || JSON.stringify($error)}`;
         </event>
     </APICall>
-
     <!-- Post composition area -->
     <VStack gap="$space-2">
-
         <!-- Text input and controls aligned to the right -->
         <VStack gap="$space-2" horizontalAlignment="end" width="100%">
             <!-- Text input area -->
@@ -65,34 +65,33 @@
                 maxRows="10"
                 width="100%"
                 onDidChange="postContent = postTextArea.value || ''"
-                value="{postContent}"
-            />
-
+                value="{postContent}" />
             <!-- Visibility selector and character counter -->
             <HStack width="100%" gap="$space-2" verticalAlignment="center">
-                <Select
-                    id="visibilitySelect"
-                    initialValue="direct"
-                    placeholder="Visibility"
-                    onDidChange="(newValue) => visibility = newValue"
-                    width="180px"
-                    fontSize="$fontSize-xs"
-                >
-                    <property name="optionTemplate">
-                        <Text fontSize="$fontSize-xs">{$item.label}</Text>
-                    </property>
-                    <Option value="public" label="Public" />
-                    <Option value="unlisted" label="Unlisted" />
-                    <Option value="private" label="Followers only" />
-                    <Option value="direct" label="Direct message" />
-                </Select>
+                <Theme fontSize="$fontSize-sm">
+                    <Select
+                        id="visibilitySelect"
+                        initialValue="direct"
+                        placeholder="Visibility"
+                        onDidChange="(newValue) => visibility = newValue"
+                        width="180px">
+                        <property name="optionTemplate">
+                            <Text fontSize="$fontSize-sm">
+                                {$item.label}
+                            </Text>
+                        </property>
+                        <Option value="public" label="Public" />
+                        <Option value="unlisted" label="Unlisted" />
+                        <Option value="private" label="Followers only" />
+                        <Option value="direct" label="Direct message" />
+                    </Select>
+                </Theme>
                 <SpaceFiller />
                 <HStack gap="$space-1">
                     <Text
                         variant="caption"
                         color="{(postTextArea.value ? postTextArea.value.length : 0) > 500 ? '$color-danger' : '$textColor-subtitle'}"
-                        fontWeight="{(postTextArea.value ? postTextArea.value.length : 0) > 500 ? 'bold' : 'normal'}"
-                    >
+                        fontWeight="{(postTextArea.value ? postTextArea.value.length : 0) > 500 ? 'bold' : 'normal'}">
                         {postTextArea.value ? postTextArea.value.length : 0}
                     </Text>
                     <Text variant="caption" color="$textColor-subtitle">
@@ -100,43 +99,62 @@
                     </Text>
                 </HStack>
             </HStack>
-
             <!-- Info sections -->
             <VStack width="100%" fontSize="$fontSize-xs" gap="$space-1">
                 <ExpandableItem summary="Supported markdown formatting">
                     <VStack gap="$space-1" paddingTop="$space-1">
                         <VStack gap="$space-0_5">
-                            <Text>**bold** - Bold text</Text>
-                            <Text>*italic* - Italic text</Text>
-                            <Text>***bold italic*** - Bold and italic</Text>
-                            <Text>`inline code` - Code with background</Text>
-                            <Text>```code block``` - Multi-line code</Text>
-                            <Text>https://example.com - Auto-linked URLs</Text>
+                            <Text>
+                                **bold** - Bold text
+                            </Text>
+                            <Text>
+                                *italic* - Italic text
+                            </Text>
+                            <Text>
+                                ***bold italic*** - Bold and italic
+                            </Text>
+                            <Text>
+                                `inline code` - Code with background
+                            </Text>
+                            <Text>
+                                ```code block``` - Multi-line code
+                            </Text>
+                            <Text>
+                                https://example.com - Auto-linked URLs
+                            </Text>
                         </VStack>
-                        <Image src="/resources/supported-markdown.png" width="100%" />
-                        <Text variant="strong">Note: Headings (#), lists, and --- do not format</Text>
+                        <Image
+                            src="/resources/supported-markdown.png"
+                            width="100%" />
+                        <Text variant="strong">
+                            Note: Headings (#), lists, and --- do not format
+                        </Text>
                     </VStack>
                 </ExpandableItem>
-
                 <ExpandableItem summary="About post visibility">
                     <VStack gap="$space-0_5" paddingTop="$space-1">
-                        <Text>Public: Everyone can see. Appears in timelines.</Text>
-                        <Text>Unlisted: Everyone can see. Not in public timelines.</Text>
-                        <Text>Followers only: Only followers and mentioned users.</Text>
-                        <Text>Direct message: Only mentioned users. Private.</Text>
+                        <Text>
+                            Public: Everyone can see. Appears in timelines.
+                        </Text>
+                        <Text>
+                            Unlisted: Everyone can see. Not in public timelines.
+                        </Text>
+                        <Text>
+                            Followers only: Only followers and mentioned users.
+                        </Text>
+                        <Text>
+                            Direct message: Only mentioned users. Private.
+                        </Text>
                     </VStack>
                 </ExpandableItem>
             </VStack>
-
             <!-- Status message -->
             <Text
                 when="{publishStatus}"
                 variant="caption"
-                color="{publishStatus.includes('Error') || publishStatus.includes('cannot') || publishStatus.includes('exceeds') ? '$color-danger' : '$color-success'}"
-            >
+                color="{publishStatus.includes('Error') || publishStatus.includes('cannot') || publishStatus.includes('exceeds') ? '$color-danger' : '$color-success'}">
                 {publishStatus}
             </Text>
-
             <!-- Publish button -->
             <Button
                 label="{isPublishing ? 'Publishing...' : 'Publish Post'}"
@@ -144,9 +162,7 @@
                     postContent = postTextArea.value;
                     publishPostAPI.execute();
                 }"
-                enabled="{!isPublishing && (postTextArea.value ? postTextArea.value.length : 0) > 0 && (postTextArea.value ? postTextArea.value.length : 0) <= 500}"
-            />
+                enabled="{!isPublishing && (postTextArea.value ? postTextArea.value.length : 0) > 0 && (postTextArea.value ? postTextArea.value.length : 0) <= 500}" />
         </VStack>
     </VStack>
-
 </Component>
