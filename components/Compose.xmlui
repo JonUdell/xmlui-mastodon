@@ -52,7 +52,7 @@
 
     <!-- Post composition area -->
     <VStack gap="$space-2">
-    
+
         <!-- Text input and controls aligned to the right -->
         <VStack gap="$space-2" horizontalAlignment="end" width="100%">
             <!-- Text input area -->
@@ -70,7 +70,7 @@
 
             <!-- Visibility selector and character counter -->
             <HStack width="100%" gap="$space-2" verticalAlignment="center">
-                <Select 
+                <Select
                     id="visibilitySelect"
                     initialValue="direct"
                     placeholder="Visibility"
@@ -104,18 +104,20 @@
             <!-- Info sections -->
             <VStack width="100%" fontSize="$fontSize-xs" gap="$space-1">
                 <ExpandableItem summary="Supported markdown formatting">
-                    <VStack gap="$space-0_5" paddingTop="$space-1">
-                        <Text>**bold** or __bold__ - Bold text</Text>
-                        <Text>*italic* or _italic_ - Italic text</Text>
-                        <Text>***bold italic*** - Bold and italic</Text>
-                        <Text>`inline code` - Code with background</Text>
-                        <Text>```code block``` - Multi-line code</Text>
-                        <Text>&gt; blockquote - Quoted text</Text>
-                        <Text>https://example.com - Auto-linked URLs</Text>
-                        <Text>Note: Headings (#), lists, and --- do not format</Text>
+                    <VStack gap="$space-1" paddingTop="$space-1">
+                        <VStack gap="$space-0_5">
+                            <Text>**bold** - Bold text</Text>
+                            <Text>*italic* - Italic text</Text>
+                            <Text>***bold italic*** - Bold and italic</Text>
+                            <Text>`inline code` - Code with background</Text>
+                            <Text>```code block``` - Multi-line code</Text>
+                            <Text>https://example.com - Auto-linked URLs</Text>
+                        </VStack>
+                        <Image src="/resources/supported-markdown.png" width="100%" />
+                        <Text variant="strong">Note: Headings (#), lists, and --- do not format</Text>
                     </VStack>
                 </ExpandableItem>
-                
+
                 <ExpandableItem summary="About post visibility">
                     <VStack gap="$space-0_5" paddingTop="$space-1">
                         <Text>Public: Everyone can see. Appears in timelines.</Text>

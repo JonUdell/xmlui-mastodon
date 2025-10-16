@@ -1,6 +1,7 @@
 # Contents
 
 - [Purpose](#purpose)
+- [Snapshot 43: Use Markdown subset](#snapshot-43-use-markdown-subset)
 - [Snapshot 42: Compact timeline](#snapshot-42-compact-timeline)
 - [Snapshot 41: Implement compose](#snapshot-41-implement-compose)
 - [Snapshot 40: Fix UX lag](#snapshot-40-fix-ux-lag)
@@ -49,6 +50,30 @@
 We are going to improve [steampipe-mod-mastodon-insights](https://github.com/turbot/steampipe-mod-mastodon-insights), with special focus on realizing the design approach discussed in [A Bloomberg terminal for Mastodon](https://blog.jonudell.net/2022/12/17/a-bloomberg-terminal-for-mastodon/). XMLUI gives us many more degrees of freedom to improve on the original bare-bones Powerpipe dashboard. Both projects use the same Mastodon API access, abstracted as a set of Postgres tables provided by [steampipe-plugin-mastodon](https://github.com/turbot/steampipe-plugin-mastodon).
 
 This should result in a beautiful Mastodon reader which, because database backed, will also (unlike the stock Mastodon client or others like Elk and Mona) have a long memory and enable powerful search and data visualization.
+
+# Snapshot 43: Use Markdown subset
+
+Discovered that vanilla Mastodon supports a limited markdown subset for post composition. While investigating markdown-to-HTML conversion approaches, learned that:
+
+- Vanilla Mastodon does NOT accept HTML in the `status` field - it escapes and displays it as plain text
+- Mastodon accepts plain text with markdown syntax and renders it server-side
+- Only Pleroma/Akkoma instances support custom content types via `content_type` parameter
+
+**Supported markdown formatting:**
+- Bold: `**text**` or `__text__`
+- Italic: `*text*` or `_text_`  
+- Bold+Italic: `***text***`
+- Inline code: `` `code` ``
+- Code blocks: ``` (on separate lines)
+- Auto-linked URLs
+
+**Not supported:**
+- Headings (`#`)
+- Lists (bullet/numbered)
+- Blockquotes (`>`)
+- Horizontal rules (`---`)
+
+Added expandable documentation in Compose component showing supported syntax with visual reference image. Users can now compose formatted posts using this markdown subset without needing external tools.
 
 # Snapshot 42: Compact timeline
 
