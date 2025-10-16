@@ -45,7 +45,8 @@
 
         <event name="error">
             isPublishing = false;
-            publishStatus = `Error: ${$error.details || $error.message}`;
+            console.error('Publish error:', $error);
+            publishStatus = `Error: ${$error.message || $error.error || JSON.stringify($error)}`;
         </event>
     </APICall>
 
@@ -75,7 +76,11 @@
                     placeholder="Visibility"
                     onDidChange="(newValue) => visibility = newValue"
                     width="180px"
+                    fontSize="$fontSize-xs"
                 >
+                    <property name="optionTemplate">
+                        <Text fontSize="$fontSize-xs">{$item.label}</Text>
+                    </property>
                     <Option value="public" label="Public" />
                     <Option value="unlisted" label="Unlisted" />
                     <Option value="private" label="Followers only" />
@@ -96,8 +101,21 @@
                 </HStack>
             </HStack>
 
-            <!-- Visibility explanation -->
-            <VStack width="100%" fontSize="$fontSize-xs">
+            <!-- Info sections -->
+            <VStack width="100%" fontSize="$fontSize-xs" gap="$space-1">
+                <ExpandableItem summary="Supported markdown formatting">
+                    <VStack gap="$space-0_5" paddingTop="$space-1">
+                        <Text>**bold** or __bold__ - Bold text</Text>
+                        <Text>*italic* or _italic_ - Italic text</Text>
+                        <Text>***bold italic*** - Bold and italic</Text>
+                        <Text>`inline code` - Code with background</Text>
+                        <Text>```code block``` - Multi-line code</Text>
+                        <Text>&gt; blockquote - Quoted text</Text>
+                        <Text>https://example.com - Auto-linked URLs</Text>
+                        <Text>Note: Headings (#), lists, and --- do not format</Text>
+                    </VStack>
+                </ExpandableItem>
+                
                 <ExpandableItem summary="About post visibility">
                     <VStack gap="$space-0_5" paddingTop="$space-1">
                         <Text>Public: Everyone can see. Appears in timelines.</Text>
