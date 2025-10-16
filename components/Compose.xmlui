@@ -68,13 +68,14 @@
                 value="{postContent}" />
             <!-- Visibility selector and character counter -->
             <HStack width="100%" gap="$space-2" verticalAlignment="center">
-                <Theme fontSize="$fontSize-sm">
+                <Theme fontSize="$fontsize-sm" padding-Select="$space-1_5">
                     <Select
                         id="visibilitySelect"
                         initialValue="direct"
                         placeholder="Visibility"
                         onDidChange="(newValue) => visibility = newValue"
-                        width="180px">
+                        width="180px"
+                        >
                         <property name="optionTemplate">
                             <Text fontSize="$fontSize-sm">
                                 {$item.label}
