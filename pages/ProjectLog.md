@@ -61,7 +61,7 @@ Discovered that vanilla Mastodon supports a limited markdown subset for post com
 
 **Supported markdown formatting:**
 - Bold: `**text**` or `__text__`
-- Italic: `*text*` or `_text_`  
+- Italic: `*text*` or `_text_`
 - Bold+Italic: `***text***`
 - Inline code: `` `code` ``
 - Code blocks: ``` (on separate lines)
@@ -73,7 +73,7 @@ Discovered that vanilla Mastodon supports a limited markdown subset for post com
 - Blockquotes (`>`)
 - Horizontal rules (`---`)
 
-Added expandable documentation in Compose component showing supported syntax with visual reference image. Users can now compose formatted posts using this markdown subset without needing external tools.
+Added expandable documentation in Compose component showing supported syntax with visual reference image. Users can now compose formatted posts using this markdown subset without needing external tools. Since Mastodon returns HTML we added a function, `htmlToMarkdown` so our client gets raw Markdown text. XMLUI's Markdown component does handle a lof HTML tags but for this purpose works better to send it only Markdown.
 
 # Snapshot 42: Compact timeline
 
