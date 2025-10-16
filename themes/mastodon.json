@@ -1,0 +1,11 @@
+{
+  "name": "Mastodon Theme",
+  "id": "mastodon",
+  "themeVars": {
+    "fontSize-Text-mastodon": "$fontSize-sm",
+    "fontColor-Text-mastodon": "$color-text-subtle",
+    "letterSpacing-Text-mastodon": "0.05rem",
+    "marginTop-Text-mastodon": "-$space-2",
+    "marginBottom-Text-mastodon": "0"
+  }
+}
