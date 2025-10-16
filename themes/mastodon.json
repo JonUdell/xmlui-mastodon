@@ -2,7 +2,8 @@
   "name": "Mastodon Theme",
   "id": "mastodon",
   "themeVars": {
-     "fontSize-Text-mastodon": "$fontSize-xs",
-     "textColor-Text-mastodon": "$color-surface-600"
+     "fontSize-Text-mastodon-timestamp": "$fontSize-xs",
+     "textColor-Text-mastodon-timestamp": "$color-surface-600",
+     "fontSize-Text-mastodon-user": "$fontSize-xs"
   }
 }

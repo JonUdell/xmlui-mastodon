@@ -2,7 +2,7 @@
   <!-- Reblog header with timestamp on its own line -->
   <VStack gap="$space-1">
     <!-- Timestamp line -->
-    <Text variant="mastodon">
+    <Text variant="mastodon-timestamp">
       {formatHumanElapsedTime($props.item.created_at ? $props.item.created_at.replace(' ', 'T') + 'Z' : 'Unknown time')}
     </Text>
 
@@ -17,8 +17,8 @@
           item="{$props.item}"
         />
         <VStack gap="$gap-none">
-          <Text variant="mastodon">{window.getDisplayName($props.item) || $props.item.author_name}</Text>
-          <Text when="{window.getUsername($props.item)}" variant="mastodon">@{window.getUsername($props.item)}</Text>
+          <Text variant="mastodon-user">{window.getDisplayName($props.item) || $props.item.author_name}</Text>
+          <Text when="{window.getUsername($props.item)}" variant="mastodon-user">@{window.getUsername($props.item)}</Text>
         </VStack>
       </HStack>
       <SocialButton icon="arrowright" />
@@ -31,8 +31,8 @@
           item="{$props.item}"
         />
         <VStack gap="$gap-none">
-          <Text variant="mastodon">{window.getReblogDisplayName($props.item) || $props.item.reblog_author_name}</Text>
-          <Text when="{window.getReblogUsername($props.item)}" variant="mastodon">@{window.getReblogUsername($props.item)}</Text>
+          <Text variant="mastodon-user">{window.getReblogDisplayName($props.item) || $props.item.reblog_author_name}</Text>
+          <Text when="{window.getReblogUsername($props.item)}" variant="mastodon-user">@{window.getReblogUsername($props.item)}</Text>
         </VStack>
       </HStack>
     </HStack>
