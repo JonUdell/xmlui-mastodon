@@ -1,40 +1,51 @@
 <Component name="ReblogHeader">
   <!-- Reblog header with timestamp on its own line -->
   <VStack gap="$space-1">
-    <!-- Timestamp line -->
-    <Text variant="caption" fontSize="0.75rem" color="$color-text-subtle">
-      {formatHumanElapsedTime($props.item.created_at ? $props.item.created_at.replace(' ', 'T') + 'Z' : 'Unknown time')}
-    </Text>
-
-    <!-- Avatar and user info line -->
-    <HStack verticalAlignment="center" gap="$space-2" wrapContent="true">
-      <HStack verticalAlignment="center" gap="$space-1_5">
-        <MastodonAvatar
-          when="{$props.item.avatar_url}"
-          url="{$props.item.avatar_url}"
-          size="xs"
-          name="{window.getDisplayName($props.item)}"
-          item="{$props.item}"
-        />
-        <VStack gap="$gap-none">
-          <Text variant="caption" fontSize="0.75rem">{window.getDisplayName($props.item) || $props.item.author_name}</Text>
-          <Text when="{window.getUsername($props.item)}" variant="caption" fontSize="0.75rem" marginTop="-$space-2">@{window.getUsername($props.item)}</Text>
-        </VStack>
+      <!-- Timestamp line -->
+      <Text variant="mastodon">
+        {formatHumanElapsedTime($props.item.created_at ? $props.item.created_at.replace(' ', 'T') + 'Z' : 'Unknown time')}
+      </Text>
+      <!-- Avatar and user info line -->
+      <HStack verticalAlignment="center" gap="$space-2" wrapContent="true">
+        <HStack verticalAlignment="center" gap="$space-1_5">
+          <MastodonAvatar
+            when="{$props.item.avatar_url}"
+            url="{$props.item.avatar_url}"
+            size="xs"
+            name="{window.getDisplayName($props.item)}"
+            item="{$props.item}" />
+          <VStack gap="$gap-none">
+            <Text variant="mastodon">
+              {window.getDisplayName($props.item) || $props.item.author_name}
+            </Text>
+            <Text
+              when="{window.getUsername($props.item)}"
+              variant="mastodon"
+              marginTop="$space-2">
+              @{window.getUsername($props.item)}
+            </Text>
+          </VStack>
+        </HStack>
+        <SocialButton icon="arrowright" />
+        <HStack verticalAlignment="center" gap="$space-2">
+          <MastodonAvatar
+            when="{$props.item.reblog_avatar_url}"
+            url="{$props.item.reblog_avatar_url}"
+            size="xs"
+            name="{window.getReblogDisplayName($props.item)}"
+            item="{$props.item}" />
+          <VStack gap="$gap-none">
+            <Text variant="mastodon">
+              {window.getReblogDisplayName($props.item) || $props.item.reblog_author_name}
+            </Text>
+            <Text
+              variant="mastodon"
+              when="{window.getReblogUsername($props.item)}"
+              marginTop="$space-2">
+              @{window.getReblogUsername($props.item)}
+            </Text>
+          </VStack>
+        </HStack>
       </HStack>
-      <SocialButton icon="arrowright" />
-      <HStack verticalAlignment="center" gap="$space-2">
-        <MastodonAvatar
-          when="{$props.item.reblog_avatar_url}"
-          url="{$props.item.reblog_avatar_url}"
-          size="xs"
-          name="{window.getReblogDisplayName($props.item)}"
-          item="{$props.item}"
-        />
-        <VStack gap="$gap-none">
-          <Text variant="strong" fontSize="0.75rem">{window.getReblogDisplayName($props.item) || $props.item.reblog_author_name}</Text>
-          <Text when="{window.getReblogUsername($props.item)}" variant="caption" fontSize="0.65rem" marginTop="-$space-2">@{window.getReblogUsername($props.item)}</Text>
-        </VStack>
-      </HStack>
-    </HStack>
-  </VStack>
+    </VStack>
 </Component>

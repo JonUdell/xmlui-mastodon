@@ -1,0 +1,8 @@
+{
+  "name": "Mastodon Theme",
+  "id": "mastodon",
+  "themeVars": {
+    "fontSize-Text-mastodon": "$fontSize-sm",
+    "fontColor-Text-mastodon": "$color-text-subtle"
+  }
+}

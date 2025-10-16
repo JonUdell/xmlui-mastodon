@@ -1,6 +1,6 @@
-<Theme width-navPanel-App="{mediaSize.size === 'xs' || mediaSize.size === 'sm' ? '$space-14' : '$space-40'}">
-  <App
-    layout="vertical">
+<App
+  layout="vertical"
+  defaultTheme="mastodon">
 
     <!-- Global debug mode state -->
     <AppState id="debugState" bucket="debugState" initialValue="{ { enabled: false } }" />
@@ -109,4 +109,3 @@
       </Text>
     </Footer>
   </App>
-</Theme>
