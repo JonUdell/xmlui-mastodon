@@ -2,7 +2,7 @@
   <!-- Reblog header with timestamp on its own line -->
   <VStack gap="$space-1">
     <!-- Timestamp line -->
-    <Text variant="caption" fontSize="0.75rem" color="$color-text-subtle">
+    <Text fontSize="$fontSize-xs" color="$color-surface-600">
       {formatHumanElapsedTime($props.item.created_at ? $props.item.created_at.replace(' ', 'T') + 'Z' : 'Unknown time')}
     </Text>
 
@@ -17,8 +17,8 @@
           item="{$props.item}"
         />
         <VStack gap="$gap-none">
-          <Text variant="caption" fontSize="0.75rem">{window.getDisplayName($props.item) || $props.item.author_name}</Text>
-          <Text when="{window.getUsername($props.item)}" variant="caption" fontSize="0.75rem" marginTop="-$space-2">@{window.getUsername($props.item)}</Text>
+          <Text fontSize="$fontSize-xs" color="$color-surface-600">{window.getDisplayName($props.item) || $props.item.author_name}</Text>
+          <Text when="{window.getUsername($props.item)}" fontSize="$fontSize-xs">@{window.getUsername($props.item)}</Text>
         </VStack>
       </HStack>
       <SocialButton icon="arrowright" />
@@ -31,8 +31,8 @@
           item="{$props.item}"
         />
         <VStack gap="$gap-none">
-          <Text variant="strong" fontSize="0.75rem">{window.getReblogDisplayName($props.item) || $props.item.reblog_author_name}</Text>
-          <Text when="{window.getReblogUsername($props.item)}" variant="caption" fontSize="0.65rem" marginTop="-$space-2">@{window.getReblogUsername($props.item)}</Text>
+          <Text fontSize="$fontSize-xs">{window.getReblogDisplayName($props.item) || $props.item.reblog_author_name}</Text>
+          <Text when="{window.getReblogUsername($props.item)}" variant="caption" fontSize="$fontSize-xs">@{window.getReblogUsername($props.item)}</Text>
         </VStack>
       </HStack>
     </HStack>
