@@ -1,4 +1,4 @@
-<Component name="Compose" var.postContent="" var.isPublishing="{false}" var.publishStatus="" var.currentLength="{0}">
+<Component name="Compose" var.postContent="" var.isPublishing="{false}" var.publishStatus="" var.currentLength="{0}" var.visibility="direct">
 
     <!-- APICall component for publishing posts -->
     <APICall
@@ -11,9 +11,9 @@
         }}"
         body="{{
             status: postContent.trim(),
-            visibility: 'direct'
+            visibility: visibility
         }}"
-        completedNotificationMessage="Post published successfully as direct message!"
+        completedNotificationMessage="Post published successfully!"
         errorNotificationMessage="Failed to publish post: {$error.details || $error.message}"
         inProgressNotificationMessage="Publishing post..."
     >
@@ -51,8 +51,7 @@
 
     <!-- Post composition area -->
     <VStack gap="$space-2">
-        <Text variant="strong" fontSize="1.2rem">Compose New Post</Text>
-
+    
         <!-- Text input and controls aligned to the right -->
         <VStack gap="$space-2" horizontalAlignment="end" width="100%">
             <!-- Text input area -->
@@ -68,11 +67,20 @@
                 value="{postContent}"
             />
 
-            <!-- Character counter -->
-            <HStack width="100%">
-                <Text variant="caption" color="$textColor-subtitle">
-                    Posts will be sent as direct messages (private)
-                </Text>
+            <!-- Visibility selector and character counter -->
+            <HStack width="100%" gap="$space-2" verticalAlignment="center">
+                <Select 
+                    id="visibilitySelect"
+                    initialValue="direct"
+                    placeholder="Visibility"
+                    onDidChange="(newValue) => visibility = newValue"
+                    width="180px"
+                >
+                    <Option value="public" label="Public" />
+                    <Option value="unlisted" label="Unlisted" />
+                    <Option value="private" label="Followers only" />
+                    <Option value="direct" label="Direct message" />
+                </Select>
                 <SpaceFiller />
                 <HStack gap="$space-1">
                     <Text
@@ -87,6 +95,36 @@
                     </Text>
                 </HStack>
             </HStack>
+
+            <!-- Visibility explanation -->
+            <ExpandableItem summary="About post visibility" width="100%">
+                <VStack gap="$space-2" paddingTop="$space-1">
+                    <VStack gap="$space-1">
+                        <Text variant="strong">Public</Text>
+                        <Text variant="caption" color="$textColor-subtitle">
+                            Visible to everyone. Appears in public timelines and can be boosted by others.
+                        </Text>
+                    </VStack>
+                    <VStack gap="$space-1">
+                        <Text variant="strong">Unlisted</Text>
+                        <Text variant="caption" color="$textColor-subtitle">
+                            Visible to everyone but does not appear in public timelines. Can still be boosted.
+                        </Text>
+                    </VStack>
+                    <VStack gap="$space-1">
+                        <Text variant="strong">Followers only</Text>
+                        <Text variant="caption" color="$textColor-subtitle">
+                            Only visible to your followers and mentioned users. Cannot be boosted.
+                        </Text>
+                    </VStack>
+                    <VStack gap="$space-1">
+                        <Text variant="strong">Direct message</Text>
+                        <Text variant="caption" color="$textColor-subtitle">
+                            Only visible to mentioned users. Private conversation that cannot be boosted or appear in timelines.
+                        </Text>
+                    </VStack>
+                </VStack>
+            </ExpandableItem>
 
             <!-- Status message -->
             <Text
