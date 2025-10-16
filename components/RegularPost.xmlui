@@ -23,18 +23,8 @@
 
   <!-- Regular post header with timestamp on its own line -->
   <VStack gap="$space-0_5">
-    <!-- Debug info -->
-    <VStack when="{$props.debugMode}" gap="$space-0_5">
-      <Text variant="caption" fontSize="0.7rem" color="$color-text-subtle" fontFamily="monospace">
-        Post ID: {$props.item.id}
-      </Text>
-      <Text when="{$props.item.media_type}" variant="caption" fontSize="0.7rem" color="$color-text-subtle" fontFamily="monospace">
-        Media: {$props.item.media_type} | Preview: {$props.item.preview_url ? 'Yes' : 'No'} | Original: {$props.item.media_url ? 'Yes' : 'No'}
-      </Text>
-    </VStack>
-
     <!-- Timestamp line -->
-    <Text variant="caption" fontSize="0.75rem" color="$color-text-subtle">
+    <Text variant="mastodon">
       {formatHumanElapsedTime($props.item.created_at)}
     </Text>
 
@@ -47,8 +37,8 @@
         item="{$props.item}"
       />
       <HStack gap="$space-2">
-        <Text variant="strong" fontSize="0.75rem">{window.getDisplayName($props.item)}</Text>
-        <Text variant="caption" fontSize="0.75rem">@{window.getUsername($props.item)}</Text>
+        <Text variant="mastodon">{window.getDisplayName($props.item)}</Text>
+        <Text variant="mastodon">@{window.getUsername($props.item)}</Text>
       </HStack>
     </HStack>
 
