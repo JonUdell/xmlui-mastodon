@@ -49,7 +49,7 @@
                 lineHeight-Text="1.2"
                 marginLeft-Image-markdown="$space-0"
               >
-                <Markdown content="{window.normalizeParagraphs($item.status_content)}" />
+                <Markdown content="{window.htmlToMarkdown($item.status_content)}" />
               </Theme>
               <Image when="{$item.preview_url}" src="{$item.preview_url}" width="{toolsState.value.zoom}%" />
             </VStack>

@@ -17,7 +17,7 @@ window.logReactivity = {
   stackTraces: true
 };
 </script>
-  <script src="xmlui/0.10.12.js"></script>
+  <script src="xmlui/0.10.20.js"></script>
   <script src="config.js"></script>
 
   <style>
@@ -1052,11 +1052,37 @@ window.logReactivity = {
       return html.replace(/<[^>]*>/g, '').trim();
     }
 
-    window.normalizeParagraphs = function(htmlContent) {
-      if (!htmlContent) return htmlContent;
-      // Replace <br> or <br/> or <br /> with double newlines to create paragraph breaks
-      return htmlContent.replace(/<br\s*\/?>/gi, '\n\n');
+    window.htmlToMarkdown = function(html) {
+      if (!html) return '';
+
+      // Convert HTML entities to characters
+      let content = html.replace(/&#39;/g, "'")
+                       .replace(/&quot;/g, '"')
+                       .replace(/&amp;/g, '&')
+                       .replace(/&lt;/g, '<')
+                       .replace(/&gt;/g, '>');
+
+      // Remove HTML tags but preserve content
+      content = content.replace(/<p>/gi, '')
+                      .replace(/<\/p>/gi, '\n\n')
+                      .replace(/<br\s*\/?>/gi, '\n\n')
+                      .replace(/<[^>]*>/g, ''); // Remove any remaining HTML tags
+
+      // Clean up extra whitespace
+      content = content.replace(/\n{3,}/g, '\n\n') // Max 2 consecutive newlines
+                      .trim();
+
+      return content;
     }
+
+    /*
+    // Test the function
+    console.log('Testing htmlToMarkdown function...');
+    const testHtml = '<p>**BARACK OBAMA**: If convictions don&#39;t cost anything, then they&#39;re really just kind of fashion. They&#39;re not really convictions. We were so accustomed to things getting better consistently, a little less racist, a little less sexist, less homophobic, a little more generous, that it was easy to say, well, yeah, I&#39;m a progressive. We could take positions on things but they were never really tested.<br />**MARC MARON**: Right.<br />**BARACK OBAMA**: Well, here&#39;s the test.</p>';
+    const testResult = window.htmlToMarkdown(testHtml);
+    console.log('Test input:', testHtml);
+    console.log('Test output:', testResult);
+    */
 
     // FTS (Full-Text Search) Infrastructure
 
