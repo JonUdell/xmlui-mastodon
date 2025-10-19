@@ -1,1 +1,0 @@
-curl -v -X POST "https://pipes.turbot.com/api/latest/user/jonudell/workspace/mastodon/query" -H "Authorization: Bearer tpt_d03d406rhj6c719qtp2g_i2feh6zjlg145ynst5pkh2og" -H "Content-Type: application/json" -d '{"sql": "select * from mastodon_toot_home limit 10" }'

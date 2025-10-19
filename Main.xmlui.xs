@@ -1,3 +1,4 @@
-function setNav(page) {
-  navState.update( { page: page } )
+function sizeIndexOne() {
+  console.log(mediaSize.sizeIndex)
+  return mediaSize.sizeIndex === 1;
 }

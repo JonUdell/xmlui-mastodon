@@ -1,9 +1,16 @@
-<App
-  layout="vertical"
-  defaultTheme="mastodon">
-
+<Theme
+  width-navPanel-App="{mediaSize.sizeIndex <= 1 ? '4rem' : '10rem'}"
+  fontSize-Text-mastodon-timestamp = "$fontSize-xs"
+  textColor-Text-mastodon-timestamp = "$color-surface-600"
+  fontSize-Text-mastodon-user = "$fontSize-xs"
+>
+  <App
+    layout="vertical">
     <!-- Global debug mode state -->
-    <AppState id="debugState" bucket="debugState" initialValue="{ { enabled: false } }" />
+    <AppState
+      id="debugState"
+      bucket="debugState"
+      initialValue="{ { enabled: false } }" />
     <DataSource
       id="data"
       url="{ window.query }"
@@ -34,17 +41,6 @@
       url="{ window.query }"
       body="{ window.customSql('select * from mastodon_my_account') }"
       method="POST" />
-    <!--
-  <AppHeader>
-    <property name="logoTemplate">
-       <Text>xmlui-mastodon</Text>
-    </property>
-    <property name="profileMenuTemplate">
-      <Icon name="cog" size="md" onClick="settingsDialog.open()"
-            when="{['/', '/notifications', '/search', '/projectLog'].includes($pathname)}" />
-    </property>
-  </AppHeader>
-  -->
     <ModalDialog
       id="settingsDialog"
       title="Settings"
@@ -53,16 +49,44 @@
         <Tools />
       </VStack>
     </ModalDialog>
-     <NavPanel>
-      <NavLink label="{mediaSize.size === 'xs' || mediaSize.size === 'sm' ? '' : 'Home'}" to="/" icon="home" tooltip="Home" />
-      <NavLink label="{mediaSize.size === 'xs' || mediaSize.size === 'sm' ? '' : 'Compose'}" to="/compose" icon="plus" tooltip="Compose" />
-      <NavLink label="{mediaSize.size === 'xs' || mediaSize.size === 'sm' ? '' : 'Notifications'}" to="/notifications" icon="info" tooltip="Notifications" />
-      <NavLink label="{mediaSize.size === 'xs' || mediaSize.size === 'sm' ? '' : 'Search'}" to="/search" icon="search" tooltip="Search" />
-      <NavLink label="{mediaSize.size === 'xs' || mediaSize.size === 'sm' ? '' : 'Followers'}" to="/followers" icon="users" tooltip="Followers" />
-      <NavLink label="{mediaSize.size === 'xs' || mediaSize.size === 'sm' ? '' : 'Following'}" to="/following" icon="users" tooltip="Following" />
-      <NavLink label="{mediaSize.size === 'xs' || mediaSize.size === 'sm' ? '' : 'Query'}" to="/query" icon="database" tooltip="Query" />
+    <NavPanel>
       <NavLink
-        label="{mediaSize.size === 'xs' || mediaSize.size === 'sm' ? '' : 'Settings'}"
+        label="{mediaSize.sizeIndex <= 1 ? '' : 'Home'}"
+        to="/"
+        icon="home"
+        tooltip="Home" />
+      <NavLink
+        label="{mediaSize.sizeIndex <= 1 ? '' : 'Compose'}"
+        to="/compose"
+        icon="plus"
+        tooltip="Compose" />
+      <NavLink
+        label="{mediaSize.sizeIndex <= 1 ? '' : 'Notifications'}"
+        to="/notifications"
+        icon="info"
+        tooltip="Notifications" />
+      <NavLink
+        label="{mediaSize.sizeIndex <= 1 ? '' : 'Search'}"
+        to="/search"
+        icon="search"
+        tooltip="Search" />
+      <NavLink
+        label="{mediaSize.sizeIndex <= 1 ? '' : 'Followers'}"
+        to="/followers"
+        icon="users"
+        tooltip="Followers" />
+      <NavLink
+        label="{mediaSize.sizeIndex <= 1 ? '' : 'Following'}"
+        to="/following"
+        icon="users"
+        tooltip="Following" />
+      <NavLink
+        label="{mediaSize.sizeIndex <= 1 ? '' : 'Query'}"
+        to="/query"
+        icon="database"
+        tooltip="Query" />
+      <NavLink
+        label="{mediaSize.sizeIndex <= 1 ? '' : 'Settings'}"
         icon="cog"
         onClick="settingsDialog.open()"
         tooltip="Settings"
@@ -109,3 +133,4 @@
       </Text>
     </Footer>
   </App>
+</Theme>
