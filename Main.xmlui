@@ -5,12 +5,14 @@
   fontSize-Text-mastodon-user = "$fontSize-xs"
 >
   <App
+    var.showSettings = "{false}"
     layout="vertical">
     <!-- Global debug mode state -->
     <AppState
       id="debugState"
       bucket="debugState"
       initialValue="{ { enabled: false } }" />
+    <!-- Settings dialog state -->
     <DataSource
       id="data"
       url="{ window.query }"
@@ -44,10 +46,10 @@
     <ModalDialog
       id="settingsDialog"
       title="Settings"
-      maxWidth="25%">
-      <VStack gap="1rem">
-        <Tools />
-      </VStack>
+      maxWidth="25%"
+      when="{true}"
+      onClose="{showSettings = false}">
+      <Tools />
     </ModalDialog>
     <NavPanel>
       <NavLink
@@ -88,9 +90,8 @@
       <NavLink
         label="{mediaSize.sizeIndex <= 1 ? '' : 'Settings'}"
         icon="cog"
-        onClick="settingsDialog.open()"
-        tooltip="Settings"
-        when="{['/', '/notifications'].includes($pathname)}" />
+        onClick="console.log('Settings clicked'); showSettings = true"
+        tooltip="Settings" />
     </NavPanel>
     <Pages>
       <Page url="/">
