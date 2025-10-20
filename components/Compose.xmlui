@@ -6,10 +6,10 @@
     var.currentLength="{0}"
     var.visibility="direct"
     var.visibilityOptions="{[
-        { value: 'public', label: 'Public', description: 'Visible for all', icon: 'globe', enabled: true },
-        { value: 'unlisted', label: 'Unlisted', description: 'Visible for all, but opted-out of discovery features', icon: 'options', enabled: true },
-        { value: 'private', label: 'Followers only', description: 'Visible for followers only', icon: 'users', enabled: true },
-        { value: 'direct', label: 'Direct', description: 'Visible for mentioned users only', icon: 'send', enabled: true }
+        { value: 'public', label: 'Public', description: 'all', icon: 'globe', enabled: true },
+        { value: 'unlisted', label: 'Unlisted', description: 'all (not discoverable)', icon: 'options', enabled: true },
+        { value: 'private', label: 'Followers', description: 'followers', icon: 'users', enabled: true },
+        { value: 'direct', label: 'Direct', description: 'people I mention', icon: 'send', enabled: true }
     ]}">
     <!-- APICall component for publishing posts -->
     <APICall
@@ -84,10 +84,10 @@
                         dropdownHeight="300px">
                         <property name="optionTemplate">
                             <HStack verticalAlignment="center" gap="$space-2">
-                                <Icon name="{$item.value === 'public' ? 'globe' : $item.value === 'unlisted' ? 'options' : $item.value === 'private' ? 'users' : 'send'}" />
+                                <Icon name="{window.getVisibilityIcon($item.value)}" />
                                 <VStack gap="$space-0_5">
                                     <Text variant="strong">{$item.label}</Text>
-                                    <Text variant="caption">{$item.value === 'public' ? 'Visible for all' : $item.value === 'unlisted' ? 'Visible for all, but opted-out of discovery features' : $item.value === 'private' ? 'Visible for followers only' : 'Visible for mentioned users only'}</Text>
+                                    <Text variant="caption">{window.getVisibilityDescription($item.value)}</Text>
                                 </VStack>
                             </HStack>
                         </property>

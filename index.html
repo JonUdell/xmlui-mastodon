@@ -5,18 +5,18 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <script>
-window.logReactivity = {
-  enabled: true,
-  components: true,
-  stateChanges: true,
-  queryKeys: true,
-  variables: true,
-  routing: true,
-  apiCalls: true,
-  cascade: true,
-  stackTraces: true
-};
-</script>
+    window.logReactivity = {
+      enabled: true,
+      components: true,
+      stateChanges: true,
+      queryKeys: true,
+      variables: true,
+      routing: true,
+      apiCalls: true,
+      cascade: true,
+      stackTraces: true
+    };
+  </script>
   <script src="xmlui/0.10.21.js"></script>
   <script src="config.js"></script>
 
@@ -1052,25 +1052,56 @@ window.logReactivity = {
       return html.replace(/<[^>]*>/g, '').trim();
     }
 
-    window.htmlToMarkdown = function(html) {
+    // Visibility helper functions
+    window.getVisibilityIcon = function (visibility) {
+      switch (visibility) {
+        case 'public':
+          return 'globe';
+        case 'unlisted':
+          return 'permissions';
+        case 'private':
+          return 'users';
+        case 'direct':
+          return 'send';
+        default:
+          return 'send';
+      }
+    }
+
+    window.getVisibilityDescription = function (visibility) {
+      switch (visibility) {
+        case 'public':
+          return 'all';
+        case 'unlisted':
+          return 'all (not discoverable)';
+        case 'private':
+          return 'followers';
+        case 'direct':
+          return 'people I mention';
+        default:
+          return 'all'
+      }
+    }
+
+    window.htmlToMarkdown = function (html) {
       if (!html) return '';
 
       // Convert HTML entities to characters
       let content = html.replace(/&#39;/g, "'")
-                       .replace(/&quot;/g, '"')
-                       .replace(/&amp;/g, '&')
-                       .replace(/&lt;/g, '<')
-                       .replace(/&gt;/g, '>');
+        .replace(/&quot;/g, '"')
+        .replace(/&amp;/g, '&')
+        .replace(/&lt;/g, '<')
+        .replace(/&gt;/g, '>');
 
       // Remove HTML tags but preserve content
       content = content.replace(/<p>/gi, '')
-                      .replace(/<\/p>/gi, '\n\n')
-                      .replace(/<br\s*\/?>/gi, '\n\n')
-                      .replace(/<[^>]*>/g, ''); // Remove any remaining HTML tags
+        .replace(/<\/p>/gi, '\n\n')
+        .replace(/<br\s*\/?>/gi, '\n\n')
+        .replace(/<[^>]*>/g, ''); // Remove any remaining HTML tags
 
       // Clean up extra whitespace
       content = content.replace(/\n{3,}/g, '\n\n') // Max 2 consecutive newlines
-                      .trim();
+        .trim();
 
       return content;
     }
