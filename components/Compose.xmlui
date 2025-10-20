@@ -6,10 +6,10 @@
     var.currentLength="{0}"
     var.visibility="direct"
     var.visibilityOptions="{[
-        { value: 'public', label: 'Public', description: 'all', icon: 'star', enabled: true },
-        { value: 'unlisted', label: 'Unlisted', description: 'all (not discoverable)', icon: 'doc-outline', enabled: true },
-        { value: 'private', label: 'Followers', description: 'followers', icon: 'binding', enabled: true },
-        { value: 'direct', label: 'Direct', description: 'people I mention', icon: 'reply', enabled: true }
+        { value: 'public', label: 'Public', description: 'Visible for all', icon: 'globe', enabled: true },
+        { value: 'unlisted', label: 'Unlisted', description: 'Visible for all, but opted-out of discovery features', icon: 'options', enabled: true },
+        { value: 'private', label: 'Followers only', description: 'Visible for followers only', icon: 'users', enabled: true },
+        { value: 'direct', label: 'Direct', description: 'Visible for mentioned users only', icon: 'send', enabled: true }
     ]}">
     <!-- APICall component for publishing posts -->
     <APICall
@@ -82,10 +82,19 @@
                         onDidChange="(newValue) => visibility = newValue"
                         width="18rem"
                         dropdownHeight="300px">
+                        <property name="optionTemplate">
+                            <HStack verticalAlignment="center" gap="$space-2">
+                                <Icon name="{$item.value === 'public' ? 'globe' : $item.value === 'unlisted' ? 'options' : $item.value === 'private' ? 'users' : 'send'}" />
+                                <VStack gap="$space-0_5">
+                                    <Text variant="strong">{$item.label}</Text>
+                                    <Text variant="caption">{$item.value === 'public' ? 'Visible for all' : $item.value === 'unlisted' ? 'Visible for all, but opted-out of discovery features' : $item.value === 'private' ? 'Visible for followers only' : 'Visible for mentioned users only'}</Text>
+                                </VStack>
+                            </HStack>
+                        </property>
                         <Items data="{visibilityOptions}">
                             <Option
                                 value="{$item.value}"
-                                label="{$item.label}: {$item.description}"
+                                label="{$item.label}"
                                 when="{$item.enabled}" />
                         </Items>
                     </Select>
