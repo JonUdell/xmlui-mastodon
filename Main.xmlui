@@ -5,6 +5,7 @@
   fontSize-Text-mastodon-user = "$fontSize-xs"
 >
   <App
+    var.showSettings = "{false}"
     layout="vertical">
     <!-- Global debug mode state -->
     <AppState
@@ -12,7 +13,6 @@
       bucket="debugState"
       initialValue="{ { enabled: false } }" />
     <!-- Settings dialog state -->
-    <variable name="showSettings" value="{false}" />
     <DataSource
       id="data"
       url="{ window.query }"

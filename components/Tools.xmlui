@@ -1,36 +1,29 @@
 <Component name="Tools">
-
   <AppState id="toolsState" bucket="toolsState" />
 
-    <!-- Theme switcher -->
-    <HStack verticalAlignment="center" gap="$space-2">
-      <ToneSwitch />
-      <Text>Tone switch</Text>
-    </HStack>
-
+  <HStack verticalAlignment="center" gap="$space-2">
+    <ToneSwitch />
+    <Text>
+      Tone switch
+    </Text>
+  </HStack>
+  <ContentSeparator />
+  <Slider
+    when="{['/', '/notifications'].includes($pathname)}"
+    width="100%"
+    label="Image zoom"
+    minValue="{0}"
+    maxValue="{100}"
+    step="{10}"
+    initialValue="{toolsState.value.zoom}"
+    showValues="true"
+    onDidChange="(value) => { toolsState.update({ zoom: value }) }" />
+  <Fragment when="{['/', '/notifications'].includes($pathname)}">
     <ContentSeparator />
-
-    <Slider
-      when="{['/', '/notifications'].includes($pathname)}"
-      width="100%"
-      label="Image zoom"
-      minValue="{0}"
-      maxValue="{100}"
-      step="{10}"
-      initialValue="{toolsState.value.zoom}"
-      showValues="true"
-      onDidChange="(value) => { toolsState.update({ zoom: value }) }"
-    />
-
-    <ContentSeparator when="{['/', '/notifications'].includes($pathname)}" />
-
     <Switch
       when="{['/', '/notifications'].includes($pathname)}"
       label="Truncate long links"
       initialValue="{localStorage.getItem('truncateLinks')}"
-      onDidChange="(value) => { window.setTruncateLinks(value); toolsState.update({ truncateLinks: value }); }"
-    />
-
-
-
+      onDidChange="(value) => { window.setTruncateLinks(value); toolsState.update({ truncateLinks: value }); }" />
+  </Fragment>
 </Component>
