@@ -4,7 +4,13 @@
     var.isPublishing="{false}"
     var.publishStatus=""
     var.currentLength="{0}"
-    var.visibility="direct">
+    var.visibility="direct"
+    var.visibilityOptions="{[
+        { value: 'public', label: 'Public', description: 'all', icon: 'star', enabled: true },
+        { value: 'unlisted', label: 'Unlisted', description: 'all (not discoverable)', icon: 'doc-outline', enabled: true },
+        { value: 'private', label: 'Followers', description: 'followers', icon: 'binding', enabled: true },
+        { value: 'direct', label: 'Direct', description: 'people I mention', icon: 'reply', enabled: true }
+    ]}">
     <!-- APICall component for publishing posts -->
     <APICall
         id="publishPostAPI"
@@ -74,17 +80,14 @@
                         initialValue="direct"
                         placeholder="Visibility"
                         onDidChange="(newValue) => visibility = newValue"
-                        width="180px"
-                        >
-                        <property name="optionTemplate">
-                            <Text fontSize="$fontSize-sm">
-                                {$item.label}
-                            </Text>
-                        </property>
-                        <Option value="public" label="Public" />
-                        <Option value="unlisted" label="Unlisted" />
-                        <Option value="private" label="Followers only" />
-                        <Option value="direct" label="Direct message" />
+                        width="18rem"
+                        dropdownHeight="300px">
+                        <Items data="{visibilityOptions}">
+                            <Option
+                                value="{$item.value}"
+                                label="{$item.label}: {$item.description}"
+                                when="{$item.enabled}" />
+                        </Items>
                     </Select>
                 </Theme>
                 <SpaceFiller />
@@ -129,22 +132,6 @@
                             width="100%" />
                         <Text variant="strong">
                             Note: Headings (#), lists, and --- do not format
-                        </Text>
-                    </VStack>
-                </ExpandableItem>
-                <ExpandableItem summary="About post visibility">
-                    <VStack gap="$space-0_5" paddingTop="$space-1">
-                        <Text>
-                            Public: Everyone can see. Appears in timelines.
-                        </Text>
-                        <Text>
-                            Unlisted: Everyone can see. Not in public timelines.
-                        </Text>
-                        <Text>
-                            Followers only: Only followers and mentioned users.
-                        </Text>
-                        <Text>
-                            Direct message: Only mentioned users. Private.
                         </Text>
                     </VStack>
                 </ExpandableItem>
