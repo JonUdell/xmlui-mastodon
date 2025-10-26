@@ -339,6 +339,42 @@
       }
     }
 
+    // Fetch additional replies from toots_home persistence layer
+    // that aren't in the current mastodon_toot_home API window
+    window.getRepliesFromPersistence = function (parentIds) {
+      const idList = parentIds.map(id => `'${id}'`).join(',');
+      return {
+        sql: `
+          WITH RECURSIVE thread_replies AS (
+            -- Direct replies to parents
+            SELECT
+              id, author_name, reblog_author_name, created_at, reblog_created_at,
+              content, reblog_content, url, in_reply_to_id, in_reply_to_account_id,
+              account_id, replies_count, preview_url, media_url, media_type,
+              reblog_preview_url, reblog_media_url, reblog_media_type,
+              1 as depth
+            FROM toots_home
+            WHERE in_reply_to_id IN (${idList})
+
+            UNION ALL
+
+            -- Recursive: replies to replies
+            SELECT
+              t.id, t.author_name, t.reblog_author_name, t.created_at, t.reblog_created_at,
+              t.content, t.reblog_content, t.url, t.in_reply_to_id, t.in_reply_to_account_id,
+              t.account_id, t.replies_count, t.preview_url, t.media_url, t.media_type,
+              t.reblog_preview_url, t.reblog_media_url, t.reblog_media_type,
+              thread_replies.depth + 1 as depth
+            FROM toots_home t
+            INNER JOIN thread_replies ON t.in_reply_to_id = thread_replies.id
+            WHERE thread_replies.depth < 10
+          )
+          SELECT * FROM thread_replies
+          ORDER BY created_at ASC
+        `
+      }
+    }
+
     window.createTootsHome = `
       create table toots_home (
         id TEXT PRIMARY KEY,
@@ -1039,44 +1075,67 @@
       return item.bookmarked;
     }
 
-    window.enrichTootsWithReplies = function(toots) {
-      console.log('enrichTootsWithReplies: processing', toots.length, 'toots');
+    // Recursively build nested reply structure
+    window.buildNestedReplies = function(allToots, parentId) {
+      // Find all direct children of this parent
+      const children = allToots.filter(t => t.in_reply_to_id === parentId);
 
-      // Debug: check for toots with in_reply_to_id
-      const repliesCount = toots.filter(t => t.in_reply_to_id).length;
-      console.log('Found', repliesCount, 'toots with in_reply_to_id');
-      if (repliesCount > 0) {
-        const sampleReply = toots.find(t => t.in_reply_to_id);
-        console.log('Sample reply:', {
-          id: sampleReply.id,
-          in_reply_to_id: sampleReply.in_reply_to_id,
-          content: sampleReply.content?.substring(0, 50)
+      // Sort chronologically (forum style - oldest first)
+      children.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+
+      // Recursively build each child's replies
+      return children.map(child => ({
+        ...child,
+        replies: window.buildNestedReplies(allToots, child.id)
+      }));
+    }
+
+    window.enrichTootsWithReplies = function(toots, persistedReplies = []) {
+      console.log('enrichTootsWithReplies: processing', toots.length, 'live toots +', persistedReplies.length, 'persisted replies');
+
+      // Merge live toots with persisted replies
+      const allToots = [...toots, ...persistedReplies];
+
+      // Create a Set of IDs for deduplication
+      const tootIds = new Set(toots.map(t => t.id));
+
+      // Filter out persisted replies that are already in live data
+      const uniquePersistedReplies = persistedReplies.filter(r => !tootIds.has(r.id));
+      const combined = [...toots, ...uniquePersistedReplies];
+
+      console.log('Combined:', combined.length, 'total unique toots');
+
+      // Build ID set of all toots
+      const allTootIds = new Set(combined.map(t => t.id));
+
+      // Debug: show toots with in_reply_to_id
+      const repliesInData = combined.filter(t => t.in_reply_to_id);
+      console.log('DEBUG: Found', repliesInData.length, 'toots with in_reply_to_id');
+      if (repliesInData.length > 0) {
+        const sample = repliesInData[0];
+        console.log('DEBUG: Sample reply:', {
+          sample: sample,
+          id: sample.id,
+          name: sample.display_name,
+          in_reply_to_id: sample.in_reply_to_id,
+          parentExists: allTootIds.has(sample.in_reply_to_id)
         });
       }
 
-      // Create a Set of IDs that exist in the feed for fast lookup
-      const tootIds = new Set(toots.map(t => t.id));
+      // Identify top-level toots (not a reply to something in our dataset)
+      const topLevelToots = combined.filter(t =>
+        !t.in_reply_to_id || !allTootIds.has(t.in_reply_to_id)
+      );
 
-      // Create a map of parent_id -> array of ALL replies
-      const replyMap = new Map();
-      toots.forEach(toot => {
-        if (toot.in_reply_to_id) {
-          if (!replyMap.has(toot.in_reply_to_id)) {
-            replyMap.set(toot.in_reply_to_id, []);
-          }
-          replyMap.get(toot.in_reply_to_id).push(toot);
-        }
-      });
+      console.log('Found', topLevelToots.length, 'top-level toots');
 
-      // Enrich each toot with computed properties
-      const enriched = toots.map(toot => ({
+      // Build nested structure for each top-level toot
+      const enriched = topLevelToots.map(toot => ({
         ...toot,
-        isReplyInFeed: toot.in_reply_to_id && tootIds.has(toot.in_reply_to_id),
-        replies: replyMap.get(toot.id) || []
+        replies: window.buildNestedReplies(combined, toot.id)
       }));
 
-      console.log('Enriched:', enriched.filter(t => t.isReplyInFeed).length, 'replies in feed');
-      console.log('Enriched:', enriched.filter(t => t.replies.length > 0).length, 'toots have replies');
+      console.log('Enriched:', enriched.filter(t => t.replies.length > 0).length, 'toots have nested replies');
 
       // Show a parent/replies example
       const parentWithReplies = enriched.find(t => t.replies.length > 0);
@@ -1084,14 +1143,14 @@
         console.log('===== PARENT/REPLIES =====');
         console.log('PARENT:', {
           id: parentWithReplies.id,
-          author: parentWithReplies.author_name,
+          author: parentWithReplies.display_name,
           content: parentWithReplies.content?.substring(0, 100),
           replyCount: parentWithReplies.replies.length
         });
         parentWithReplies.replies.forEach((reply, idx) => {
           console.log(`REPLY ${idx + 1}:`, {
             id: reply.id,
-            author: reply.author_name,
+            author: reply.display_name,
             in_reply_to_id: reply.in_reply_to_id,
             content: reply.content?.substring(0, 100)
           });
@@ -1105,10 +1164,10 @@
       if (index === 0) {
         console.log('First List item properties:', {
           id: item.id,
-          hasIsReplyInFeed: 'isReplyInFeed' in item,
-          isReplyInFeed: item.isReplyInFeed,
+          author: item.author_name,
           hasReplies: 'replies' in item,
-          repliesCount: item.replies ? item.replies.length : 0
+          repliesCount: item.replies ? item.replies.length : 0,
+          firstReplyHasReplies: item.replies && item.replies[0] ? item.replies[0].replies.length : 0
         });
       }
       return true;

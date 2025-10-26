@@ -1,4 +1,4 @@
-<Component name="Home" var.loaded="{false}" var.syncCompleted="{false}">
+<Component name="Home" var.loaded="{false}" var.syncCompleted="{false}" var.liveToots="{[]}" var.parentIds="{[]}">
 
 <AppState id="toolsState" bucket="toolsState" />
 <AppState id="debugState" bucket="debugState" />
@@ -6,16 +6,36 @@
 <DataSource
   id="ephemeralToots"
   url="{ window.query }"
-  body="{ window.tootsHome(100) }"
+  body="{ window.tootsHome(50) }"
   method="POST"
   onLoaded="(data) => {
-    window.ephemeralData = window.enrichTootsWithReplies(data);
-    loaded = true;
+    liveToots = data;
+    parentIds = data.map(t => t.id);
+
     if (!syncCompleted) {
       syncCompleted = true;
       updateTootsHome.execute();
       syncTootsHome.execute();
     }
+    // Trigger persisted replies fetch with parent IDs
+    persistedReplies.execute();
+  }"
+/>
+
+<APICall
+  id="persistedReplies"
+  method="post"
+  url="{window.query}"
+  body="{window.getRepliesFromPersistence(parentIds)}"
+  onSuccess="(data) => {
+    window.ephemeralData = window.enrichTootsWithReplies(liveToots, data || []);
+    loaded = true;
+  }"
+  invalidates="{[]}"
+  onError="(error) => {
+    console.error('Failed to fetch persisted replies:', error);
+    window.ephemeralData = window.enrichTootsWithReplies(liveToots, []);
+    loaded = true;
   }"
 />
 
@@ -24,7 +44,7 @@
   method="post"
   url="{window.query}"
   body="{ window.updateTootsHome() }"
-
+  invalidates="{[]}"
   onSuccess="() => {
     console.log('updateTootsHome success')
   }"
@@ -35,6 +55,7 @@
   method="post"
   url="{window.query}"
   body="{ window.syncFTSAfterUpdate() }"
+  invalidates="{[]}"
   onSuccess="() => {
     console.log('syncFTSAfterUpdate success')
   }"
@@ -55,21 +76,13 @@
     <!-- Timeline display -->
     <List when="{loaded}" height="*" data="{window.ephemeralData}">
       <VStack gap="0">
-        <!-- Only show if this is NOT a reply to something in the feed -->
-        <Fragment when="{window.debugListItem($item, $index) && !$item.isReplyInFeed}">
+        <Fragment when="{window.debugListItem($item, $index)}">
 
-          <!-- Regular Post Display -->
+          <!-- Regular Post Display (handles nested replies recursively) -->
           <RegularPost when="{!$item.reblog}" item="{$item}" debugMode="{debugState.value.enabled}" />
 
           <!-- Reblog Display -->
           <ReblogPost when="{$item.reblog}" item="{$item}" debugMode="{debugState.value.enabled}" />
-
-          <!-- Show all replies if they exist -->
-          <VStack when="{$item.replies && $item.replies.length > 0}" marginLeft="$space-8" gap="$space-2">
-            <List data="{$item.replies}">
-              <RegularPost item="{$item}" debugMode="{debugState.value.enabled}" />
-            </List>
-          </VStack>
 
         </Fragment>
       </VStack>
