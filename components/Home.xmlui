@@ -6,7 +6,7 @@
 <DataSource
   id="ephemeralToots"
   url="{ window.query }"
-  body="{ window.tootsHome(50) }"
+  body="{ window.tootsHome(100) }"
   method="POST"
   onLoaded="(data) => {
     window.ephemeralData = window.enrichTootsWithReplies(data);
@@ -64,9 +64,11 @@
           <!-- Reblog Display -->
           <ReblogPost when="{$item.reblog}" item="{$item}" debugMode="{debugState.value.enabled}" />
 
-          <!-- Show first reply if it exists -->
-          <VStack when="{$item.firstReply}" marginLeft="$space-8">
-            <RegularPost item="{$item.firstReply}" debugMode="{debugState.value.enabled}" />
+          <!-- Show all replies if they exist -->
+          <VStack when="{$item.replies && $item.replies.length > 0}" marginLeft="$space-8" gap="$space-2">
+            <List data="{$item.replies}">
+              <RegularPost item="{$item}" debugMode="{debugState.value.enabled}" />
+            </List>
           </VStack>
 
         </Fragment>

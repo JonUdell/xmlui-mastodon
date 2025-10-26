@@ -1057,11 +1057,14 @@
       // Create a Set of IDs that exist in the feed for fast lookup
       const tootIds = new Set(toots.map(t => t.id));
 
-      // Create a map of parent_id -> first reply
+      // Create a map of parent_id -> array of ALL replies
       const replyMap = new Map();
       toots.forEach(toot => {
-        if (toot.in_reply_to_id && !replyMap.has(toot.in_reply_to_id)) {
-          replyMap.set(toot.in_reply_to_id, toot);
+        if (toot.in_reply_to_id) {
+          if (!replyMap.has(toot.in_reply_to_id)) {
+            replyMap.set(toot.in_reply_to_id, []);
+          }
+          replyMap.get(toot.in_reply_to_id).push(toot);
         }
       });
 
@@ -1069,26 +1072,29 @@
       const enriched = toots.map(toot => ({
         ...toot,
         isReplyInFeed: toot.in_reply_to_id && tootIds.has(toot.in_reply_to_id),
-        firstReply: replyMap.get(toot.id) || null
+        replies: replyMap.get(toot.id) || []
       }));
 
       console.log('Enriched:', enriched.filter(t => t.isReplyInFeed).length, 'replies in feed');
-      console.log('Enriched:', enriched.filter(t => t.firstReply).length, 'toots have first replies');
+      console.log('Enriched:', enriched.filter(t => t.replies.length > 0).length, 'toots have replies');
 
-      // Show a parent/reply pair example
-      const parentWithReply = enriched.find(t => t.firstReply);
-      if (parentWithReply) {
-        console.log('===== PARENT/REPLY PAIR =====');
+      // Show a parent/replies example
+      const parentWithReplies = enriched.find(t => t.replies.length > 0);
+      if (parentWithReplies) {
+        console.log('===== PARENT/REPLIES =====');
         console.log('PARENT:', {
-          id: parentWithReply.id,
-          author: parentWithReply.author_name,
-          content: parentWithReply.content?.substring(0, 100)
+          id: parentWithReplies.id,
+          author: parentWithReplies.author_name,
+          content: parentWithReplies.content?.substring(0, 100),
+          replyCount: parentWithReplies.replies.length
         });
-        console.log('REPLY:', {
-          id: parentWithReply.firstReply.id,
-          author: parentWithReply.firstReply.author_name,
-          in_reply_to_id: parentWithReply.firstReply.in_reply_to_id,
-          content: parentWithReply.firstReply.content?.substring(0, 100)
+        parentWithReplies.replies.forEach((reply, idx) => {
+          console.log(`REPLY ${idx + 1}:`, {
+            id: reply.id,
+            author: reply.author_name,
+            in_reply_to_id: reply.in_reply_to_id,
+            content: reply.content?.substring(0, 100)
+          });
         });
       }
 
@@ -1101,8 +1107,8 @@
           id: item.id,
           hasIsReplyInFeed: 'isReplyInFeed' in item,
           isReplyInFeed: item.isReplyInFeed,
-          hasFirstReply: 'firstReply' in item,
-          firstReply: item.firstReply ? 'EXISTS' : 'NULL'
+          hasReplies: 'replies' in item,
+          repliesCount: item.replies ? item.replies.length : 0
         });
       }
       return true;
