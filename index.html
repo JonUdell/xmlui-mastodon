@@ -390,7 +390,12 @@
         const reblogMediaUrl = (toot.reblog_media_url || '').replace(/'/g, "''");
         const reblogMediaType = (toot.reblog_media_type || '').replace(/'/g, "''");
 
-        return `('${toot.id}', '${authorName}', '${reblogAuthorName}', '${toot.created_at}', '${toot.reblog_created_at || ''}', '${content.replace(/'/g, "''")}', '${reblogContent.replace(/'/g, "''")}', '${url}', '${previewUrl}', '${mediaUrl}', '${mediaType}', '${reblogPreviewUrl}', '${reblogMediaUrl}', '${reblogMediaType}')`;
+        const inReplyToId = toot.in_reply_to_id || '';
+        const inReplyToAccountId = toot.in_reply_to_account_id || '';
+        const accountId = toot.account_id || '';
+        const repliesCount = toot.replies_count || 0;
+
+        return `('${toot.id}', '${authorName}', '${reblogAuthorName}', '${toot.created_at}', '${toot.reblog_created_at || ''}', '${content.replace(/'/g, "''")}', '${reblogContent.replace(/'/g, "''")}', '${url}', '${previewUrl}', '${mediaUrl}', '${mediaType}', '${reblogPreviewUrl}', '${reblogMediaUrl}', '${reblogMediaType}', '${inReplyToId}', '${inReplyToAccountId}', '${accountId}', ${repliesCount})`;
       }).join(',');
 
       return {
@@ -409,7 +414,11 @@
             media_type,
             reblog_preview_url,
             reblog_media_url,
-            reblog_media_type
+            reblog_media_type,
+            in_reply_to_id,
+            in_reply_to_account_id,
+            account_id,
+            replies_count
           )
           VALUES ${values};
         `
