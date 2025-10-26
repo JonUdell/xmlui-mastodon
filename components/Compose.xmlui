@@ -11,6 +11,7 @@
         { value: 'private', label: 'Followers', description: 'followers', icon: 'users', enabled: true },
         { value: 'direct', label: 'Direct', description: 'people I mention', icon: 'send', enabled: true }
     ]}">
+    <AppState id="replyContext" bucket="replyContext" />
     <!-- APICall component for publishing posts -->
     <APICall
         id="publishPostAPI"
@@ -20,10 +21,16 @@
             'Authorization': `Bearer ${window.config.mastodonToken}`,
             'Content-Type': 'application/json'
         }}"
-        body="{{
-            status: postContent.trim(),
-            visibility: visibility
-        }}"
+        body="{(() => {
+            const body = {
+                status: postContent.trim(),
+                visibility: visibility
+            };
+            if (replyContext.value.replyToId) {
+                body.in_reply_to_id = replyContext.value.replyToId;
+            }
+            return body;
+        })()}"
         completedNotificationMessage="Post published successfully!"
         errorNotificationMessage="Failed to publish post: {$error.details || $error.message}"
         inProgressNotificationMessage="Publishing post...">
@@ -50,6 +57,7 @@
             postContent = '';
             postTextArea.value = '';
             currentLength = 0;
+            replyContext.update({ replyToId: null, replyToAuthor: null, replyToContent: null });
         </event>
         <event name="error">
             isPublishing = false;
@@ -59,6 +67,16 @@
     </APICall>
     <!-- Post composition area -->
     <VStack gap="$space-2">
+        <!-- Reply context display -->
+        <HStack when="{replyContext.value.replyToId}" gap="$space-2" width="100%" verticalAlignment="center">
+            <VStack gap="$space-1" width="*">
+                <Text variant="strong">Replying to {replyContext.value.replyToAuthor}</Text>
+                <Text variant="caption" color="$textColor-subtitle">
+                    {window.stripHtmlTags(replyContext.value.replyToContent)?.substring(0, 100)}...
+                </Text>
+            </VStack>
+        </HStack>
+        <ContentSeparator when="{replyContext.value.replyToId}" />
         <!-- Text input and controls aligned to the right -->
         <VStack gap="$space-2" horizontalAlignment="end" width="100%">
             <!-- Text input area -->

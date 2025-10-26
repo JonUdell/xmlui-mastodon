@@ -12,6 +12,11 @@
       id="debugState"
       bucket="debugState"
       initialValue="{ { enabled: false } }" />
+    <!-- Reply context state -->
+    <AppState
+      id="replyContext"
+      bucket="replyContext"
+      initialValue="{ { replyToId: null, replyToAuthor: null, replyToContent: null } }" />
     <!-- Settings dialog state -->
     <DataSource
       id="data"

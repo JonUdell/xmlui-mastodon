@@ -1,5 +1,7 @@
 <Component name="Reactions" var.favoriteStartTime="{null}" var.localFavorited="{null}" var.localReblogged="{null}" var.localFavoritesCount="{null}" var.localReblogsCount="{null}" var.clickStartTime="{null}">
 
+  <AppState id="replyContext" bucket="replyContext" />
+
   <APICall
     id="favoritePost"
     method="post"
@@ -95,7 +97,16 @@
   <VStack marginBottom="$space-4">
     <HStack verticalAlignment="center" gap="$space-3">
       <HStack verticalAlignment="center" gap="$space-1">
-        <SocialButton icon="reply" />
+        <SocialButton icon="reply">
+          <event name="click">
+            replyContext.update({
+              replyToId: window.getPostId($props.item),
+              replyToAuthor: window.getDisplayName($props.item),
+              replyToContent: $props.item.content
+            });
+            navigate('/compose')
+          </event>
+        </SocialButton>
         <Text variant="secondary">
           {$props.item.replies_count || 0}
         </Text>
