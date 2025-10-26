@@ -9,7 +9,7 @@
   body="{ window.tootsHome(50) }"
   method="POST"
   onLoaded="(data) => {
-    window.ephemeralData = data;
+    window.ephemeralData = window.enrichTootsWithReplies(data);
     loaded = true;
     if (!syncCompleted) {
       syncCompleted = true;
@@ -53,10 +53,10 @@
     <Text when="{!loaded}">Loading timeline data...</Text>
 
     <!-- Timeline display -->
-    <List when="{loaded}" height="*" data="{ephemeralToots}">
+    <List when="{loaded}" height="*" data="{window.ephemeralData}">
       <VStack gap="0">
         <!-- Only show if this is NOT a reply to something in the feed -->
-        <Fragment when="{!ephemeralToots.some(t => t.id === $item.in_reply_to_id)}">
+        <Fragment when="{window.debugListItem($item, $index) && !$item.isReplyInFeed}">
 
           <!-- Regular Post Display -->
           <RegularPost when="{!$item.reblog}" item="{$item}" debugMode="{debugState.value.enabled}" />
@@ -65,12 +65,8 @@
           <ReblogPost when="{$item.reblog}" item="{$item}" debugMode="{debugState.value.enabled}" />
 
           <!-- Show first reply if it exists -->
-          <VStack
-            when="{window.getFirstReply($item.id, ephemeralToots)}"
-            marginLeft="$space-8">
-            <RegularPost
-              item="{window.getFirstReply($item.id, ephemeralToots)}"
-              debugMode="{debugState.value.enabled}" />
+          <VStack when="{$item.firstReply}" marginLeft="$space-8">
+            <RegularPost item="{$item.firstReply}" debugMode="{debugState.value.enabled}" />
           </VStack>
 
         </Fragment>

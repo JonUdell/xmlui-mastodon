@@ -1039,8 +1039,73 @@
       return item.bookmarked;
     }
 
-    window.getFirstReply = function(tootId, allToots) {
-      return allToots.value.find(toot => toot.in_reply_to_id === tootId);
+    window.enrichTootsWithReplies = function(toots) {
+      console.log('enrichTootsWithReplies: processing', toots.length, 'toots');
+
+      // Debug: check for toots with in_reply_to_id
+      const repliesCount = toots.filter(t => t.in_reply_to_id).length;
+      console.log('Found', repliesCount, 'toots with in_reply_to_id');
+      if (repliesCount > 0) {
+        const sampleReply = toots.find(t => t.in_reply_to_id);
+        console.log('Sample reply:', {
+          id: sampleReply.id,
+          in_reply_to_id: sampleReply.in_reply_to_id,
+          content: sampleReply.content?.substring(0, 50)
+        });
+      }
+
+      // Create a Set of IDs that exist in the feed for fast lookup
+      const tootIds = new Set(toots.map(t => t.id));
+
+      // Create a map of parent_id -> first reply
+      const replyMap = new Map();
+      toots.forEach(toot => {
+        if (toot.in_reply_to_id && !replyMap.has(toot.in_reply_to_id)) {
+          replyMap.set(toot.in_reply_to_id, toot);
+        }
+      });
+
+      // Enrich each toot with computed properties
+      const enriched = toots.map(toot => ({
+        ...toot,
+        isReplyInFeed: toot.in_reply_to_id && tootIds.has(toot.in_reply_to_id),
+        firstReply: replyMap.get(toot.id) || null
+      }));
+
+      console.log('Enriched:', enriched.filter(t => t.isReplyInFeed).length, 'replies in feed');
+      console.log('Enriched:', enriched.filter(t => t.firstReply).length, 'toots have first replies');
+
+      // Show a parent/reply pair example
+      const parentWithReply = enriched.find(t => t.firstReply);
+      if (parentWithReply) {
+        console.log('===== PARENT/REPLY PAIR =====');
+        console.log('PARENT:', {
+          id: parentWithReply.id,
+          author: parentWithReply.author_name,
+          content: parentWithReply.content?.substring(0, 100)
+        });
+        console.log('REPLY:', {
+          id: parentWithReply.firstReply.id,
+          author: parentWithReply.firstReply.author_name,
+          in_reply_to_id: parentWithReply.firstReply.in_reply_to_id,
+          content: parentWithReply.firstReply.content?.substring(0, 100)
+        });
+      }
+
+      return enriched;
+    }
+
+    window.debugListItem = function(item, index) {
+      if (index === 0) {
+        console.log('First List item properties:', {
+          id: item.id,
+          hasIsReplyInFeed: 'isReplyInFeed' in item,
+          isReplyInFeed: item.isReplyInFeed,
+          hasFirstReply: 'firstReply' in item,
+          firstReply: item.firstReply ? 'EXISTS' : 'NULL'
+        });
+      }
+      return true;
     }
 
     window.listAllTables = `
