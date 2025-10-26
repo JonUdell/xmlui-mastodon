@@ -11,12 +11,17 @@
     <AppState
       id="debugState"
       bucket="debugState"
-      initialValue="{ { enabled: false } }" />
+      initialValue="{{ enabled: false }}" />
     <!-- Reply context state -->
     <AppState
       id="replyContext"
       bucket="replyContext"
-      initialValue="{ { replyToId: null, replyToAuthor: null, replyToContent: null } }" />
+      initialValue="{{ replyToId: null, replyToAuthor: null, replyToContent: null }}" />
+    <!-- UI settings state -->
+    <AppState
+      id="toolsState"
+      bucket="toolsState"
+      initialValue="{{ zoom: 20, truncateLinks: true }}" />
     <!-- Settings dialog state -->
     <DataSource
       id="data"
