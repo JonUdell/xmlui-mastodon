@@ -4,19 +4,6 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <script>
-    window.logReactivity = {
-      enabled: true,
-      components: true,
-      stateChanges: true,
-      queryKeys: true,
-      variables: true,
-      routing: true,
-      apiCalls: true,
-      cascade: true,
-      stackTraces: true
-    };
-  </script>
   <script src="xmlui/0.10.21.js"></script>
   <script src="config.js"></script>
 
@@ -1050,6 +1037,10 @@
         return JSON.parse(item.reblog).bookmarked;
       }
       return item.bookmarked;
+    }
+
+    window.getFirstReply = function(tootId, allToots) {
+      return allToots.value.find(toot => toot.in_reply_to_id === tootId);
     }
 
     window.listAllTables = `

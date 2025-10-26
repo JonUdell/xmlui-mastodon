@@ -54,12 +54,26 @@
 
     <!-- Timeline display -->
     <List when="{loaded}" height="*" data="{ephemeralToots}">
-      <VStack>
-             <!-- Regular Post Display -->
-             <RegularPost when="{!$item.reblog}" item="{$item}" debugMode="{debugState.value.enabled}" />
+      <VStack gap="0">
+        <!-- Only show if this is NOT a reply to something in the feed -->
+        <Fragment when="{!ephemeralToots.some(t => t.id === $item.in_reply_to_id)}">
 
-             <!-- Reblog Display -->
-             <ReblogPost when="{$item.reblog}" item="{$item}" debugMode="{debugState.value.enabled}" />
+          <!-- Regular Post Display -->
+          <RegularPost when="{!$item.reblog}" item="{$item}" debugMode="{debugState.value.enabled}" />
+
+          <!-- Reblog Display -->
+          <ReblogPost when="{$item.reblog}" item="{$item}" debugMode="{debugState.value.enabled}" />
+
+          <!-- Show first reply if it exists -->
+          <VStack
+            when="{window.getFirstReply($item.id, ephemeralToots)}"
+            marginLeft="$space-8">
+            <RegularPost
+              item="{window.getFirstReply($item.id, ephemeralToots)}"
+              debugMode="{debugState.value.enabled}" />
+          </VStack>
+
+        </Fragment>
       </VStack>
 
       <ContentSeparator />
