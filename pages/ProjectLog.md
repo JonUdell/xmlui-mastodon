@@ -1,6 +1,7 @@
 # Contents
 
 - [Purpose](#purpose)
+- [Snapshot 44: Threading](#snapshot-44-threading)
 - [Snapshot 43: Use Markdown subset](#snapshot-43-use-markdown-subset)
 - [Snapshot 42: Compact timeline](#snapshot-42-compact-timeline)
 - [Snapshot 41: Implement compose](#snapshot-41-implement-compose)
@@ -50,6 +51,241 @@
 We are going to improve [steampipe-mod-mastodon-insights](https://github.com/turbot/steampipe-mod-mastodon-insights), with special focus on realizing the design approach discussed in [A Bloomberg terminal for Mastodon](https://blog.jonudell.net/2022/12/17/a-bloomberg-terminal-for-mastodon/). XMLUI gives us many more degrees of freedom to improve on the original bare-bones Powerpipe dashboard. Both projects use the same Mastodon API access, abstracted as a set of Postgres tables provided by [steampipe-plugin-mastodon](https://github.com/turbot/steampipe-plugin-mastodon).
 
 This should result in a beautiful Mastodon reader which, because database backed, will also (unlike the stock Mastodon client or others like Elk and Mona) have a long memory and enable powerful search and data visualization.
+
+# Snapshot 44: Threading
+
+## Overview
+
+This snapshot documents the evolution of conversation threading in xmlui-mastodon, from initial reply persistence through recursive nested structures to handling reblogged conversations.
+
+## Evolution Timeline
+
+### Phase 1: Persistence (commit f46250e)
+**Goal**: Start persisting reply metadata alongside toot content
+
+Added to `toots_home` table and `updateTootsHome()`:
+- `in_reply_to_id`: The parent toot's ID
+- `in_reply_to_account_id`: The parent toot author's account ID
+- `account_id`: The current toot author's account ID
+- `replies_count`: Number of replies to this toot
+
+This laid the groundwork for identifying reply relationships in the persisted data.
+
+### Phase 2: Basic Display (commit ad3064f)
+**Goal**: Show first-level replies inline
+
+Implemented basic reply threading:
+- Added `window.getFirstReply()` function to find one reply
+- Modified Home.xmlui to hide toots that are replies to others in the feed
+- Displayed first reply indented under parent with `marginLeft="$space-8"`
+- Used Fragment condition: `when="{!ephemeralToots.some(t => t.id === $item.in_reply_to_id)}"`
+
+**Limitation**: Only showed one reply per parent, no deeper nesting.
+
+### Phase 3: Reply Enrichment (commit 25f3e2f)
+**Goal**: Create structured reply data for better rendering
+
+Introduced `window.enrichTootsWithReplies()` function:
+```javascript
+const enriched = toots.map(toot => ({
+  ...toot,
+  isReplyInFeed: toot.in_reply_to_id && tootIds.has(toot.in_reply_to_id),
+  firstReply: replyMap.get(toot.id) || null
+}));
+```
+
+Key improvements:
+- Computed `isReplyInFeed` property to identify replies to visible parents
+- Added `firstReply` property containing the reply toot object
+- Changed filtering to use `!$item.isReplyInFeed` instead of inline array searches
+- Added debug logging to understand threading behavior
+
+**Limitation**: Still only one reply per parent.
+
+### Phase 4: Multiple Replies (commit 673914f)
+**Goal**: Show all direct replies to a toot
+
+Upgraded reply tracking from single reply to array:
+```javascript
+// Changed from Map<parent_id, toot> to Map<parent_id, toot[]>
+const replyMap = new Map();
+toots.forEach(toot => {
+  if (toot.in_reply_to_id) {
+    if (!replyMap.has(toot.in_reply_to_id)) {
+      replyMap.set(toot.in_reply_to_id, []);
+    }
+    replyMap.get(toot.in_reply_to_id).push(toot);
+  }
+});
+```
+
+UI changes:
+```xml
+<VStack when="{$item.replies && $item.replies.length > 0}" marginLeft="$space-8">
+  <List data="{$item.replies}">
+    <RegularPost item="{$item}" debugMode="{debugState.value.enabled}" />
+  </List>
+</VStack>
+```
+
+**Limitation**: Only one level of nesting, replies couldn't have their own replies displayed.
+
+### Phase 5: Recursive Nesting + Persistence (commit 25bdff9)
+**Goal**: Build true conversation trees with historical context
+
+Major architectural refactor introducing three key components:
+
+**1. Recursive Reply Building**:
+```javascript
+window.buildNestedReplies = function(allToots, parentId) {
+  const children = allToots.filter(t => t.in_reply_to_id === parentId);
+  children.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+  return children.map(child => ({
+    ...child,
+    replies: window.buildNestedReplies(allToots, child.id)  // Recursive!
+  }));
+}
+```
+
+**2. Fetching Historical Replies**:
+```javascript
+window.getRepliesFromPersistence = function(parentIds) {
+  // Uses recursive SQL CTE to fetch entire thread trees
+  WITH RECURSIVE thread_replies AS (
+    SELECT ... FROM toots_home WHERE in_reply_to_id IN (${idList})
+    UNION ALL
+    SELECT ... FROM toots_home t
+    INNER JOIN thread_replies ON t.in_reply_to_id = thread_replies.id
+    WHERE thread_replies.depth < 10
+  )
+}
+```
+
+**3. Merged Data Processing**:
+```javascript
+window.enrichTootsWithReplies = function(toots, persistedReplies = []) {
+  // Merge live API data with persisted replies
+  const combined = [...toots, ...uniquePersistedReplies];
+
+  // Identify top-level toots
+  const topLevelToots = combined.filter(t =>
+    !t.in_reply_to_id || !allTootIds.has(t.in_reply_to_id)
+  );
+
+  // Build nested trees
+  return topLevelToots.map(toot => ({
+    ...toot,
+    replies: window.buildNestedReplies(combined, toot.id)
+  }));
+}
+```
+
+**Component Changes**:
+- Moved recursive rendering into RegularPost component itself
+- Each post renders its own replies, which recursively render theirs
+- Removed top-level reply display logic from Home.xmlui
+
+**Performance Optimization**:
+- Added `invalidates="{[]}"` to APICall components to prevent reactive cascades
+- Used explicit `execute()` calls instead of reactive triggers
+
+**Results**: True threaded conversations with unlimited depth (capped at 10 in SQL), pulling in historical context from persistence layer.
+
+### Phase 6: Reblog Threading Fix (commit 2d022bf - today's work)
+**Goal**: Make reblogged conversations thread correctly
+
+**The Problem**: When you reblog a reply, Mastodon returns:
+```json
+{
+  "id": "reblog-action-id",           // This is NOT the original post ID
+  "reblog": {
+    "id": "original-post-id",         // This IS the original post ID
+    "in_reply_to_id": "parent-id"     // Reply relationship is here
+  }
+}
+```
+
+The SQL query was extracting IDs from the wrong level, so threading saw reblog-action IDs instead of original post IDs.
+
+**The Solution**: Applied the same conditional extraction pattern used for `replies_count`:
+
+```sql
+-- Before: Used reblog-action ID
+id,
+json_extract(status, '$.in_reply_to_id') as in_reply_to_id
+
+-- After: Use original post ID from reblog when present
+case
+  when reblog is not null then json_extract(reblog, '$.id')
+  else id
+end as id,
+case
+  when reblog is not null then json_extract(reblog, '$.in_reply_to_id')
+  else json_extract(status, '$.in_reply_to_id')
+end as in_reply_to_id
+```
+
+**Additional Fix**: Made recursive rendering handle reblog replies:
+
+RegularPost.xmlui:
+```xml
+<List data="{$props.item.replies}">
+  <RegularPost when="{!$item.reblog}" item="{$item}" debugMode="{$props.debugMode}" />
+  <ReblogPost when="{$item.reblog}" item="{$item}" debugMode="{$props.debugMode}" />
+</List>
+```
+
+ReblogPost.xmlui (added recursive section):
+```xml
+<VStack when="{$props.item.replies && $props.item.replies.length > 0}" marginLeft="$space-8">
+  <List data="{$props.item.replies}">
+    <RegularPost when="{!$item.reblog}" item="{$item}" debugMode="{$props.debugMode}" />
+    <ReblogPost when="{$item.reblog}" item="{$item}" debugMode="{$props.debugMode}" />
+  </List>
+</VStack>
+```
+
+**Results**:
+- Reblogged conversations now thread correctly
+- Console shows "Enriched: 2 toots have nested replies" (was 0)
+- When Kilian reblogs a thread, the conversation structure is preserved
+
+## Current State
+
+Threading now supports:
+- Unlimited depth (capped at 10 levels in SQL)
+- Recursive nested display
+- Historical replies from persistence layer
+- Reblogged conversations
+- Mixed regular posts and reblogs in thread trees
+- Forum-style chronological ordering (oldest first within each level)
+
+## What's Still Pending
+
+- Testing with complex multi-branch threads
+- Performance profiling for deeply nested conversations
+- Visual thread indicators (lines connecting replies)
+- Fetching missing parent toots when only partial threads are visible
+- Handling deleted toots in thread chains
+- Better visual distinction for thread depth
+
+## Key Learnings
+
+1. **Iterative Complexity**: Threading evolved through 6+ commits, each adding capability. Starting simple (one reply) and building up was the right approach.
+
+2. **Reblog Data Structure**: Mastodon's reblog wrapper creates ID mismatches. Always extract relationship data from inside the `reblog` object when present.
+
+3. **Recursive Component Design**: Components that render themselves (RegularPost → RegularPost) must handle all content types they might encounter, not just their original type.
+
+4. **SQL vs JavaScript Recursion**: Used SQL recursion for fetching (CTE) and JavaScript recursion for building UI trees. Each language's strengths were matched to the problem.
+
+5. **Persistence Enables History**: By storing everything we display, we can reconstruct conversation threads even when parents/children have scrolled out of the live API window.
+
+6. **Diagnostic Technique**: Strategic console logging (`parentExists: allTootIds.has(sample.in_reply_to_id)`) quickly revealed the ID extraction problem.
+
+7. **XMLUI Reactivity Constraints**: Had to use `invalidates="{[]}"` to prevent unwanted reactive cascades when updating persistence layer.
+
+
 
 # Snapshot 43: Use Markdown subset
 
