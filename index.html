@@ -230,7 +230,10 @@
       return {
         sql: `
             select
-                id,
+                case
+                  when reblog is not null then json_extract(reblog, '$.id')
+                  else id
+                end as id,
                 username,
                 display_name,
                 created_at,
@@ -314,8 +317,14 @@
                   when reblog is not null then json_extract(reblog, '$.account.url')
                   else null
                 end as reblog_account_url,
-                json_extract(status, '$.in_reply_to_id') as in_reply_to_id,
-                json_extract(status, '$.in_reply_to_account_id') as in_reply_to_account_id,
+                case
+                  when reblog is not null then json_extract(reblog, '$.in_reply_to_id')
+                  else json_extract(status, '$.in_reply_to_id')
+                end as in_reply_to_id,
+                case
+                  when reblog is not null then json_extract(reblog, '$.in_reply_to_account_id')
+                  else json_extract(status, '$.in_reply_to_account_id')
+                end as in_reply_to_account_id,
                 json_extract(status, '$.media_attachments[0].preview_url') as preview_url,
                 json_extract(status, '$.media_attachments[0].url') as media_url,
                 json_extract(status, '$.media_attachments[0].type') as media_type,

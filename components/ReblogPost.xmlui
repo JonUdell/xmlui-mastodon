@@ -45,5 +45,13 @@
     </Tooltip>
 
     <Reactions item="{$props.item}" />
+
+    <!-- Recursively render nested replies -->
+    <VStack when="{$props.item.replies && $props.item.replies.length > 0}" marginLeft="$space-8" gap="$space-2">
+      <List data="{$props.item.replies}">
+        <RegularPost when="{!$item.reblog}" item="{$item}" debugMode="{$props.debugMode}" />
+        <ReblogPost when="{$item.reblog}" item="{$item}" debugMode="{$props.debugMode}" />
+      </List>
+    </VStack>
   </VStack>
 </Component>
