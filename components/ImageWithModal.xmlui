@@ -1,24 +1,33 @@
 <Component name="ImageWithModal">
+  <AppState id="toolsState" bucket="toolsState" />
   <ModalDialog id="imageModal" title="" fullScreen="true">
     <!-- Debug info
     <Fragment> when="{$param}">
       <Text>Debug: Modal param = {$param}</Text>
     </Fragment>
     -->
-
-    <Markdown when="{$param && ($param.includes('.mp4') || $param.includes('.gifv') || $param.includes('.webm'))}" content="<video src='{$param}' width='100%' controls></video>" />
-    <Image when="{$param && !$param.includes('.mp4') && !$param.includes('.gifv') && !$param.includes('.webm')}" src="{$param}" width="100%" fit="contain" />
+   <Text>{JSON.stringify(toolsState)}</Text>
+    <Markdown
+      when="{$param && ($param.includes('.mp4') || $param.includes('.gifv') || $param.includes('.webm'))}"
+      content="<video src='{$param}' width='100%' controls></video>" />
+    <Image
+      grayscale="{toolsState.value.grayscale}"
+      when="{$param && !$param.includes('.mp4') && !$param.includes('.gifv') && !$param.includes('.webm')}"
+      src="{$param}"
+      width="100%"
+      fit="contain" />
   </ModalDialog>
 
-  <VStack when="{$props.mediaType === 'video' || $props.mediaType === 'gifv'}" onClick="imageModal.open($props.mediaUrl)">
+  <VStack
+    when="{$props.mediaType === 'video' || $props.mediaType === 'gifv'}"
+    onClick="imageModal.open($props.mediaUrl)">
     <Markdown
-      content="<video src='{$props.mediaUrl}' width='{$props.width}' controls></video>"
-    />
+      content="<video src='{$props.mediaUrl}' width='{$props.width}' controls></video>" />
   </VStack>
   <Image
+    grayscale="{toolsState.value.grayscale}"
     when="{$props.mediaType !== 'video' && $props.mediaType !== 'gifv'}"
     onClick="imageModal.open($props.src.replace('/small/','/original/'))"
     src="{$props.src}"
-    width="{$props.width}"
-  />
+    width="{$props.width}" />
 </Component>

@@ -14,6 +14,8 @@
     </Text>
   </VStack>
 
+  <Text>{JSON.stringify(toolsState.value)}</Text>
+
   <VStack gap="$space-1">
     <ReblogHeader item="{$props.item}" />
 
@@ -29,7 +31,7 @@
       paddingBottom-Blockquote="$space-1"
       paddingHorizontal-Blockquote="$space-3"
     >
-      <Markdown content="{window.htmlToMarkdown($props.item.reblog_content)}" />
+      <Markdown grayscale="{toolsState.value.grayscale}" content="{window.htmlToMarkdown($props.item.reblog_content)}" />
     </Theme>
 
     <ImageWithModal

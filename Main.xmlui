@@ -4,6 +4,7 @@
   textColor-Text-mastodon-timestamp = "$color-surface-600"
   fontSize-Text-mastodon-user = "$fontSize-xs"
 >
+
   <App
     var.showSettings = "{false}"
     layout="vertical">
@@ -21,7 +22,7 @@
     <AppState
       id="toolsState"
       bucket="toolsState"
-      initialValue="{{ zoom: 20, truncateLinks: true }}" />
+      initialValue="{{ zoom: 20, truncateLinks: true, grayscale: true }}" />
     <!-- Settings dialog state -->
     <DataSource
       id="data"
@@ -101,8 +102,26 @@
         label="{mediaSize.sizeIndex <= 1 ? '' : 'Settings'}"
         icon="cog"
         onClick="{showSettings = true}" />
+      <!--
+      <NavLink label="test" to="/test" />
+      -->
     </NavPanel>
     <Pages>
+    <!--
+      <Page url="/test">
+         test direct
+         <Image grayscale="true" src="/resources/snapshot35.png"/>
+         <Markdown grayscale="true">
+         ![](/resources/snapshot35.png)
+         </Markdown>
+        <Text>{JSON.stringify(toolsState)}</Text>
+         test indirect
+         <Image grayscale="{toolsState.value.grayscale}" src="/resources/snapshot35.png"/>
+         <Markdown grayscale="{toolsState.value.grayscale}">
+         ![](/resources/snapshot35.png)
+         </Markdown>
+      </Page>
+      -->
       <Page url="/">
         <Home />
       </Page>

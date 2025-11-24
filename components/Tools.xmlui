@@ -8,6 +8,11 @@
     </Text>
   </HStack>
   <ContentSeparator />
+  <Switch
+    label="Grayscale images"
+    initialValue="{toolsState.value.grayscale}"
+    onDidChange="(value) => { toolsState.update({ grayscale: value }); }" />
+  <ContentSeparator />
   <Slider
     when="{['/', '/notifications'].includes($pathname)}"
     width="100%"

@@ -56,7 +56,9 @@
         paddingBottom-Blockquote="$space-1"
         paddingHorizontal-Blockquote="$space-3"
       >
-        <Markdown content="{window.htmlToMarkdown($props.item.content)}" />
+        <Markdown
+          grayscale="{toolsState.value.grayscale}"
+          content="{window.htmlToMarkdown($props.item.content)}" />
       </Theme>
     </Fragment>
 
