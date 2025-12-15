@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <script src="xmlui/0.11.19.js"></script>
+  <script src="xmlui/0.11.22.js"></script>
   <script src="config.js"></script>
 
   <style>
@@ -1033,12 +1033,6 @@
         truncate = 'true';
         localStorage.setItem('truncateLinks', truncate);
       }
-      // Apply truncation state
-      window.setTruncateLinks(truncate === 'true');
-      // Try to update toolsState if available
-      if (window.toolsState && typeof window.toolsState.update === 'function') {
-        window.toolsState.update({ truncateLinks: truncate === 'true' });
-      }
     }
     window.addEventListener('DOMContentLoaded', initTruncateLinksSetting);
 
@@ -1049,10 +1043,6 @@
         window.enableLinkTruncation();
       } else {
         window.disableLinkTruncation();
-      }
-      // Keep toolsState in sync if available
-      if (window.toolsState && typeof window.toolsState.update === 'function') {
-        window.toolsState.update({ truncateLinks: enabled });
       }
     }
 
