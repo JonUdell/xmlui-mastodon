@@ -1,0 +1,5 @@
+window.config = {
+    mastodonToken: 'yOxf1...0NBW0',
+    server: 'https://social.coop',
+    app: 'elk.zone'
+};
