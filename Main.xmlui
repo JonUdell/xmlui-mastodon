@@ -1,5 +1,6 @@
+
 <Theme
-  width-navPanel-App="{mediaSize.sizeIndex <= 1 ? '4rem' : '10rem'}"
+  width-navPanel-App="{mediaSize.sizeIndex <= 1 ? '6rem' : '12rem'}"
   fontSize-Text-mastodon-timestamp = "$fontSize-xs"
   textColor-Text-mastodon-timestamp = "$color-surface-600"
   fontSize-Text-mastodon-user = "$fontSize-xs"
@@ -8,21 +9,17 @@
   <App
     var.showSettings = "{false}"
     layout="vertical">
+
     <!-- Global debug mode state -->
     <AppState
       id="debugState"
       bucket="debugState"
       initialValue="{{ enabled: false }}" />
-    <!-- Reply context state -->
+    <!-- Reply con state -->
     <AppState
       id="replyContext"
       bucket="replyContext"
       initialValue="{{ replyToId: null, replyToAuthor: null, replyToContent: null }}" />
-    <!-- UI settings state -->
-    <AppState
-      id="toolsState"
-      bucket="toolsState"
-      initialValue="{{ zoom: 20, truncateLinks: true, grayscale: true }}" />
     <!-- Settings dialog state -->
     <DataSource
       id="data"
@@ -123,6 +120,7 @@
       </Page>
       -->
       <Page url="/">
+
         <Home />
       </Page>
       <Page url="/notifications">

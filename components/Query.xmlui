@@ -64,18 +64,18 @@
       <h2>Queries</h2>
 
       <FlowLayout gap="$space-6" columnGap="$space-8">
-        <!-- Home Timeline Queries -->
+        <!-- Home Timeline Queries
         <VStack backgroundColor="$color-background-subtle" padding="$space-4" borderRadius="$radius-lg" width="auto">
           <Text variant="strong">Home Timeline</Text>
           <QueryExample title="Create Home Table" example="createTootsHome" />
           <QueryExample title="Update Home Posts" example="updateTootsHome" />
           <QueryExample title="Count Home Posts" example="countTootsHome" />
         </VStack>
+         -->
 
         <!-- Following Queries -->
         <VStack backgroundColor="$color-background-subtle" padding="$space-4" borderRadius="$radius-lg" width="auto">
           <Text variant="strong">Following</Text>
-          <QueryExample title="Create Following Table" example="createFollowing" />
           <QueryExample title="Update Following" example="updateFollowing" />
           <QueryExample title="Count Following" example="countFollowing" />
         </VStack>
@@ -83,7 +83,6 @@
         <!-- Follower Queries -->
         <VStack backgroundColor="$color-background-subtle" padding="$space-4" borderRadius="$radius-lg" width="auto">
           <Text variant="strong">Followers</Text>
-          <QueryExample title="Create Follower Table" example="createFollower" />
           <QueryExample title="Update Followers" example="updateFollower" />
           <QueryExample title="Count Followers" example="countFollower" />
         </VStack>
@@ -91,7 +90,6 @@
         <!-- Notification Queries -->
         <VStack backgroundColor="$color-background-subtle" padding="$space-4" borderRadius="$radius-lg" width="auto">
           <Text variant="strong">Notifications</Text>
-          <QueryExample title="Create Notifications Table" example="createNotifications" />
           <QueryExample title="Update Notifications" example="updateNotifications" />
           <QueryExample title="Count Notifications" example="countNotifications" />
         </VStack>
@@ -100,7 +98,7 @@
         <VStack backgroundColor="$color-background-subtle" padding="$space-4" borderRadius="$radius-lg" width="auto">
           <Text variant="strong">Meta</Text>
           <QueryExample title="List tables" example="listAllTables" />
-          <QueryExample title="Table stats" example="tableStats" />
+          <!--           <QueryExample title="Table stats" example="tableStats" /> -->
         </VStack>
       </FlowLayout>
 

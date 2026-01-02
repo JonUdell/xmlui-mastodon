@@ -1,7 +1,19 @@
-<Component name="Home" var.loaded="{false}" var.syncCompleted="{false}" var.liveToots="{[]}" var.parentIds="{[]}">
+<Component
+  name="Home"
+  codeBehind="Home.xmlui.xs"
+  var.loaded="{false}"
+  var.syncCompleted="{false}"
+  var.liveToots="{[]}"
+  var.parentIds="{[]}"
+  >
 
 <AppState id="toolsState" bucket="toolsState" />
 <AppState id="debugState" bucket="debugState" />
+
+<script>
+  console.log('call initAppState');
+  initAppState()
+</script>
 
 <DataSource
   id="ephemeralToots"
@@ -62,13 +74,18 @@
 />
 
 
-
   <VStack width="90%" maxWidth="90vw" marginRight="$space-4">
 
-  <!--
-   <Text preserveLinebreaks="true"> { JSON.stringify(mediaSize, null, 2) } </Text>
-  -->
+    <Button label="init zoom from codebehind" onClick="initAppState()"/>
 
+    <!--
+    <HStack>
+    define AppState.test.zoom as: <TextBox width="8rem" id="initZoom"/>
+    <Button label="define AppState.test.zoom" onClick="AppState.define('test', {'zoom': initZoom.value})" />
+    <Text>zoom value: {AppState.get('test').zoom}</Text>
+    </HStack>
+    <Text>AppState keys: { JSON.stringify(Object.keys(AppState)) }</Text>
+    -->
 
     <!-- Loading indicator -->
     <Text when="{!loaded}">Loading timeline data...</Text>

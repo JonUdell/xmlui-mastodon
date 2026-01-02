@@ -21,6 +21,8 @@
   </Fragment>
 -->
 
+<!--   <Text>zoom: { AppState.get('test').zoom }</Text> -->
+
   <!-- Regular post header with timestamp on its own line -->
   <VStack gap="$space-0_5">
     <!-- Timestamp line -->
@@ -67,7 +69,7 @@
       src="{$props.item.preview_url}"
       mediaUrl="{$props.item.media_url}"
       mediaType="{$props.item.media_type}"
-      width="{toolsState.value.zoom}%"
+      width="{AppState.get('test').zoom}%"
     />
 
     <Reactions item="{$props.item}" />

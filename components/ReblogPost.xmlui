@@ -14,7 +14,7 @@
     </Text>
   </VStack>
 
-  <Text>{JSON.stringify(toolsState.value)}</Text>
+<!--  <Text>{JSON.stringify(toolsState.value)}</Text> -->
 
   <VStack gap="$space-1">
     <ReblogHeader item="{$props.item}" />
@@ -39,7 +39,7 @@
       src="{$props.item.reblog_preview_url}"
       mediaUrl="{$props.item.reblog_media_url}"
       mediaType="{$props.item.reblog_media_type}"
-      width="{toolsState.value.zoom}%"
+      width="{AppState.get('test').zoom}%"
     />
 
     <Tooltip text="view on home server">
