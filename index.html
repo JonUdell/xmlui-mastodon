@@ -771,12 +771,12 @@
             CASE
               WHEN th.content LIKE '%' || ? || '%' THEN
                 SUBSTR(th.content,
-                  MAX(1, INSTR(LOWER(th.content), LOWER(?)) - 30),
-                  64)
+                  MAX(1, INSTR(LOWER(th.content), LOWER(?)) - 60),
+                  160)
               WHEN th.reblog_content LIKE '%' || ? || '%' THEN
                 SUBSTR(th.reblog_content,
-                  MAX(1, INSTR(LOWER(th.reblog_content), LOWER(?)) - 30),
-                  64)
+                  MAX(1, INSTR(LOWER(th.reblog_content), LOWER(?)) - 60),
+                  160)
               WHEN th.author_name LIKE '%' || ? || '%' THEN
                 th.author_name || ': ' || SUBSTR(COALESCE(th.content, th.reblog_content, ''), 1, 40)
               ELSE
@@ -815,14 +815,14 @@
             CASE
               WHEN n.status_content LIKE '%' || ? || '%' THEN
                 SUBSTR(n.status_content,
-                  MAX(1, INSTR(LOWER(n.status_content), LOWER(?)) - 30),
-                  64)
+                  MAX(1, INSTR(LOWER(n.status_content), LOWER(?)) - 60),
+                  160)
               WHEN n.display_name LIKE '%' || ? || '%' THEN
                 n.display_name || ': ' || SUBSTR(COALESCE(n.status_content, ''), 1, 40)
               WHEN n.note LIKE '%' || ? || '%' THEN
                 SUBSTR(n.note,
-                  MAX(1, INSTR(LOWER(n.note), LOWER(?)) - 30),
-                  64)
+                  MAX(1, INSTR(LOWER(n.note), LOWER(?)) - 60),
+                  160)
               ELSE
                 SUBSTR(COALESCE(n.status_content, n.note, ''), 1, 64)
             END as match_snippet
