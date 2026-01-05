@@ -57,6 +57,7 @@
       >
         <Markdown
           grayscale="{ AppState.get('toolsState', 'grayscale') }"
+          truncateLinks="{ AppState.get('toolsState', 'truncateLinks') }"
           content="{window.htmlToMarkdown($props.item.content)}" />
       </Theme>
     </Fragment>

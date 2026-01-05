@@ -30,7 +30,7 @@
     <Switch
       when="{['/', '/notifications'].includes($pathname)}"
       label="Truncate long links"
-      initialValue="{ true }"
+      initialValue="{ AppState.get('toolsState', 'truncateLinks') }"
       onDidChange="(value) => { AppState.set('toolsState', 'truncateLinks', value); }" />
   </Fragment>
 </Component>

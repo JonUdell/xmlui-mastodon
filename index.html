@@ -4,28 +4,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!--
   <script src="https://docs.xmlui.org/resources/files/for-download/xmlui/xmlui-standalone.umd.js"></script>
+  -->
+  <script src="xmlui/0.11.24.js"></script>
   <script src="config.js"></script>
-
-  <style>
-    /* Truncation rules moved into a class for toggling */
-    .truncate-links a[href] {
-      display: inline-block;
-      max-width: 300px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      vertical-align: bottom;
-    }
-
-    .truncate-links a[href] span.ellipsis {
-      display: inline;
-    }
-
-    .truncate-links a[href] span.invisible {
-      display: none;
-    }
-  </style>
 
   <script>
 
@@ -1016,34 +999,6 @@
 
     window.avatarTopMargin = function (header_url) {
       return window.hasHeader(header_url) ? '-2rem' : '0'
-    }
-
-    // link truncation
-    window.enableLinkTruncation = function () {
-      document.body.classList.add('truncate-links');
-    }
-
-    window.disableLinkTruncation = function () {
-      document.body.classList.remove('truncate-links');
-    }
-
-    function initTruncateLinksSetting() {
-      let truncate = localStorage.getItem('truncateLinks');
-      if (truncate === null) {
-        truncate = 'true';
-        localStorage.setItem('truncateLinks', truncate);
-      }
-    }
-    window.addEventListener('DOMContentLoaded', initTruncateLinksSetting);
-
-    window.setTruncateLinks = function (enabled) {
-      console.log('truncate', enabled)
-      localStorage.setItem('truncateLinks', enabled ? 'true' : 'false');
-      if (enabled) {
-        window.enableLinkTruncation();
-      } else {
-        window.disableLinkTruncation();
-      }
     }
 
     window.getPostId = function (item) {

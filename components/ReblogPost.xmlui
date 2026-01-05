@@ -29,7 +29,10 @@
       paddingHorizontal-Blockquote="$space-3"
     >
 
-x`      <Markdown grayscale="{ AppState.get('toolsState', 'grayscale')}" content="{window.htmlToMarkdown($props.item.reblog_content)}" />
+    <Markdown
+      grayscale="{ AppState.get('toolsState', 'grayscale') }"
+      truncateLinks="{ AppState.get('toolsState', 'truncateLinks') }"
+      content="{window.htmlToMarkdown($props.item.reblog_content)}" />
     </Theme>
 
     <ImageWithModal
