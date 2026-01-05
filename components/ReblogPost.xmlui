@@ -1,5 +1,5 @@
 <Component name="ReblogPost">
-  <AppState id="toolsState" bucket="toolsState" />
+
 
   <!-- Debug info for reblog posts -->
   <VStack when="{$props.debugMode}" gap="$space-1" marginBottom="$space-2">
@@ -13,8 +13,6 @@
       Media: {$props.item.reblog_media_type} | Preview: {$props.item.reblog_preview_url ? 'Yes' : 'No'} | Original: {$props.item.reblog_media_url ? 'Yes' : 'No'}
     </Text>
   </VStack>
-
-<!--  <Text>{JSON.stringify(toolsState.value)}</Text> -->
 
   <VStack gap="$space-1">
     <ReblogHeader item="{$props.item}" />
@@ -31,7 +29,8 @@
       paddingBottom-Blockquote="$space-1"
       paddingHorizontal-Blockquote="$space-3"
     >
-      <Markdown grayscale="{toolsState.value.grayscale}" content="{window.htmlToMarkdown($props.item.reblog_content)}" />
+
+x`      <Markdown grayscale="{ AppState.get('toolsState', 'grayscale')}" content="{window.htmlToMarkdown($props.item.reblog_content)}" />
     </Theme>
 
     <ImageWithModal
@@ -39,7 +38,7 @@
       src="{$props.item.reblog_preview_url}"
       mediaUrl="{$props.item.reblog_media_url}"
       mediaType="{$props.item.reblog_media_type}"
-      width="{AppState.get('test').zoom}%"
+      width="{ AppState.get('toolsState', 'zoom') }%"
     />
 
     <Tooltip text="view on home server">

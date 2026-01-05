@@ -7,13 +7,7 @@
   var.parentIds="{[]}"
   >
 
-<AppState id="toolsState" bucket="toolsState" />
 <AppState id="debugState" bucket="debugState" />
-
-<script>
-  console.log('call initAppState');
-  initAppState()
-</script>
 
 <DataSource
   id="ephemeralToots"
@@ -74,18 +68,9 @@
 />
 
 
+  <Text>zoom: { JSON.stringify(AppState.get('toolsState')) }</Text>
+
   <VStack width="90%" maxWidth="90vw" marginRight="$space-4">
-
-    <Button label="init zoom from codebehind" onClick="initAppState()"/>
-
-    <!--
-    <HStack>
-    define AppState.test.zoom as: <TextBox width="8rem" id="initZoom"/>
-    <Button label="define AppState.test.zoom" onClick="AppState.define('test', {'zoom': initZoom.value})" />
-    <Text>zoom value: {AppState.get('test').zoom}</Text>
-    </HStack>
-    <Text>AppState keys: { JSON.stringify(Object.keys(AppState)) }</Text>
-    -->
 
     <!-- Loading indicator -->
     <Text when="{!loaded}">Loading timeline data...</Text>

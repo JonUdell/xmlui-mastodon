@@ -1,5 +1,5 @@
-<Component name="ImageWithModal">
-  <AppState id="toolsState" bucket="toolsState" />
+<Component name="ImageWithModal" var.grayscale="{ AppState.get('toolsState', 'grayscale') }"
+>
   <ModalDialog id="imageModal" title="" fullScreen="true">
     <!-- Debug info
     <Fragment> when="{$param}">
@@ -11,7 +11,7 @@
       when="{$param && ($param.includes('.mp4') || $param.includes('.gifv') || $param.includes('.webm'))}"
       content="<video src='{$param}' width='100%' controls></video>" />
     <Image
-      grayscale="{toolsState.value.grayscale}"
+      grayscale="{ grayscale }"
       when="{$param && !$param.includes('.mp4') && !$param.includes('.gifv') && !$param.includes('.webm')}"
       src="{$param}"
       width="100%"
@@ -25,7 +25,7 @@
       content="<video src='{$props.mediaUrl}' width='{$props.width}' controls></video>" />
   </VStack>
   <Image
-    grayscale="{toolsState.value.grayscale}"
+    grayscale="{ grayscale }"
     when="{$props.mediaType !== 'video' && $props.mediaType !== 'gifv'}"
     onClick="imageModal.open($props.src.replace('/small/','/original/'))"
     src="{$props.src}"

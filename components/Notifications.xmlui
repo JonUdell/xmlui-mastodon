@@ -1,7 +1,5 @@
 <Component name="Notifications">
 
-  <AppState id="toolsState" bucket="toolsState" initialValue="{{ zoom: 20 }}" />
-
   <DataSource
     id="notifications"
     url="{ window.query }"
@@ -51,7 +49,7 @@
               >
                 <Markdown content="{window.htmlToMarkdown($item.status_content)}" />
               </Theme>
-              <Image when="{$item.preview_url}" src="{$item.preview_url}" width="{toolsState.value.zoom}%" />
+              <Image when="{$item.preview_url}" src="{$item.preview_url}" width="{ AppState.get('toolsState', 'zoom') }%" />
             </VStack>
 
             <ContentSeparator />

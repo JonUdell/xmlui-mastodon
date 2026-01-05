@@ -1,5 +1,4 @@
 <Component name="RegularPost">
-  <AppState id="toolsState" bucket="toolsState" />
 
   <!-- Reply indicator if this is a reply
   <Fragment when="{$props.item.in_reply_to_account_id}">
@@ -20,8 +19,6 @@
     </DataSource>
   </Fragment>
 -->
-
-<!--   <Text>zoom: { AppState.get('test').zoom }</Text> -->
 
   <!-- Regular post header with timestamp on its own line -->
   <VStack gap="$space-0_5">
@@ -59,7 +56,7 @@
         paddingHorizontal-Blockquote="$space-3"
       >
         <Markdown
-          grayscale="{toolsState.value.grayscale}"
+          grayscale="{ AppState.get('toolsState', 'grayscale') }"
           content="{window.htmlToMarkdown($props.item.content)}" />
       </Theme>
     </Fragment>
@@ -69,7 +66,7 @@
       src="{$props.item.preview_url}"
       mediaUrl="{$props.item.media_url}"
       mediaType="{$props.item.media_type}"
-      width="{AppState.get('test').zoom}%"
+      width="{ AppState.get('toolsState', 'zoom') }%"
     />
 
     <Reactions item="{$props.item}" />

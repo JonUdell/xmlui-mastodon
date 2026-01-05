@@ -10,6 +10,11 @@
     var.showSettings = "{false}"
     layout="vertical">
 
+    <AppState
+        bucket="toolsState"
+        initialValue="{{ zoom: '20', grayscale: true, truncateLinks: true }}"
+    />
+
     <!-- Global debug mode state -->
     <AppState
       id="debugState"
@@ -104,21 +109,6 @@
       -->
     </NavPanel>
     <Pages>
-    <!--
-      <Page url="/test">
-         test direct
-         <Image grayscale="true" src="/resources/snapshot35.png"/>
-         <Markdown grayscale="true">
-         ![](/resources/snapshot35.png)
-         </Markdown>
-        <Text>{JSON.stringify(toolsState)}</Text>
-         test indirect
-         <Image grayscale="{toolsState.value.grayscale}" src="/resources/snapshot35.png"/>
-         <Markdown grayscale="{toolsState.value.grayscale}">
-         ![](/resources/snapshot35.png)
-         </Markdown>
-      </Page>
-      -->
       <Page url="/">
 
         <Home />
