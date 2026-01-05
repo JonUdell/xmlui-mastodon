@@ -10,7 +10,10 @@
   <Switch
     label="Grayscale images"
     initialValue="{ AppState.get('toolsState', 'grayscale') }"
+    onDidChange="(value) => { AppState.update('toolsState', {grayscale: value}) }" />
+    <!-- or equivalently
     onDidChange="(value) => { AppState.set('toolsState', 'grayscale', value) }" />
+    -->
   <ContentSeparator />
   <Slider
     when="{['/', '/notifications'].includes($pathname)}"
@@ -27,7 +30,7 @@
     <Switch
       when="{['/', '/notifications'].includes($pathname)}"
       label="Truncate long links"
-      initialValue="{localStorage.getItem('truncateLinks')}"
-      onDidChange="(value) => { window.setTruncateLinks(value); AppState.set('toolsState', 'truncateLinks', value); }" />
+      initialValue="{ true }"
+      onDidChange="(value) => { AppState.set('toolsState', 'truncateLinks', value); }" />
   </Fragment>
 </Component>

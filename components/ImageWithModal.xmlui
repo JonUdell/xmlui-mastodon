@@ -1,18 +1,12 @@
 <Component name="ImageWithModal" var.grayscale="{ AppState.get('toolsState', 'grayscale') }"
 >
   <ModalDialog id="imageModal" title="" fullScreen="true">
-    <!-- Debug info
-    <Fragment> when="{$param}">
-      <Text>Debug: Modal param = {$param}</Text>
-    </Fragment>
-   <Text>{JSON.stringify(toolsState)}</Text>
-    -->
     <Markdown
       when="{$param && ($param.includes('.mp4') || $param.includes('.gifv') || $param.includes('.webm'))}"
-      content="<video src='{$param}' width='100%' controls></video>" />
+     content="<video src='{$param}' width='100%' controls></video>" />
     <Image
       grayscale="{ grayscale }"
-      when="{$param && !$param.includes('.mp4') && !$param.includes('.gifv') && !$param.includes('.webm')}"
+      when="{ $param && !/\.(mp4|gifv|webm)$/.test($param) }"
       src="{$param}"
       width="100%"
       fit="contain" />

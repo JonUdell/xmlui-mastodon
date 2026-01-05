@@ -1,6 +1,5 @@
 <Component name="ReblogPost">
 
-
   <!-- Debug info for reblog posts -->
   <VStack when="{$props.debugMode}" gap="$space-1" marginBottom="$space-2">
     <Text fontSize="0.7rem" color="$color-text-subtle" fontFamily="monospace">
